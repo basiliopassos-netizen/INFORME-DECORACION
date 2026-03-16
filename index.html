@@ -9,15 +9,12 @@
         :root { --primary: #2c3e50; --success: #27ae60; --danger: #e74c3c; --warning: #f39c12; --bg: #f0f2f5; --info: #3498db; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', sans-serif; }
         body { margin: 0; padding: 0; background: var(--bg); color: #2c3e50; min-height: 100vh; }
-
         .fixed-top { position: sticky; top: 0; z-index: 1000; width: 100%; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         header { background: var(--primary); color: white; padding: 12px 15px; display: flex; align-items: center; gap: 12px; }
         .logo-u { background: white; color: var(--primary); width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 22px; }
-
         .tabs { display: flex; background: #34495e; }
         .tab-btn { flex: 1; padding: 15px 5px; border: none; background: transparent; color: #bdc3c7; font-weight: bold; font-size: 11px; text-transform: uppercase; }
         .tab-btn.active { color: white; border-bottom: 4px solid var(--warning); background: rgba(255,255,255,0.1); }
-
         .contenido { padding: 12px; width: 100%; }
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 12px; }
         .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -25,33 +22,27 @@
         .full-width { grid-column: span 2; }
         label { font-size: 10px; font-weight: 800; color: #7f8c8d; margin-bottom: 3px; text-transform: uppercase; }
         input, select, textarea { padding: 10px; border: 1px solid #dce1e5; border-radius: 10px; font-size: 14px; width: 100%; background: #fff; }
-
         .control-row { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; width: 100%; }
         .btn-main { flex: 1; border: none; border-radius: 18px; padding: 15px; color: white; min-height: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .btn-edit { width: 55px; height: 90px; border: none; border-radius: 15px; background: #fff; border: 2px solid #dce1e5; color: var(--primary); font-size: 24px; }
-
         .btn-ok { background: var(--success); box-shadow: 0 5px 0 #1e8449; }
         .btn-nook { background: var(--danger); box-shadow: 0 5px 0 #b03a2e; }
         .btn-event { background: var(--info); box-shadow: 0 5px 0 #2980b9; margin-top: 10px; width: 100%; padding: 15px; border: none; border-radius: 12px; color: white; font-weight: bold; }
         .num-big { font-size: 38px; font-weight: bold; line-height: 1; }
-
         .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
         .stat-item { background: #1a252f; color: white; padding: 15px; border-radius: 15px; text-align: center; }
-
         .btn-finalizar { background: #007bff; color: white; border: none; width: 100%; padding: 20px; border-radius: 15px; font-weight: bold; font-size: 16px; margin-top: 20px; }
         .btn-reset { background: #95a5a6; color: white; border: none; width: 100%; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 12px; margin-top: 30px; margin-bottom: 50px; }
-
         .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; align-items:center; justify-content:center; }
         .modal-box { background:white; width:90%; padding:25px; border-radius:25px; text-align: center; max-height: 90vh; overflow-y: auto; }
         .defecto-btn { width: 100%; padding: 15px; margin-bottom: 10px; border: none; background: #f8f9fa; border-left: 6px solid var(--danger); border-radius: 12px; text-align: left; font-weight: bold; font-size: 16px; }
-
         #loading { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 5000; flex-direction: column; align-items: center; justify-content: center; }
         .hidden { display: none; }
     </style>
 </head>
 <body onload="cargarDatos()">
 
-<div id="loading"><h2>🚀 GENERANDO INFORME...</h2><p>Guardando datos de forma segura.</p></div>
+<div id="loading"><h2>🚀 GENERANDO INFORME...</h2><p>Sumando tiempos por estación...</p></div>
 
 <div class="fixed-top">
     <header>
@@ -72,23 +63,17 @@
             <div class="campo"><label>Turno</label><select id="turno" onchange="guardarDatos()"><option>Mañana</option><option>Tarde</option><option>Noche</option></select></div>
             <div class="campo"><label>OF</label><input type="text" id="of" placeholder="Nº Orden" oninput="guardarDatos()"></div>
             <div class="campo"><label>Gráfica</label><input type="text" id="grafica" placeholder="Nombre gráfica" oninput="guardarDatos()"></div>
-            <div class="campo full-width"><label>Sustrato</label><input type="text" id="sustrato" placeholder="Nombre sustrato..." oninput="guardarDatos()"></div>
+            <div class="campo full-width"><label>Sustrato</label><input type="text" id="sustrato" placeholder="Sustrato..." oninput="guardarDatos()"></div>
         </div>
     </div>
 
     <div id="vista-produccion">
         <div class="control-row">
-            <button class="btn-main btn-ok" onclick="sumarUno('ok')">
-                <span style="font-size:10px; font-weight:bold;">PIEZAS OK</span>
-                <span class="num-big" id="val-ok">0</span>
-            </button>
+            <button class="btn-main btn-ok" onclick="sumarUno('ok')"><span>PIEZAS OK</span><span class="num-big" id="val-ok">0</span></button>
             <button class="btn-edit" onclick="editarManual('ok')">✎</button>
         </div>
         <div class="control-row">
-            <button class="btn-main btn-nook" onclick="abrirDefectos()">
-                <span style="font-size:10px; font-weight:bold;">PIEZAS NO OK</span>
-                <span class="num-big" id="val-nook">0</span>
-            </button>
+            <button class="btn-main btn-nook" onclick="abrirDefectos()"><span>PIEZAS NO OK</span><span class="num-big" id="val-nook">0</span></button>
             <button class="btn-edit" onclick="editarManual('nook')">✎</button>
         </div>
         <div class="stats">
@@ -101,7 +86,7 @@
         <div class="card">
             <h3 style="margin-top:0">Registro de Parada</h3>
             <div class="campo">
-                <label>Estación de Trabajo</label>
+                <label>Estación</label>
                 <select id="ev-estacion">
                     <option>HORNOS</option>
                     <option>ROBOTTIONS</option>
@@ -111,12 +96,12 @@
                 </select>
             </div>
             <div class="grid-inputs">
-                <div class="campo"><label>Hora Inicio</label><input type="time" id="ev-inicio"></div>
-                <div class="campo"><label>Hora Fin</label><input type="time" id="ev-fin"></div>
+                <div class="campo"><label>Inicio</label><input type="time" id="ev-inicio"></div>
+                <div class="campo"><label>Fin</label><input type="time" id="ev-fin"></div>
             </div>
             <div class="campo">
                 <label>Descripción</label>
-                <textarea id="ev-desc" rows="2" placeholder="Describe la incidencia..."></textarea>
+                <textarea id="ev-desc" rows="2" placeholder="Causa..."></textarea>
             </div>
             <button class="btn-event" onclick="document.getElementById('cam-input-event').click()">📸 FOTO (OPCIONAL)</button>
             <p id="ev-foto-status" style="font-size:11px; color:var(--success); text-align:center; display:none;">✓ Foto cargada</p>
@@ -124,8 +109,8 @@
         </div>
     </div>
 
-    <button class="btn-finalizar" onclick="compartirInforme()">📤 GENERAR PDF COMPLETO</button>
-    <button class="btn-reset" onclick="borrarTodo()">🗑️ LIMPIAR DATOS (NUEVO TURNO)</button>
+    <button class="btn-finalizar" onclick="compartirInforme()">📤 GENERAR PDF</button>
+    <button class="btn-reset" onclick="borrarTodo()">🗑️ LIMPIAR TURNO</button>
 </div>
 
 <div id="modal-app" class="modal"><div class="modal-box" id="modal-content"></div></div>
@@ -139,41 +124,28 @@
     let db = { calidad: { ok: 0, nook: 0, registros: [] }, final: { ok: 0, nook: 0, registros: [] }, eventos: [] };
 
     function guardarDatos() {
-        const cabecera = {
-            fecha: document.getElementById('fecha').value,
-            turno: document.getElementById('turno').value,
-            of: document.getElementById('of').value,
-            grafica: document.getElementById('grafica').value,
-            sustrato: document.getElementById('sustrato').value
-        };
-        localStorage.setItem('produccion_db_v2', JSON.stringify(db));
-        localStorage.setItem('cabecera_db_v2', JSON.stringify(cabecera));
+        const cab = { fecha: document.getElementById('fecha').value, turno: document.getElementById('turno').value, of: document.getElementById('of').value, grafica: document.getElementById('grafica').value, sustrato: document.getElementById('sustrato').value };
+        localStorage.setItem('prod_db_v3', JSON.stringify(db));
+        localStorage.setItem('cab_db_v3', JSON.stringify(cab));
     }
 
     function cargarDatos() {
-        const dbLocal = localStorage.getItem('produccion_db_v2');
-        const cabLocal = localStorage.getItem('cabecera_db_v2');
-        if (dbLocal) db = JSON.parse(dbLocal);
-        if (cabLocal) {
-            const c = JSON.parse(cabLocal);
+        const dLocal = localStorage.getItem('prod_db_v3');
+        const cLocal = localStorage.getItem('cab_db_v3');
+        if (dLocal) db = JSON.parse(dLocal);
+        if (cLocal) {
+            const c = JSON.parse(cLocal);
             document.getElementById('fecha').value = c.fecha || "";
             document.getElementById('turno').value = c.turno || "Mañana";
             document.getElementById('of').value = c.of || "";
             document.getElementById('grafica').value = c.grafica || "";
             document.getElementById('sustrato').value = c.sustrato || "";
-        } else {
-            document.getElementById('fecha').valueAsDate = new Date();
-        }
+        } else { document.getElementById('fecha').valueAsDate = new Date(); }
         actualizarUI();
     }
 
-    function borrarTodo() {
-        if (confirm("⚠️ ¿Deseas resetear el turno?")) {
-            localStorage.clear();
-            location.reload();
-        }
-    }
-
+    function borrarTodo() { if (confirm("¿Resetear turno?")) { localStorage.clear(); location.reload(); } }
+    
     function cambiarTab(t) {
         tabActual = t;
         document.getElementById('btn-calidad').classList.toggle('active', t === 'calidad');
@@ -181,11 +153,10 @@
         document.getElementById('btn-eventos').classList.toggle('active', t === 'eventos');
         document.getElementById('vista-produccion').classList.toggle('hidden', t === 'eventos');
         document.getElementById('vista-eventos').classList.toggle('hidden', t !== 'eventos');
-        if(t !== 'eventos') actualizarUI();
+        actualizarUI();
     }
 
     function sumarUno(tipo) { db[tabActual][tipo]++; actualizarUI(); guardarDatos(); }
-    
     function editarManual(tipo) {
         let n = prompt("Total " + tipo.toUpperCase(), db[tabActual][tipo]);
         if (n !== null && !isNaN(n)) { db[tabActual][tipo] = parseInt(n || 0); actualizarUI(); guardarDatos(); }
@@ -193,9 +164,9 @@
 
     function abrirDefectos() {
         const mc = document.getElementById('modal-content');
-        mc.innerHTML = `<h3>Selecciona Defecto</h3><div id="lista-btns"></div><button onclick="cerrarModal()" style="width:100%;margin-top:15px;padding:12px;border:none;background:#eee;border-radius:12px;">Cerrar</button>`;
+        mc.innerHTML = `<h3>Defecto</h3><div id="btns"></div><button onclick="cerrarModal()" style="width:100%;margin-top:10px;padding:10px;">Cerrar</button>`;
         config[tabActual].forEach(d => {
-            mc.querySelector('#lista-btns').innerHTML += `<button class="defecto-btn" onclick="iniciarFotos('${d}')">${d}</button>`;
+            mc.querySelector('#btns').innerHTML += `<button class="defecto-btn" onclick="iniciarFotos('${d}')">${d}</button>`;
         });
         document.getElementById('modal-app').style.display = 'flex';
     }
@@ -203,7 +174,7 @@
     function iniciarFotos(d) { defectoSeleccionado = d; pasoFoto = 1; mostrarPasoFoto(); }
     function mostrarPasoFoto() {
         const mc = document.getElementById('modal-content');
-        mc.innerHTML = `<h3>${pasoFoto === 1 ? "📸 FOTO DEFECTO" : "📸 FOTO LOTE"}</h3><button class="defecto-btn" style="background:var(--primary);color:white;text-align:center" onclick="document.getElementById('cam-input').click()">ABRIR CÁMARA</button>`;
+        mc.innerHTML = `<h3>${pasoFoto === 1 ? "📸 FOTO DEFECTO" : "📸 FOTO LOTE"}</h3><button class="defecto-btn" onclick="document.getElementById('cam-input').click()">ABRIR CÁMARA</button>`;
     }
 
     function fotoProcesada(e) {
@@ -222,38 +193,27 @@
     }
 
     function fotoEventoProcesada(e) {
-        const reader = new FileReader();
-        reader.onload = (ev) => { 
-            tempFotoEvento = ev.target.result; 
-            document.getElementById('ev-foto-status').style.display = 'block';
-        };
-        reader.readAsDataURL(e.target.files[0]);
+        const r = new FileReader();
+        r.onload = (ev) => { tempFotoEvento = ev.target.result; document.getElementById('ev-foto-status').style.display = 'block'; };
+        r.readAsDataURL(e.target.files[0]);
     }
 
     function guardarEvento() {
-        const estacion = document.getElementById('ev-estacion').value;
-        const inicio = document.getElementById('ev-inicio').value;
-        const fin = document.getElementById('ev-fin').value;
-        const desc = document.getElementById('ev-desc').value;
-        if (!inicio || !fin || !desc) { alert("Faltan datos."); return; }
-        
-        const [h1, m1] = inicio.split(':').map(Number);
-        const [h2, m2] = fin.split(':').map(Number);
-        let d1 = new Date(); d1.setHours(h1, m1, 0);
-        let d2 = new Date(); d2.setHours(h2, m2, 0);
+        const est = document.getElementById('ev-estacion').value, ini = document.getElementById('ev-inicio').value, fin = document.getElementById('ev-fin').value, desc = document.getElementById('ev-desc').value;
+        if (!ini || !fin || !desc) return alert("Faltan datos");
+        const [h1, m1] = ini.split(':').map(Number), [h2, m2] = fin.split(':').map(Number);
+        let d1 = new Date(), d2 = new Date(); d1.setHours(h1, m1, 0); d2.setHours(h2, m2, 0);
         if (d2 < d1) d2.setDate(d2.getDate() + 1);
         const mins = Math.floor((d2 - d1) / 60000);
-
-        db.eventos.push({ estacion, inicio, fin, desc, foto: tempFotoEvento, minutos: mins });
-        document.getElementById('ev-inicio').value = ""; document.getElementById('ev-fin').value = ""; document.getElementById('ev-desc').value = "";
+        db.eventos.push({ estacion: est, inicio: ini, fin: fin, desc: desc, foto: tempFotoEvento, minutos: mins });
         tempFotoEvento = null; document.getElementById('ev-foto-status').style.display = 'none';
-        guardarDatos(); alert("Evento guardado.");
+        guardarDatos(); alert("Guardado");
     }
 
     function cerrarModal() { document.getElementById('modal-app').style.display = 'none'; }
 
     function actualizarUI() {
-        const d = db[tabActual];
+        const d = db[tabActual]; if(!d) return;
         document.getElementById('val-ok').innerText = d.ok;
         document.getElementById('val-nook').innerText = d.nook;
         const total = d.ok + d.nook;
@@ -262,48 +222,55 @@
     }
 
     async function compartirInforme() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
+        const { jsPDF } = window.jspdf; const doc = new jsPDF();
         document.getElementById('loading').style.display = 'flex';
-        
-        const of = document.getElementById('of').value || "S/N";
-        const sus = document.getElementById('sustrato').value || "N/A";
-        const graf = document.getElementById('grafica').value || "N/A";
-        const tur = document.getElementById('turno').value;
-        const fec = document.getElementById('fecha').value;
+        const of = document.getElementById('of').value || "S/N", tur = document.getElementById('turno').value, fec = document.getElementById('fecha').value;
 
-        doc.setFontSize(18); doc.text("INFORME PRODUCCIÓN DECORACIÓN", 20, 20);
-        doc.setFontSize(10); doc.text(`OF: ${of} | Gráfica: ${graf} | Turno: ${tur}`, 20, 30);
-        doc.text(`Sustrato: ${sus} | Fecha: ${fec}`, 20, 36);
-        doc.line(20, 40, 190, 40);
+        // Cabecera
+        doc.setFontSize(16); doc.text("INFORME DE PRODUCCIÓN", 20, 20);
+        doc.setFontSize(10); doc.text(`OF: ${of} | Turno: ${tur} | Fecha: ${fec}`, 20, 28);
+        doc.line(20, 32, 190, 32);
 
-        doc.text(`RESUMEN: CALIDAD OK: ${db.calidad.ok} | FINAL OK: ${db.final.ok}`, 20, 50);
-        const mins = db.eventos.reduce((a, b) => a + b.minutos, 0);
-        doc.text(`TIEMPO PERDIDO TOTAL: ${mins} MINUTOS`, 20, 56);
+        // RESUMEN GENERAL
+        doc.text(`PIEZAS CALIDAD: OK: ${db.calidad.ok} | NO OK: ${db.calidad.nook}`, 20, 40);
+        doc.text(`PIEZAS FINAL:   OK: ${db.final.ok}   | NO OK: ${db.final.nook}`, 20, 46);
+        const totalMins = db.eventos.reduce((a, b) => a + b.minutos, 0);
+        doc.setTextColor(200, 0, 0);
+        doc.text(`TIEMPO TOTAL PERDIDO: ${totalMins} MINUTOS`, 20, 54);
+        doc.setTextColor(0);
 
-        let y = 70;
+        // --- RESUMEN POR ESTACIÓN ---
+        doc.setFontSize(12); doc.text("RESUMEN POR ESTACIÓN:", 20, 65);
+        const resEst = {};
+        db.eventos.forEach(e => {
+            if(!resEst[e.estacion]) resEst[e.estacion] = { min: 0, cant: 0 };
+            resEst[e.estacion].min += e.minutos; resEst[e.estacion].cant += 1;
+        });
+        doc.setFontSize(10);
+        let yRes = 72;
+        for (const s in resEst) {
+            doc.text(`- ${s}: ${resEst[s].cant} paradas | Total: ${resEst[s].min} min.`, 25, yRes);
+            yRes += 6;
+        }
+        doc.line(20, yRes + 4, 190, yRes + 4);
+        let y = yRes + 15;
+
+        // Fallos y Eventos (Listado)
         const addSect = (tit, regs) => {
             if (regs.length === 0) return;
-            doc.setFontSize(14); doc.text(`FALLOS ${tit}`, 20, y); y += 10;
+            if (y > 250) { doc.addPage(); y = 20; }
+            doc.setFontSize(14); doc.text(tit, 20, y); y += 10;
             regs.forEach(r => {
-                if (y > 230) { doc.addPage(); y = 20; }
-                doc.setFontSize(10); doc.text(`${r.defecto} (${r.hora})`, 20, y);
-                if(r.foto1) doc.addImage(r.foto1, 'JPEG', 20, y+5, 80, 50);
-                if(r.foto2) doc.addImage(r.foto2, 'JPEG', 105, y+5, 80, 50);
-                y += 60;
+                if (y > 220) { doc.addPage(); y = 20; }
+                doc.setFontSize(9); doc.text(`${r.defecto || r.estacion} (${r.hora || r.inicio})`, 20, y);
+                if(r.foto1 || r.foto) doc.addImage(r.foto1 || r.foto, 'JPEG', 20, y+2, 70, 45);
+                if(r.foto2) doc.addImage(r.foto2, 'JPEG', 95, y+2, 70, 45);
+                y += (r.foto1 || r.foto) ? 55 : 10;
             });
         };
-        addSect("CALIDAD", db.calidad.registros);
-        addSect("FINAL", db.final.registros);
-
-        if (db.eventos.length > 0) {
-            doc.addPage(); y = 20;
-            doc.text("EVENTOS / PARADAS", 20, y); y += 10;
-            db.eventos.forEach(ev => {
-                doc.text(`${ev.estacion} (${ev.minutos} min): ${ev.desc}`, 20, y);
-                if(ev.foto) { doc.addImage(ev.foto, 'JPEG', 20, y+5, 80, 50); y += 65; } else { y += 10; }
-            });
-        }
+        addSect("DETALLE FALLOS CALIDAD", db.calidad.registros);
+        addSect("DETALLE FALLOS FINAL", db.final.registros);
+        addSect("LISTADO DE PARADAS", db.eventos);
 
         const pdfBlob = doc.output('blob');
         const file = new File([pdfBlob], `Informe_${of}.pdf`, { type: 'application/pdf' });
