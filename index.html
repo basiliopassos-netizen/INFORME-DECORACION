@@ -48,7 +48,7 @@
 </head>
 <body>
 
-<div id="loading"><h2>🚀 GENERANDO INFORME...</h2><p>Preparando datos y fotos.</p></div>
+<div id="loading"><h2>🚀 GENERANDO INFORME...</h2><p>Organizando secciones y fotos.</p></div>
 
 <div class="fixed-top">
     <header>
@@ -182,30 +182,44 @@
         
         doc.line(20, 46, 190, 46);
 
-        // RESUMEN
+        // RESUMEN POR SECCIÓN
         doc.setFontSize(12); doc.setTextColor(0);
-        doc.text("RESUMEN DE PIEZAS:", 20, 56);
+        doc.text("RESUMEN DE PRODUCCIÓN:", 20, 56);
         doc.setFontSize(10);
-        doc.text(`- CALIDAD: OK: ${db.calidad.ok} | NO OK: ${db.calidad.nook}`, 25, 64);
-        doc.text(`- FINAL:   OK: ${db.final.ok} | NO OK: ${db.final.nook}`, 25, 70);
+        doc.text(`SECCIÓN CALIDAD -> OK: ${db.calidad.ok} | NO OK: ${db.calidad.nook}`, 25, 64);
+        doc.text(`SECCIÓN FINAL   -> OK: ${db.final.ok} | NO OK: ${db.final.nook}`, 25, 70);
 
         doc.line(20, 78, 190, 78);
 
-        // FALLOS
         let y = 88;
-        const fallos = [...db.calidad.registros, ...db.final.registros];
 
-        fallos.forEach((r, idx) => {
-            if (y > 220) { doc.addPage(); y = 20; }
-            doc.setFontSize(11); doc.setTextColor(231, 76, 60);
-            doc.text(`${idx + 1}. FALLO: ${r.defecto.toUpperCase()} (${r.seccion.toUpperCase()})`, 20, y);
-            doc.setFontSize(9); doc.setTextColor(100);
-            doc.text(`Hora: ${r.hora}`, 20, y + 5);
+        // FUNCIÓN PARA AÑADIR SECCIONES DE FALLOS
+        const añadirSeccion = (titulo, registros) => {
+            if (registros.length === 0) return;
+            
+            if (y > 250) { doc.addPage(); y = 20; }
+            
+            doc.setFontSize(14); doc.setTextColor(44, 62, 80);
+            doc.text(`DETALLE FALLOS: ${titulo}`, 20, y);
+            y += 10;
 
-            if(r.foto1) doc.addImage(r.foto1, 'JPEG', 20, y + 8, 80, 55);
-            if(r.foto2) doc.addImage(r.foto2, 'JPEG', 105, y + 8, 80, 55);
-            y += 75;
-        });
+            registros.forEach((r, idx) => {
+                if (y > 220) { doc.addPage(); y = 20; }
+                doc.setFontSize(11); doc.setTextColor(231, 76, 60);
+                doc.text(`${idx + 1}. FALLO: ${r.defecto.toUpperCase()}`, 20, y);
+                doc.setFontSize(9); doc.setTextColor(100);
+                doc.text(`Hora: ${r.hora}`, 20, y + 5);
+
+                if(r.foto1) doc.addImage(r.foto1, 'JPEG', 20, y + 8, 80, 55);
+                if(r.foto2) doc.addImage(r.foto2, 'JPEG', 105, y + 8, 80, 55);
+                y += 75;
+            });
+            y += 10; // Espacio extra tras la sección
+        };
+
+        // LLAMAR PARA CADA SECCIÓN
+        añadirSeccion("CALIDAD", db.calidad.registros);
+        añadirSeccion("FINAL", db.final.registros);
 
         const pdfBlob = doc.output('blob');
         const file = new File([pdfBlob], `Informe_Prod_OF_${of}.pdf`, { type: 'application/pdf' });
@@ -214,7 +228,7 @@
         if (navigator.share) {
             await navigator.share({ files: [file], title: `Informe Producción OF ${of}` });
         } else {
-            doc.save(`Informe_Produccion_${of}.pdf`);
+            doc.save(`Informe_Prod_OF_${of}.pdf`);
         }
     }
     document.getElementById('fecha').valueAsDate = new Date();
