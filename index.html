@@ -8,146 +8,107 @@
     <style>
         :root { --primary: #2c3e50; --success: #27ae60; --danger: #e74c3c; --warning: #f39c12; --bg: #f0f2f5; }
         
-        /* Ajuste total a la pantalla del móvil */
-        html, body { height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden; background: var(--bg); }
+        /* FUERZA EL AJUSTE A LA PANTALLA SIN ZOOM */
+        html, body { 
+            height: 100vh; 
+            width: 100vw; 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden; /* Evita que toda la página rebote */
+            background: var(--bg);
+            position: fixed; /* Bloquea el desplazamiento del navegador */
+        }
+
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', sans-serif; }
 
-        /* Cabecera Azul Bloqueada */
+        /* CABECERA AZUL BLOQUEADA */
         header { 
             background: var(--primary); 
             color: white; 
-            position: sticky; 
-            top: 0; 
-            z-index: 1000;
             width: 100%;
+            flex-shrink: 0;
+            z-index: 1000;
         }
         .app-header { padding: 12px 15px; display: flex; align-items: center; gap: 12px; }
         
-        /* Icono de la U */
+        /* ICONO U MAYÚSCULA */
         .logo-u { 
             background: white; 
             color: var(--primary); 
-            width: 35px; 
-            height: 35px; 
+            width: 38px; 
+            height: 38px; 
             border-radius: 8px; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
             font-weight: 900; 
-            font-size: 22px;
+            font-size: 24px;
         }
         
-        .tabs { display: flex; background: #34495e; }
-        .tab-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #bdc3c7; font-weight: bold; font-size: 11px; text-transform: uppercase; }
+        /* PESTAÑAS BLOQUEADAS */
+        .tabs { display: flex; background: #34495e; width: 100%; }
+        .tab-btn { flex: 1; padding: 14px; border: none; background: transparent; color: #bdc3c7; font-weight: bold; font-size: 11px; text-transform: uppercase; }
         .tab-btn.active { color: white; border-bottom: 4px solid var(--warning); background: rgba(255,255,255,0.1); }
 
-        /* Contenido con scroll independiente */
-        .contenido { 
-            height: calc(100vh - 100px); 
-            overflow-y: auto; 
-            padding: 12px; 
-            padding-bottom: 80px; /* Espacio para que el botón de enviar no tape nada */
+        /* ÁREA DE CONTENIDO (CON SCROLL PROPIO) */
+        .contenedor-principal {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
         }
 
+        .contenido-scroll { 
+            flex: 1;
+            overflow-y: auto; /* Solo esta parte se desliza */
+            padding: 12px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* TARJETAS Y BOTONES */
         .card { background: white; padding: 12px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 12px; }
         .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .campo { display: flex; flex-direction: column; margin-bottom: 4px; }
         label { font-size: 9px; font-weight: 800; color: #7f8c8d; margin-bottom: 2px; text-transform: uppercase; }
-        input, select { padding: 8px; border: 1px solid #dce1e5; border-radius: 8px; font-size: 14px; width: 100%; }
+        input, select { padding: 10px; border: 1px solid #dce1e5; border-radius: 8px; font-size: 14px; width: 100%; }
 
-        /* Controles */
         .control-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-        .btn-main { flex: 1; border: none; border-radius: 15px; padding: 12px; color: white; min-height: 85px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .btn-edit { width: 50px; height: 85px; border: none; border-radius: 12px; background: #fff; border: 1px solid #dce1e5; color: var(--primary); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .btn-main { flex: 1; border: none; border-radius: 15px; padding: 12px; color: white; min-height: 90px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .btn-edit { width: 55px; height: 90px; border: none; border-radius: 12px; background: #fff; border: 1px solid #dce1e5; color: var(--primary); font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         
         .btn-ok { background: var(--success); box-shadow: 0 4px 0 #1e8449; }
         .btn-nook { background: var(--danger); box-shadow: 0 4px 0 #b03a2e; }
-        .num-big { font-size: 38px; font-weight: bold; line-height: 1; }
+        .num-big { font-size: 40px; font-weight: bold; line-height: 1; }
 
-        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .stat-item { background: #1a252f; color: white; padding: 12px; border-radius: 12px; text-align: center; }
+        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-bottom: 20px; }
+        .stat-item { background: #1a252f; color: white; padding: 15px; border-radius: 12px; text-align: center; }
 
-        .btn-finalizar { background: #007bff; color: white; border: none; width: 100%; padding: 16px; border-radius: 15px; margin-top: 15px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .btn-finalizar { background: #007bff; color: white; border: none; width: 100%; padding: 18px; border-radius: 15px; font-weight: bold; font-size: 16px; margin-bottom: 30px; }
 
-        /* Modales */
+        /* MODALES */
         .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; align-items:center; justify-content:center; }
-        .modal-box { background:white; width:90%; padding:20px; border-radius:20px; text-align: center; }
+        .modal-box { background:white; width:90%; padding:20px; border-radius:20px; text-align: center; max-height: 80vh; overflow-y: auto; }
         .defecto-btn { width: 100%; padding: 15px; margin-bottom: 8px; border: none; background: #f8f9fa; border-left: 6px solid var(--danger); border-radius: 10px; text-align: left; font-weight: bold; }
         
-        #loading { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:5000; flex-direction:column; align-items:center; justify-content:center; }
+        #loading { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:5000; flex-direction:column; align-items:center; justify-content:center; text-align: center; }
     </style>
 </head>
 <body>
 
-<div id="loading"><h2>🚀 GENERANDO PDF...</h2><p>Procesando fotos, espera un momento.</p></div>
-
-<header>
-    <div class="app-header">
-        <div class="logo-u">U</div>
-        <div style="font-weight: bold; font-size: 15px; letter-spacing: 0.5px;">UNIDAD DE DECORACIÓN</div>
-    </div>
-    <div class="tabs">
-        <button class="tab-btn active" id="btn-calidad" onclick="cambiarTab('calidad')">Calidad</button>
-        <button class="tab-btn" id="btn-final" onclick="cambiarTab('final')">Final</button>
-    </div>
-</header>
-
-<div class="contenido">
-    <div class="card">
-        <div class="grid-inputs">
-            <div class="campo"><label>Fecha</label><input type="date" id="fecha"></div>
-            <div class="campo"><label>Turno</label><select id="turno"><option>Mañana</option><option>Tarde</option><option>Noche</option></select></div>
-            <div class="campo"><label>OF</label><input type="text" id="of" placeholder="Nº Orden"></div>
-            <div class="campo"><label>Sustrato</label><input type="text" id="sustrato" placeholder="Tipo..."></div>
+<div class="contenedor-principal">
+    <header>
+        <div class="app-header">
+            <div class="logo-u">U</div>
+            <div style="font-weight: 800; font-size: 16px; letter-spacing: 0.5px;">UNIDAD DE DECORACIÓN</div>
         </div>
-    </div>
+        <div class="tabs">
+            <button class="tab-btn active" id="btn-calidad" onclick="cambiarTab('calidad')">Calidad</button>
+            <button class="tab-btn" id="btn-final" onclick="cambiarTab('final')">Final</button>
+        </div>
+    </header>
 
-    <div class="control-row">
-        <button class="btn-main btn-ok" onclick="sumarUno('ok')">
-            <span style="font-size:10px;font-weight:bold;opacity:0.9">PIEZAS OK</span>
-            <span class="num-big" id="val-ok">0</span>
-        </button>
-        <button class="btn-edit" onclick="editarManual('ok')">✎</button>
-    </div>
-
-    <div class="control-row">
-        <button class="btn-main btn-nook" onclick="abrirDefectos()">
-            <span style="font-size:10px;font-weight:bold;opacity:0.9">PIEZAS NO OK</span>
-            <span class="num-big" id="val-nook">0</span>
-        </button>
-        <button class="btn-edit" onclick="editarManual('nook')">✎</button>
-    </div>
-
-    <div class="stats">
-        <div class="stat-item"><span id="val-total" style="font-size:22px;font-weight:bold">0</span><br><small style="font-size:9px">TOTAL</small></div>
-        <div class="stat-item"><span id="val-pct" style="font-size:22px;font-weight:bold;color:var(--success)">0%</span><br><small style="font-size:9px">CALIDAD</small></div>
-    </div>
-
-    <button class="btn-finalizar" onclick="compartirInforme()">📤 GENERAR Y ENVIAR PDF</button>
-</div>
-
-<div id="modal-app" class="modal"><div class="modal-box" id="modal-content"></div></div>
-<input type="file" id="cam-input" accept="image/*" capture="environment" style="display:none" onchange="fotoProcesada(event)">
-
-<script>
-    const config = { calidad: ["Bultos", "Malla suelta", "Rota", "Sucia"], final: ["Gota Kerajet", "Tono", "Rascada", "Manchada"] };
-    let tabActual = 'calidad', pasoFoto = 0, currentDefecto = "";
-    let db = { calidad: { ok: 0, nook: 0, registros: [] }, final: { ok: 0, nook: 0, registros: [] } };
-
-    function cambiarTab(t) {
-        tabActual = t;
-        document.getElementById('btn-calidad').className = t === 'calidad' ? 'tab-btn active' : 'tab-btn';
-        document.getElementById('btn-final').className = t === 'final' ? 'tab-btn active' : 'tab-btn';
-        actualizarUI();
-    }
-
-    function sumarUno(tipo) { db[tabActual][tipo]++; actualizarUI(); }
-
-    function editarManual(tipo) {
-        let valor = prompt("Escribe el total de " + tipo.toUpperCase(), db[tabActual][tipo]);
-        if (valor !== null && !isNaN(valor)) { db[tabActual][tipo] = parseInt(valor || 0); actualizarUI(); }
-    }
-
-    function abrirDefectos() {
-        const mc = document.getElementById('modal-content');
-        mc.innerHTML = `<h3>¿Qué defecto es?</h3><div id="lista"></div><button onclick="cerrarModal()" style="width:100%;margin-top:15px;padding:10px;border:none;background:#eee;border-radius:10px;">Cerrar</button
+    <div class="contenido-scroll">
+        <div class="card">
+            <div class="grid-inputs">
+                <div class="campo"><label>Fecha</label><input type="date" id="fecha"></div>
+                <div class="campo"><label>Turno</label><select id="turno"><option>Mañana</option><option>Tarde</option><option>Noche</option></select></div>
+                <div class
