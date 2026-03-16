@@ -8,107 +8,278 @@
     <style>
         :root { --primary: #2c3e50; --success: #27ae60; --danger: #e74c3c; --warning: #f39c12; --bg: #f0f2f5; }
         
-        /* FUERZA EL AJUSTE A LA PANTALLA SIN ZOOM */
-        html, body { 
-            height: 100vh; 
-            width: 100vw; 
-            margin: 0; 
-            padding: 0; 
-            overflow: hidden; /* Evita que toda la página rebote */
-            background: var(--bg);
-            position: fixed; /* Bloquea el desplazamiento del navegador */
-        }
-
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', sans-serif; }
-
-        /* CABECERA AZUL BLOQUEADA */
-        header { 
-            background: var(--primary); 
-            color: white; 
-            width: 100%;
-            flex-shrink: 0;
-            z-index: 1000;
-        }
-        .app-header { padding: 12px 15px; display: flex; align-items: center; gap: 12px; }
         
-        /* ICONO U MAYÚSCULA */
+        body { margin: 0; padding: 0; background: var(--bg); color: #2c3e50; }
+
+        /* CABECERA FIJA */
+        .fixed-top {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+        }
+
+        header { background: var(--primary); color: white; padding: 12px 15px; display: flex; align-items: center; gap: 12px; }
+        
         .logo-u { 
             background: white; 
             color: var(--primary); 
-            width: 38px; 
-            height: 38px; 
+            width: 35px; 
+            height: 35px; 
             border-radius: 8px; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
             font-weight: 900; 
-            font-size: 24px;
+            font-size: 22px;
         }
-        
-        /* PESTAÑAS BLOQUEADAS */
-        .tabs { display: flex; background: #34495e; width: 100%; }
-        .tab-btn { flex: 1; padding: 14px; border: none; background: transparent; color: #bdc3c7; font-weight: bold; font-size: 11px; text-transform: uppercase; }
+
+        .tabs { display: flex; background: #34495e; }
+        .tab-btn { 
+            flex: 1; 
+            padding: 15px; 
+            border: none; 
+            background: transparent; 
+            color: #bdc3c7; 
+            font-weight: bold; 
+            font-size: 12px; 
+            text-transform: uppercase; 
+            cursor: pointer;
+        }
         .tab-btn.active { color: white; border-bottom: 4px solid var(--warning); background: rgba(255,255,255,0.1); }
 
-        /* ÁREA DE CONTENIDO (CON SCROLL PROPIO) */
-        .contenedor-principal {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
+        /* CONTENIDO */
+        .contenido { padding: 12px; }
+
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 12px; }
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .campo { display: flex; flex-direction: column; margin-bottom: 5px; }
+        label { font-size: 10px; font-weight: 800; color: #7f8c8d; margin-bottom: 3px; text-transform: uppercase; }
+        input, select { padding: 10px; border: 1px solid #dce1e5; border-radius: 10px; font-size: 14px; width: 100%; }
+
+        .control-row { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .btn-main { 
+            flex: 1; 
+            border: none; 
+            border-radius: 18px; 
+            padding: 15px; 
+            color: white; 
+            min-height: 95px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+        }
+        .btn-edit { 
+            width: 60px; 
+            height: 95px; 
+            border: none; 
+            border-radius: 15px; 
+            background: #fff; 
+            border: 2px solid #dce1e5; 
+            color: var(--primary); 
+            font-size: 24px;
         }
 
-        .contenido-scroll { 
-            flex: 1;
-            overflow-y: auto; /* Solo esta parte se desliza */
-            padding: 12px;
-            -webkit-overflow-scrolling: touch;
+        .btn-ok { background: var(--success); box-shadow: 0 5px 0 #1e8449; }
+        .btn-nook { background: var(--danger); box-shadow: 0 5px 0 #b03a2e; }
+        .num-big { font-size: 42px; font-weight: bold; line-height: 1; }
+
+        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .stat-item { background: #1a252f; color: white; padding: 15px; border-radius: 15px; text-align: center; }
+
+        .btn-finalizar { 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            width: 100%; 
+            padding: 20px; 
+            border-radius: 15px; 
+            font-weight: bold; 
+            font-size: 16px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            margin-bottom: 40px;
         }
-
-        /* TARJETAS Y BOTONES */
-        .card { background: white; padding: 12px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 12px; }
-        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .campo { display: flex; flex-direction: column; margin-bottom: 4px; }
-        label { font-size: 9px; font-weight: 800; color: #7f8c8d; margin-bottom: 2px; text-transform: uppercase; }
-        input, select { padding: 10px; border: 1px solid #dce1e5; border-radius: 8px; font-size: 14px; width: 100%; }
-
-        .control-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-        .btn-main { flex: 1; border: none; border-radius: 15px; padding: 12px; color: white; min-height: 90px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .btn-edit { width: 55px; height: 90px; border: none; border-radius: 12px; background: #fff; border: 1px solid #dce1e5; color: var(--primary); font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        
-        .btn-ok { background: var(--success); box-shadow: 0 4px 0 #1e8449; }
-        .btn-nook { background: var(--danger); box-shadow: 0 4px 0 #b03a2e; }
-        .num-big { font-size: 40px; font-weight: bold; line-height: 1; }
-
-        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-bottom: 20px; }
-        .stat-item { background: #1a252f; color: white; padding: 15px; border-radius: 12px; text-align: center; }
-
-        .btn-finalizar { background: #007bff; color: white; border: none; width: 100%; padding: 18px; border-radius: 15px; font-weight: bold; font-size: 16px; margin-bottom: 30px; }
 
         /* MODALES */
         .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; align-items:center; justify-content:center; }
-        .modal-box { background:white; width:90%; padding:20px; border-radius:20px; text-align: center; max-height: 80vh; overflow-y: auto; }
-        .defecto-btn { width: 100%; padding: 15px; margin-bottom: 8px; border: none; background: #f8f9fa; border-left: 6px solid var(--danger); border-radius: 10px; text-align: left; font-weight: bold; }
-        
-        #loading { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:5000; flex-direction:column; align-items:center; justify-content:center; text-align: center; }
+        .modal-box { background:white; width:90%; padding:25px; border-radius:25px; text-align: center; }
+        .defecto-btn { width: 100%; padding: 15px; margin-bottom: 10px; border: none; background: #f8f9fa; border-left: 6px solid var(--danger); border-radius: 12px; text-align: left; font-weight: bold; font-size: 16px; }
+
+        #loading { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 5000; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
-<div class="contenedor-principal">
-    <header>
-        <div class="app-header">
-            <div class="logo-u">U</div>
-            <div style="font-weight: 800; font-size: 16px; letter-spacing: 0.5px;">UNIDAD DE DECORACIÓN</div>
-        </div>
-        <div class="tabs">
-            <button class="tab-btn active" id="btn-calidad" onclick="cambiarTab('calidad')">Calidad</button>
-            <button class="tab-btn" id="btn-final" onclick="cambiarTab('final')">Final</button>
-        </div>
-    </header>
+<div id="loading"><h2>🚀 PROCESANDO...</h2></div>
 
-    <div class="contenido-scroll">
-        <div class="card">
-            <div class="grid-inputs">
-                <div class="campo"><label>Fecha</label><input type="date" id="fecha"></div>
-                <div class="campo"><label>Turno</label><select id="turno"><option>Mañana</option><option>Tarde</option><option>Noche</option></select></div>
-                <div class
+<div class="fixed-top">
+    <header>
+        <div class="logo-u">U</div>
+        <div style="font-weight: bold; font-size: 16px;">UNIDAD DE DECORACIÓN</div>
+    </header>
+    <div class="tabs">
+        <button class="tab-btn active" id="btn-calidad" onclick="cambiarTab('calidad')">Calidad</button>
+        <button class="tab-btn" id="btn-final" onclick="cambiarTab('final')">Final</button>
+    </div>
+</div>
+
+<div class="contenido">
+    <div class="card">
+        <div class="grid-inputs">
+            <div class="campo"><label>Fecha</label><input type="date" id="fecha"></div>
+            <div class="campo"><label>Turno</label><select id="turno"><option>Mañana</option><option>Tarde</option><option>Noche</option></select></div>
+            <div class="campo"><label>OF</label><input type="text" id="of" placeholder="Nº Orden"></div>
+            <div class="campo"><label>Sustrato</label><input type="text" id="sustrato" placeholder="Tipo..."></div>
+        </div>
+    </div>
+
+    <div class="control-row">
+        <button class="btn-main btn-ok" onclick="sumarUno('ok')">
+            <span style="font-size:10px; font-weight:bold;">PIEZAS OK</span>
+            <span class="num-big" id="val-ok">0</span>
+        </button>
+        <button class="btn-edit" onclick="editarManual('ok')">✎</button>
+    </div>
+
+    <div class="control-row">
+        <button class="btn-main btn-nook" onclick="abrirDefectos()">
+            <span style="font-size:10px; font-weight:bold;">PIEZAS NO OK</span>
+            <span class="num-big" id="val-nook">0</span>
+        </button>
+        <button class="btn-edit" onclick="editarManual('nook')">✎</button>
+    </div>
+
+    <div class="stats">
+        <div class="stat-item"><span id="val-total" style="font-size:24px; font-weight:bold;">0</span><br><small>TOTAL</small></div>
+        <div class="stat-item"><span id="val-pct" style="font-size:24px; font-weight:bold; color:var(--success);">0%</span><br><small>CALIDAD</small></div>
+    </div>
+
+    <button class="btn-finalizar" onclick="compartirInforme()">📤 GENERAR Y ENVIAR PDF</button>
+</div>
+
+<div id="modal-app" class="modal">
+    <div class="modal-box" id="modal-content"></div>
+</div>
+
+<input type="file" id="cam-input" accept="image/*" capture="environment" style="display:none" onchange="fotoProcesada(event)">
+
+<script>
+    const config = {
+        calidad: ["Bultos", "Malla suelta", "Rota", "Sucia"],
+        final: ["Gota Kerajet", "Tono", "Rascada", "Manchada"]
+    };
+
+    let tabActual = 'calidad';
+    let pasoFoto = 0;
+    let defectoSeleccionado = "";
+    let db = {
+        calidad: { ok: 0, nook: 0, registros: [] },
+        final: { ok: 0, nook: 0, registros: [] }
+    };
+
+    function cambiarTab(t) {
+        tabActual = t;
+        document.getElementById('btn-calidad').classList.toggle('active', t === 'calidad');
+        document.getElementById('btn-final').classList.toggle('active', t === 'final');
+        actualizarUI();
+    }
+
+    function sumarUno(tipo) {
+        db[tabActual][tipo]++;
+        actualizarUI();
+    }
+
+    function editarManual(tipo) {
+        let n = prompt("Total " + tipo.toUpperCase(), db[tabActual][tipo]);
+        if (n !== null && !isNaN(n)) {
+            db[tabActual][tipo] = parseInt(n || 0);
+            actualizarUI();
+        }
+    }
+
+    function abrirDefectos() {
+        const mc = document.getElementById('modal-content');
+        mc.innerHTML = `<h3>Selecciona Defecto</h3><div id="lista-btns"></div>
+        <button onclick="cerrarModal()" style="width:100%;margin-top:15px;padding:12px;border:none;background:#eee;border-radius:12px;">Cerrar</button>`;
+        
+        config[tabActual].forEach(d => {
+            mc.querySelector('#lista-btns').innerHTML += `<button class="defecto-btn" onclick="iniciarFotos('${d}')">${d}</button>`;
+        });
+        document.getElementById('modal-app').style.display = 'flex';
+    }
+
+    function iniciarFotos(d) {
+        defectoSeleccionado = d;
+        pasoFoto = 1;
+        mostrarPasoFoto();
+    }
+
+    function mostrarPasoFoto() {
+        const mc = document.getElementById('modal-content');
+        const tit = pasoFoto === 1 ? "📸 FOTO DEFECTO" : "📸 FOTO LOTE";
+        mc.innerHTML = `<h3>${tit}</h3><button class="defecto-btn" style="background:var(--primary);color:white;text-align:center" onclick="document.getElementById('cam-input').click()">ABRIR CÁMARA</button>`;
+    }
+
+    function fotoProcesada(e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const foto = event.target.result;
+            if(pasoFoto === 1) {
+                db[tabActual].nook++;
+                db[tabActual].registros.push({ defecto: defectoSeleccionado, hora: new Date().toLocaleTimeString(), foto1: foto, foto2: null });
+                pasoFoto = 2;
+                mostrarPasoFoto();
+            } else {
+                db[tabActual].registros[db[tabActual].registros.length - 1].foto2 = foto;
+                cerrarModal();
+                actualizarUI();
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function cerrarModal() { document.getElementById('modal-app').style.display = 'none'; }
+
+    function actualizarUI() {
+        const d = db[tabActual];
+        document.getElementById('val-ok').innerText = d.ok;
+        document.getElementById('val-nook').innerText = d.nook;
+        const total = d.ok + d.nook;
+        document.getElementById('val-total').innerText = total;
+        document.getElementById('val-pct').innerText = total > 0 ? ((d.ok / total) * 100).toFixed(1) + "%" : "0%";
+    }
+
+    async function compartirInforme() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const of = document.getElementById('of').value || "SN";
+        document.getElementById('loading').style.display = 'flex';
+
+        doc.setFontSize(18); doc.text("REPORTE CALIDAD", 20, 20);
+        doc.setFontSize(10); doc.text(`OF: ${of} | Fecha: ${document.getElementById('fecha').value}`, 20, 30);
+        
+        let y = 40;
+        const data = [...db.calidad.registros, ...db.final.registros];
+        for(const r of data) {
+            if (y > 240) { doc.addPage(); y = 20; }
+            doc.text(`${r.defecto} (${r.hora})`, 20, y);
+            if(r.foto1) doc.addImage(r.foto1, 'JPEG', 20, y+5, 80, 50);
+            if(r.foto2) doc.addImage(r.foto2, 'JPEG', 105, y+5, 80, 50);
+            y += 60;
+        }
+
+        const pdf = doc.output('blob');
+        const file = new File([pdf], `Reporte_${of}.pdf`, { type: 'application/pdf' });
+        document.getElementById('loading').style.display = 'none';
+
+        if (navigator.share) await navigator.share({ files: [file] });
+        else doc.save(`Reporte_${of}.pdf`);
+    }
+
+    document.getElementById('fecha').valueAsDate = new Date();
+</script>
+</body>
+</html>
