@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -12,25 +11,27 @@
         body { margin: 0; padding: 0; background: var(--bg); color: #2c3e50; min-height: 100vh; }
         .fixed-top { position: sticky; top: 0; z-index: 1000; width: 100%; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         header { background: var(--primary); color: white; padding: 12px 15px; display: flex; align-items: center; gap: 12px; }
-        .logo-u { background: white; color: var(--primary); width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 22px; }
+        .logo-u { background: white; color: var(--primary); width: 30px; height: 30px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 900; }
         .tabs { display: flex; background: #34495e; }
         .tab-btn { flex: 1; padding: 15px 5px; border: none; background: transparent; color: #bdc3c7; font-weight: bold; font-size: 11px; text-transform: uppercase; }
         .tab-btn.active { color: white; border-bottom: 4px solid var(--warning); background: rgba(255,255,255,0.1); }
-        .contenido { padding: 12px; width: 100%; }
+        .contenido { padding: 12px; }
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 12px; }
         .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .campo { display: flex; flex-direction: column; margin-bottom: 8px; }
         .full-width { grid-column: span 2; }
         label { font-size: 10px; font-weight: 800; color: #7f8c8d; margin-bottom: 3px; text-transform: uppercase; }
-        input, select, textarea { padding: 10px; border: 1px solid #dce1e5; border-radius: 10px; font-size: 14px; width: 100%; background: #fff; }
-        .btn-main { border: none; border-radius: 18px; padding: 15px; color: white; min-height: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .btn-ok { background: var(--success); box-shadow: 0 5px 0 #1e8449; width: 80%; }
-        .btn-nook { background: var(--danger); box-shadow: 0 5px 0 #b03a2e; width: 80%; }
-        .btn-edit { width: 55px; height: 90px; border: none; border-radius: 15px; background: #fff; border: 2px solid #dce1e5; font-size: 20px; }
-        .btn-finalizar { background: #007bff; color: white; border: none; width: 100%; padding: 20px; border-radius: 15px; font-weight: bold; font-size: 16px; margin-top: 20px; }
+        input, select, textarea { padding: 10px; border: 1px solid #dce1e5; border-radius: 10px; font-size: 14px; width: 100%; }
+        .control-prod { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .btn-main { flex: 1; border: none; border-radius: 18px; padding: 15px; color: white; min-height: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .btn-ok { background: var(--success); box-shadow: 0 5px 0 #1e8449; }
+        .btn-nook { background: var(--danger); box-shadow: 0 5px 0 #b03a2e; }
+        .btn-edit { width: 50px; height: 90px; border: none; border-radius: 15px; background: #fff; border: 2px solid #dce1e5; font-size: 20px; }
+        .num-big { font-size: 32px; font-weight: bold; }
+        .btn-finalizar { background: #007bff; color: white; border: none; width: 100%; padding: 20px; border-radius: 15px; font-weight: bold; font-size: 16px; margin-top: 10px; }
         .btn-reset { background: #95a5a6; color: white; border: none; width: 100%; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 12px; margin-top: 30px; margin-bottom: 50px; }
         .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; align-items:center; justify-content:center; }
-        .modal-box { background:white; width:90%; padding:25px; border-radius:25px; text-align: center; }
+        .modal-box { background:white; width:90%; padding:20px; border-radius:20px; text-align: center; max-height: 85vh; overflow-y: auto; }
         .defecto-btn { width: 100%; padding: 15px; margin-bottom: 10px; border: none; background: #f8f9fa; border-left: 6px solid var(--danger); border-radius: 12px; text-align: left; font-weight: bold; }
         #loading { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 5000; flex-direction: column; align-items: center; justify-content: center; }
         .hidden { display: none; }
@@ -38,7 +39,7 @@
 </head>
 <body onload="cargarDatos()">
 
-<div id="loading"><h2>🚀 GENERANDO INFORME...</h2></div>
+<div id="loading"><h2>🚀 PROCESANDO...</h2><p>Generando PDF con fotos...</p></div>
 
 <div class="fixed-top">
     <header><div class="logo-u">U</div><div style="font-weight: bold; font-size: 14px;">PRODUCCIÓN DECORACIÓN</div></header>
@@ -56,49 +57,40 @@
             <div class="campo"><label>Turno</label><select id="turno" onchange="guardarDatos()"><option>Mañana</option><option>Tarde</option><option>Noche</option></select></div>
             <div class="campo"><label>OF</label><input type="text" id="of" placeholder="Nº Orden" oninput="guardarDatos()"></div>
             <div class="campo"><label>Gráfica</label><input type="text" id="grafica" placeholder="Nombre" oninput="guardarDatos()"></div>
-            <div class="campo full-width"><label>Sustrato</label><input type="text" id="sustrato" placeholder="Sustrato..." oninput="guardarDatos()"></div>
+            <div class="campo full-width"><label>Sustrato</label><input type="text" id="sustrato" placeholder="Material..." oninput="guardarDatos()"></div>
         </div>
     </div>
 
     <div id="vista-produccion">
-        <div style="display:flex; gap:10px; margin-bottom:15px; align-items:center;">
-            <button class="btn-main btn-ok" onclick="sumarUno('ok')"><span>OK</span><span id="val-ok" style="font-size:35px; font-weight:bold;">0</span></button>
+        <div class="control-prod">
+            <button class="btn-main btn-ok" onclick="sumarUno('ok')"><span>OK</span><span id="val-ok" class="num-big">0</span></button>
             <button class="btn-edit" onclick="editarManual('ok')">✎</button>
         </div>
-        <div style="display:flex; gap:10px; margin-bottom:15px; align-items:center;">
-            <button class="btn-main btn-nook" onclick="abrirDefectos()"><span>FALLO</span><span id="val-nook" style="font-size:35px; font-weight:bold;">0</span></button>
+        <div class="control-prod">
+            <button class="btn-main btn-nook" onclick="abrirDefectos()"><span>NO OK</span><span id="val-nook" class="num-big">0</span></button>
             <button class="btn-edit" onclick="editarManual('nook')">✎</button>
         </div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <div style="background:#1a252f; color:white; padding:15px; border-radius:15px; text-align:center;"><span id="val-total" style="font-size:24px; font-weight:bold;">0</span><br><small>TOTAL</small></div>
-            <div style="background:#1a252f; color:white; padding:15px; border-radius:15px; text-align:center;"><span id="val-pct" style="font-size:24px; font-weight:bold; color:var(--success);">0%</span><br><small>EFIC.</small></div>
+        <div class="grid-inputs">
+            <div class="card" style="text-align:center; margin:0;"><small>TOTAL</small><br><b id="val-total" style="font-size:20px;">0</b></div>
+            <div class="card" style="text-align:center; margin:0;"><small>EFIC.</small><br><b id="val-pct" style="font-size:20px; color:var(--success);">0%</b></div>
         </div>
     </div>
 
     <div id="vista-eventos" class="hidden">
         <div class="card">
-            <h3 style="margin-top:0">Nueva Parada</h3>
+            <h3>Nueva Parada</h3>
             <div class="campo">
                 <label>Estación</label>
-                <select id="ev-estacion">
-                    <option>HORNOS</option>
-                    <option>ROBOTTIONS</option>
-                    <option>CABINA 1</option>
-                    <option>KERAJET</option>
-                    <option>CABINA 2</option>
-                </select>
+                <select id="ev-estacion"><option>HORNOS</option><option>ROBOTTIONS</option><option>CABINA 1</option><option>KERAJET</option><option>CABINA 2</option></select>
             </div>
             <div class="grid-inputs">
-                <div class="campo"><label>Hora Inicio</label><input type="time" id="ev-inicio"></div>
-                <div class="campo"><label>Hora Fin</label><input type="time" id="ev-fin"></div>
+                <div class="campo"><label>Inicio</label><input type="time" id="ev-inicio"></div>
+                <div class="campo"><label>Fin</label><input type="time" id="ev-fin"></div>
             </div>
-            <div class="campo">
-                <label>Descripción / Motivo</label>
-                <textarea id="ev-desc" rows="2" placeholder="Escribe aquí por qué se ha parado..."></textarea>
-            </div>
-            <button class="btn-finalizar" style="background:var(--info); margin-top:5px;" onclick="document.getElementById('cam-input-event').click()">📸 AÑADIR FOTO</button>
-            <p id="ev-foto-status" style="display:none; color:var(--success); text-align:center; font-size:12px; font-weight:bold;">✓ FOTO LISTA</p>
-            <button id="btn-guardar-parada" class="btn-finalizar" style="background:var(--primary); margin-top:15px;" onclick="guardarEvento()">💾 GUARDAR PARADA</button>
+            <div class="campo"><label>Motivo</label><textarea id="ev-desc" rows="2"></textarea></div>
+            <button class="btn-finalizar" style="background:var(--info);" onclick="document.getElementById('cam-input-event').click()">📸 FOTO PARADA</button>
+            <p id="ev-foto-status" style="display:none; color:var(--success); text-align:center; font-size:12px;">✓ Foto cargada</p>
+            <button class="btn-finalizar" style="background:var(--primary);" onclick="guardarEvento()">💾 GUARDAR PARADA</button>
         </div>
     </div>
 
@@ -117,25 +109,23 @@
 
     function guardarDatos() {
         const cab = { fecha: document.getElementById('fecha').value, turno: document.getElementById('turno').value, of: document.getElementById('of').value, grafica: document.getElementById('grafica').value, sustrato: document.getElementById('sustrato').value };
-        localStorage.setItem('prod_v4', JSON.stringify(db));
-        localStorage.setItem('cab_v4', JSON.stringify(cab));
+        localStorage.setItem('prod_final_v5', JSON.stringify(db));
+        localStorage.setItem('cab_final_v5', JSON.stringify(cab));
     }
 
     function cargarDatos() {
-        const d = localStorage.getItem('prod_v4'), c = localStorage.getItem('cab_v4');
+        const d = localStorage.getItem('prod_final_v5'), c = localStorage.getItem('cab_final_v5');
         if (d) db = JSON.parse(d);
         if (c) {
             const co = JSON.parse(c);
-            document.getElementById('fecha').value = co.fecha;
-            document.getElementById('turno').value = co.turno;
-            document.getElementById('of').value = co.of;
-            document.getElementById('grafica').value = co.grafica;
-            document.getElementById('sustrato').value = co.sustrato;
+            document.getElementById('fecha').value = co.fecha || "";
+            document.getElementById('turno').value = co.turno || "Mañana";
+            document.getElementById('of').value = co.of || "";
+            document.getElementById('grafica').value = co.grafica || "";
+            document.getElementById('sustrato').value = co.sustrato || "";
         } else { document.getElementById('fecha').valueAsDate = new Date(); }
         actualizarUI();
     }
-
-    function borrarTodo() { if(confirm("¿Seguro que quieres borrar todo?")) { localStorage.clear(); location.reload(); } }
 
     function cambiarTab(t) {
         tabActual = t;
@@ -154,16 +144,16 @@
 
     function abrirDefectos() {
         const mc = document.getElementById('modal-content');
-        mc.innerHTML = `<h3>Tipo de Defecto</h3><div id="lista-d"></div><button onclick="cerrarModal()" style="margin-top:15px; width:100%; padding:10px;">Cerrar</button>`;
+        mc.innerHTML = `<h3>¿Qué defecto es?</h3><div id="btns-d"></div><button onclick="cerrarModal()" style="margin-top:15px; width:100%; padding:10px;">Cancelar</button>`;
         config[tabActual].forEach(d => {
-            mc.querySelector('#lista-d').innerHTML += `<button class="defecto-btn" onclick="iniciarFotos('${d}')">${d}</button>`;
+            mc.querySelector('#btns-d').innerHTML += `<button class="defecto-btn" onclick="iniciarFotos('${d}')">${d}</button>`;
         });
         document.getElementById('modal-app').style.display = 'flex';
     }
 
     function iniciarFotos(d) { defectoSeleccionado = d; pasoFoto = 1; mostrarPasoFoto(); }
     function mostrarPasoFoto() {
-        document.getElementById('modal-content').innerHTML = `<h3>${pasoFoto === 1 ? '📸 FOTO DEFECTO' : '📸 FOTO LOTE'}</h3><button class="defecto-btn" style="background:var(--primary); color:white; text-align:center;" onclick="document.getElementById('cam-input').click()">ABRIR CÁMARA</button>`;
+        document.getElementById('modal-content').innerHTML = `<h3>${pasoFoto === 1 ? '📸 FOTO DEFECTO' : '📸 FOTO LOTE'}</h3><p>Capturando: ${defectoSeleccionado}</p><button class="defecto-btn" style="background:var(--primary); color:white; text-align:center;" onclick="document.getElementById('cam-input').click()">ABRIR CÁMARA</button>`;
     }
 
     function fotoProcesada(e) {
@@ -187,71 +177,101 @@
         r.readAsDataURL(e.target.files[0]);
     }
 
-    // --- FUNCIÓN CORREGIDA ---
     function guardarEvento() {
-        const est = document.getElementById('ev-estacion').value;
-        const ini = document.getElementById('ev-inicio').value;
-        const fin = document.getElementById('ev-fin').value;
-        const des = document.getElementById('ev-desc').value;
-
-        if (!ini || !fin || !des) { alert("¡Eh! Te falta rellenar la hora o el motivo."); return; }
-
-        const [h1, m1] = ini.split(':').map(Number);
-        const [h2, m2] = fin.split(':').map(Number);
-        let d1 = new Date(); d1.setHours(h1, m1, 0);
-        let d2 = new Date(); d2.setHours(h2, m2, 0);
+        const est = document.getElementById('ev-estacion').value, ini = document.getElementById('ev-inicio').value, fin = document.getElementById('ev-fin').value, des = document.getElementById('ev-desc').value;
+        if (!ini || !fin || !des) return alert("Faltan datos");
+        const [h1, m1] = ini.split(':').map(Number), [h2, m2] = fin.split(':').map(Number);
+        let d1 = new Date(), d2 = new Date(); d1.setHours(h1, m1, 0); d2.setHours(h2, m2, 0);
         if (d2 < d1) d2.setDate(d2.getDate() + 1);
-        const minutos = Math.floor((d2 - d1) / 60000);
-
-        db.eventos.push({ estacion: est, inicio: ini, fin: fin, desc: des, foto: tempFotoEvento, minutos: minutos });
-
-        // Limpiar formulario
-        document.getElementById('ev-inicio').value = "";
-        document.getElementById('ev-fin').value = "";
-        document.getElementById('ev-desc').value = "";
-        tempFotoEvento = null;
-        document.getElementById('ev-foto-status').style.display = 'none';
-
-        guardarDatos();
-        alert("✅ Parada de " + minutos + " min guardada con éxito.");
+        const mins = Math.floor((d2 - d1) / 60000);
+        db.eventos.push({ estacion: est, inicio: ini, fin: fin, desc: des, foto: tempFotoEvento, minutos: mins });
+        tempFotoEvento = null; document.getElementById('ev-foto-status').style.display = 'none';
+        document.getElementById('ev-inicio').value = ""; document.getElementById('ev-fin').value = ""; document.getElementById('ev-desc').value = "";
+        guardarDatos(); alert("Parada guardada.");
     }
 
     function cerrarModal() { document.getElementById('modal-app').style.display = 'none'; }
     function actualizarUI() {
-        const d = db[tabActual];
+        const d = db[tabActual]; if(!d) return;
         document.getElementById('val-ok').innerText = d.ok;
         document.getElementById('val-nook').innerText = d.nook;
-        const t = d.ok + d.nook;
-        document.getElementById('val-total').innerText = t;
-        document.getElementById('val-pct').innerText = t > 0 ? ((d.ok/t)*100).toFixed(1) + "%" : "0%";
+        const total = d.ok + d.nook;
+        document.getElementById('val-total').innerText = total;
+        document.getElementById('val-pct').innerText = total > 0 ? ((d.ok / total) * 100).toFixed(1) + "%" : "0%";
     }
+
+    function borrarTodo() { if(confirm("¿Borrar turno?")) { localStorage.clear(); location.reload(); } }
 
     async function compartirInforme() {
         const { jsPDF } = window.jspdf; const doc = new jsPDF();
         document.getElementById('loading').style.display = 'flex';
+        
         const of = document.getElementById('of').value || "S-N";
-        
-        doc.setFontSize(16); doc.text("INFORME DE PRODUCCIÓN", 20, 20);
-        doc.setFontSize(10); doc.text(`OF: ${of} | Turno: ${document.getElementById('turno').value}`, 20, 28);
-        
-        // Resumen estaciones
-        const res = {};
-        db.eventos.forEach(e => {
+        const turno = document.getElementById('turno').value;
+        const fecha = document.getElementById('fecha').value;
+
+        // PAG 1: CABECERA Y RESUMEN
+        doc.setFontSize(18); doc.text("INFORME DE PRODUCCIÓN", 20, 20);
+        doc.setFontSize(10); doc.text(`OF: ${of} | Turno: ${turno} | Fecha: ${fecha}`, 20, 28);
+        doc.line(20, 32, 190, 32);
+
+        doc.setFontSize(12); doc.text("RESUMEN DE PIEZAS:", 20, 42);
+        doc.text(`CALIDAD -> OK: ${db.calidad.ok} | NO OK: ${db.calidad.nook}`, 25, 50);
+        doc.text(`FINAL   -> OK: ${db.final.ok} | NO OK: ${db.final.nook}`, 25, 56);
+
+        doc.text("TIEMPOS POR ESTACIÓN:", 20, 68);
+        const res = {}; db.eventos.forEach(e => {
             if(!res[e.estacion]) res[e.estacion] = { m: 0, c: 0 };
             res[e.estacion].m += e.minutos; res[e.estacion].c++;
         });
-        
-        doc.text("RESUMEN POR ESTACIÓN:", 20, 40);
-        let y = 46;
+        let yRes = 75;
         for (const s in res) {
-            doc.text(`- ${s}: ${res[s].c} paradas (${res[s].m} min totales)`, 25, y);
-            y += 6;
+            doc.text(`- ${s}: ${res[s].c} paradas | Total: ${res[s].m} min.`, 25, yRes);
+            yRes += 6;
+        }
+
+        // PAGS SIGUIENTES: FOTOS DEFECTOS
+        let currentY = yRes + 10;
+        const checkPage = (h) => { if(currentY + h > 280) { doc.addPage(); currentY = 20; } };
+
+        const imprimirRegistros = (titulo, registros) => {
+            if(registros.length === 0) return;
+            checkPage(15);
+            doc.setFontSize(14); doc.text(titulo, 20, currentY); currentY += 10;
+            registros.forEach(r => {
+                checkPage(60);
+                doc.setFontSize(9); doc.text(`${r.defecto} - ${r.hora}`, 20, currentY);
+                if(r.foto1) doc.addImage(r.foto1, 'JPEG', 20, currentY + 2, 75, 45);
+                if(r.foto2) doc.addImage(r.foto2, 'JPEG', 100, currentY + 2, 75, 45);
+                currentY += 55;
+            });
+        };
+
+        imprimirRegistros("DETALLE FALLOS CALIDAD", db.calidad.registros);
+        imprimirRegistros("DETALLE FALLOS FINAL", db.final.registros);
+
+        // FOTOS EVENTOS
+        if(db.eventos.length > 0) {
+            checkPage(15);
+            doc.setFontSize(14); doc.text("DETALLE DE PARADAS", 20, currentY); currentY += 10;
+            db.eventos.forEach(ev => {
+                checkPage(70);
+                doc.setFontSize(9); doc.text(`${ev.estacion} (${ev.minutos} min) - ${ev.desc}`, 20, currentY);
+                if(ev.foto) {
+                    doc.addImage(ev.foto, 'JPEG', 20, currentY + 2, 80, 50);
+                    currentY += 60;
+                } else { currentY += 10; }
+            });
         }
 
         const pdfBlob = doc.output('blob');
         const file = new File([pdfBlob], `Informe_${of}.pdf`, { type: 'application/pdf' });
         document.getElementById('loading').style.display = 'none';
-        if (navigator.share) await navigator.share({ files: [file] }); else doc.save(`Informe_${of}.pdf`);
+        if (navigator.share) {
+            await navigator.share({ files: [file], title: 'Informe Producción' }).catch(() => doc.save(`Informe_${of}.pdf`));
+        } else {
+            doc.save(`Informe_${of}.pdf`);
+        }
     }
 </script>
 </body>
