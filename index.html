@@ -10,14 +10,16 @@
         
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', sans-serif; }
         
-        body { margin: 0; padding: 0; background: var(--bg); color: #2c3e50; }
+        /* Permitimos que el cuerpo haga scroll si es necesario, pero fijamos la cabecera */
+        body { margin: 0; padding: 0; background: var(--bg); color: #2c3e50; min-height: 100vh; }
 
-        /* CABECERA FIJA */
+        /* CABECERA FIJA ARRIBA */
         .fixed-top {
             position: sticky;
             top: 0;
             z-index: 1000;
             width: 100%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         header { background: var(--primary); color: white; padding: 12px 15px; display: flex; align-items: center; gap: 12px; }
@@ -44,36 +46,42 @@
             color: #bdc3c7; 
             font-weight: bold; 
             font-size: 12px; 
-            text-transform: uppercase; 
-            cursor: pointer;
+            text-transform: uppercase;
         }
         .tab-btn.active { color: white; border-bottom: 4px solid var(--warning); background: rgba(255,255,255,0.1); }
 
-        /* CONTENIDO */
-        .contenido { padding: 12px; }
+        /* CONTENIDO - Ahora ajustado para que siempre se vea en el móvil */
+        .contenido { 
+            padding: 12px; 
+            display: block; /* Asegura que no se oculte nada */
+            width: 100%;
+        }
 
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 12px; }
         .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .campo { display: flex; flex-direction: column; margin-bottom: 5px; }
         label { font-size: 10px; font-weight: 800; color: #7f8c8d; margin-bottom: 3px; text-transform: uppercase; }
-        input, select { padding: 10px; border: 1px solid #dce1e5; border-radius: 10px; font-size: 14px; width: 100%; }
+        input, select { padding: 10px; border: 1px solid #dce1e5; border-radius: 10px; font-size: 14px; width: 100%; background: #fff; }
 
-        .control-row { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .control-row { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; width: 100%; }
+        
+        /* BOTONES PRINCIPALES */
         .btn-main { 
             flex: 1; 
             border: none; 
             border-radius: 18px; 
             padding: 15px; 
             color: white; 
-            min-height: 95px; 
+            min-height: 90px; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             justify-content: center;
+            text-align: center;
         }
         .btn-edit { 
-            width: 60px; 
-            height: 95px; 
+            width: 55px; 
+            height: 90px; 
             border: none; 
             border-radius: 15px; 
             background: #fff; 
@@ -84,9 +92,9 @@
 
         .btn-ok { background: var(--success); box-shadow: 0 5px 0 #1e8449; }
         .btn-nook { background: var(--danger); box-shadow: 0 5px 0 #b03a2e; }
-        .num-big { font-size: 42px; font-weight: bold; line-height: 1; }
+        .num-big { font-size: 38px; font-weight: bold; line-height: 1; }
 
-        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
         .stat-item { background: #1a252f; color: white; padding: 15px; border-radius: 15px; text-align: center; }
 
         .btn-finalizar { 
@@ -99,7 +107,8 @@
             font-weight: bold; 
             font-size: 16px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            margin-bottom: 40px;
+            margin-top: 20px;
+            margin-bottom: 50px; /* Espacio para no chocar con el borde inferior del móvil */
         }
 
         /* MODALES */
@@ -159,25 +168,13 @@
     <button class="btn-finalizar" onclick="compartirInforme()">📤 GENERAR Y ENVIAR PDF</button>
 </div>
 
-<div id="modal-app" class="modal">
-    <div class="modal-box" id="modal-content"></div>
-</div>
-
+<div id="modal-app" class="modal"><div class="modal-box" id="modal-content"></div></div>
 <input type="file" id="cam-input" accept="image/*" capture="environment" style="display:none" onchange="fotoProcesada(event)">
 
 <script>
-    const config = {
-        calidad: ["Bultos", "Malla suelta", "Rota", "Sucia"],
-        final: ["Gota Kerajet", "Tono", "Rascada", "Manchada"]
-    };
-
-    let tabActual = 'calidad';
-    let pasoFoto = 0;
-    let defectoSeleccionado = "";
-    let db = {
-        calidad: { ok: 0, nook: 0, registros: [] },
-        final: { ok: 0, nook: 0, registros: [] }
-    };
+    const config = { calidad: ["Bultos", "Malla suelta", "Rota", "Sucia"], final: ["Gota Kerajet", "Tono", "Rascada", "Manchada"] };
+    let tabActual = 'calidad', pasoFoto = 0, defectoSeleccionado = "";
+    let db = { calidad: { ok: 0, nook: 0, registros: [] }, final: { ok: 0, nook: 0, registros: [] } };
 
     function cambiarTab(t) {
         tabActual = t;
@@ -186,59 +183,42 @@
         actualizarUI();
     }
 
-    function sumarUno(tipo) {
-        db[tabActual][tipo]++;
-        actualizarUI();
-    }
+    function sumarUno(tipo) { db[tabActual][tipo]++; actualizarUI(); }
 
     function editarManual(tipo) {
         let n = prompt("Total " + tipo.toUpperCase(), db[tabActual][tipo]);
-        if (n !== null && !isNaN(n)) {
-            db[tabActual][tipo] = parseInt(n || 0);
-            actualizarUI();
-        }
+        if (n !== null && !isNaN(n)) { db[tabActual][tipo] = parseInt(n || 0); actualizarUI(); }
     }
 
     function abrirDefectos() {
         const mc = document.getElementById('modal-content');
-        mc.innerHTML = `<h3>Selecciona Defecto</h3><div id="lista-btns"></div>
-        <button onclick="cerrarModal()" style="width:100%;margin-top:15px;padding:12px;border:none;background:#eee;border-radius:12px;">Cerrar</button>`;
-        
+        mc.innerHTML = `<h3>Selecciona Defecto</h3><div id="lista-btns"></div><button onclick="cerrarModal()" style="width:100%;margin-top:15px;padding:12px;border:none;background:#eee;border-radius:12px;">Cerrar</button>`;
         config[tabActual].forEach(d => {
             mc.querySelector('#lista-btns').innerHTML += `<button class="defecto-btn" onclick="iniciarFotos('${d}')">${d}</button>`;
         });
         document.getElementById('modal-app').style.display = 'flex';
     }
 
-    function iniciarFotos(d) {
-        defectoSeleccionado = d;
-        pasoFoto = 1;
-        mostrarPasoFoto();
-    }
+    function iniciarFotos(d) { defectoSeleccionado = d; pasoFoto = 1; mostrarPasoFoto(); }
 
     function mostrarPasoFoto() {
         const mc = document.getElementById('modal-content');
-        const tit = pasoFoto === 1 ? "📸 FOTO DEFECTO" : "📸 FOTO LOTE";
-        mc.innerHTML = `<h3>${tit}</h3><button class="defecto-btn" style="background:var(--primary);color:white;text-align:center" onclick="document.getElementById('cam-input').click()">ABRIR CÁMARA</button>`;
+        mc.innerHTML = `<h3>${pasoFoto === 1 ? "📸 FOTO DEFECTO" : "📸 FOTO LOTE"}</h3><button class="defecto-btn" style="background:var(--primary);color:white;text-align:center" onclick="document.getElementById('cam-input').click()">ABRIR CÁMARA</button>`;
     }
 
     function fotoProcesada(e) {
-        const file = e.target.files[0];
         const reader = new FileReader();
         reader.onload = (event) => {
-            const foto = event.target.result;
             if(pasoFoto === 1) {
                 db[tabActual].nook++;
-                db[tabActual].registros.push({ defecto: defectoSeleccionado, hora: new Date().toLocaleTimeString(), foto1: foto, foto2: null });
-                pasoFoto = 2;
-                mostrarPasoFoto();
+                db[tabActual].registros.push({ defecto: defectoSeleccionado, hora: new Date().toLocaleTimeString(), foto1: event.target.result, foto2: null });
+                pasoFoto = 2; mostrarPasoFoto();
             } else {
-                db[tabActual].registros[db[tabActual].registros.length - 1].foto2 = foto;
-                cerrarModal();
-                actualizarUI();
+                db[tabActual].registros[db[tabActual].registros.length - 1].foto2 = event.target.result;
+                cerrarModal(); actualizarUI();
             }
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(e.target.files[0]);
     }
 
     function cerrarModal() { document.getElementById('modal-app').style.display = 'none'; }
@@ -255,30 +235,21 @@
     async function compartirInforme() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        const of = document.getElementById('of').value || "SN";
         document.getElementById('loading').style.display = 'flex';
-
-        doc.setFontSize(18); doc.text("REPORTE CALIDAD", 20, 20);
-        doc.setFontSize(10); doc.text(`OF: ${of} | Fecha: ${document.getElementById('fecha').value}`, 20, 30);
-        
-        let y = 40;
-        const data = [...db.calidad.registros, ...db.final.registros];
-        for(const r of data) {
+        doc.text("REPORTE CALIDAD", 20, 20);
+        let y = 30;
+        [...db.calidad.registros, ...db.final.registros].forEach(r => {
             if (y > 240) { doc.addPage(); y = 20; }
             doc.text(`${r.defecto} (${r.hora})`, 20, y);
             if(r.foto1) doc.addImage(r.foto1, 'JPEG', 20, y+5, 80, 50);
             if(r.foto2) doc.addImage(r.foto2, 'JPEG', 105, y+5, 80, 50);
             y += 60;
-        }
-
+        });
         const pdf = doc.output('blob');
-        const file = new File([pdf], `Reporte_${of}.pdf`, { type: 'application/pdf' });
+        const file = new File([pdf], `Reporte.pdf`, { type: 'application/pdf' });
         document.getElementById('loading').style.display = 'none';
-
-        if (navigator.share) await navigator.share({ files: [file] });
-        else doc.save(`Reporte_${of}.pdf`);
+        if (navigator.share) await navigator.share({ files: [file] }); else doc.save(`Reporte.pdf`);
     }
-
     document.getElementById('fecha').valueAsDate = new Date();
 </script>
 </body>
