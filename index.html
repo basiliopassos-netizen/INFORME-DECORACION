@@ -3,61 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QC Pro v2.7 - Doble Evidencia</title>
+    <title>QC DECORACIÓN</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="QC Decor">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3121/3121510.png">
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3121/3121510.png">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
     <style>
         :root { --primary: #2c3e50; --success: #27ae60; --danger: #e74c3c; --warning: #f39c12; --dark: #1a252f; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', sans-serif; }
         body { background: #f0f2f5; margin: 0; padding: 0; width: 100%; overflow-x: hidden; }
 
-        .tabs { display: flex; background: var(--primary); position: sticky; top: 0; z-index: 1000; }
-        .tab-btn { flex: 1; padding: 15px; border: none; background: var(--primary); color: #bdc3c7; font-weight: bold; font-size: 11px; text-transform: uppercase; }
+        /* Estética de App Nativa */
+        .tabs { display: flex; background: var(--primary); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .tab-btn { flex: 1; padding: 18px; border: none; background: var(--primary); color: #bdc3c7; font-weight: bold; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
         .tab-btn.active { color: white; border-bottom: 4px solid var(--warning); background: #34495e; }
 
-        .seccion { padding: 12px; }
-        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 12px; }
+        .seccion { padding: 12px; padding-bottom: 40px; }
+        .card { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 12px; border: 1px solid #e1e8ed; }
 
         .grid-datos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .campo { display: flex; flex-direction: column; margin-bottom: 8px; }
-        label { font-size: 10px; font-weight: bold; color: var(--primary); margin-bottom: 2px; text-transform: uppercase; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; background: #fff; height: 42px; }
+        label { font-size: 10px; font-weight: bold; color: var(--primary); margin-bottom: 3px; text-transform: uppercase; opacity: 0.7; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #dcdde1; border-radius: 10px; font-size: 14px; background: #fff; height: 45px; -webkit-appearance: none; }
 
-        /* Botones de Conteo */
-        .btn-principal { border: none; border-radius: 15px; padding: 15px; color: white; width: 100%; min-height: 100px; cursor: pointer; transition: 0.2s; }
-        .btn-ok { background: var(--success); box-shadow: 0 4px #1e8449; }
-        .btn-nook { background: var(--danger); box-shadow: 0 4px #b03a2e; }
-        .btn-principal:active { transform: scale(0.98); }
-        .label-btn { font-size: 11px; font-weight: bold; display: block; opacity: 0.9; margin-bottom: 2px; }
-        .num-btn { font-size: 44px; font-weight: bold; display: block; line-height: 1; }
+        .btn-principal { border: none; border-radius: 18px; padding: 15px; color: white; width: 100%; min-height: 110px; cursor: pointer; transition: transform 0.1s; }
+        .btn-ok { background: var(--success); box-shadow: 0 5px 0 #1e8449; margin-bottom: 5px; }
+        .btn-nook { background: var(--danger); box-shadow: 0 5px 0 #b03a2e; margin-bottom: 5px; }
+        .btn-principal:active { transform: translateY(3px); box-shadow: 0 2px 0 #1e8449; }
+        .label-btn { font-size: 12px; font-weight: bold; display: block; opacity: 0.9; margin-bottom: 4px; }
+        .num-btn { font-size: 50px; font-weight: bold; display: block; line-height: 1; }
 
-        .controles-fila { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
-        .btn-accion { background: #dfe4ea; border: none; padding: 12px; border-radius: 8px; font-weight: bold; color: #2f3542; cursor: pointer; font-size: 12px; }
+        .controles-fila { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .btn-accion { background: #f1f2f6; border: 1px solid #dcdde1; padding: 12px; border-radius: 10px; font-weight: bold; color: #2f3542; cursor: pointer; font-size: 12px; }
 
-        /* Stats */
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
-        .stat-box { background: var(--dark); color: white; padding: 12px; border-radius: 12px; text-align: center; }
-        .stat-num { font-size: 24px; font-weight: bold; display: block; }
-        .stat-label { font-size: 9px; font-weight: bold; opacity: 0.6; text-transform: uppercase; }
+        .stat-box { background: var(--dark); color: white; padding: 15px; border-radius: 15px; text-align: center; }
+        .stat-num { font-size: 28px; font-weight: bold; display: block; }
+        .stat-label { font-size: 10px; font-weight: bold; opacity: 0.6; text-transform: uppercase; margin-top: 5px; }
 
-        /* Modal */
+        /* Modal Doble Foto */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: white; width: 100%; max-width: 400px; padding: 25px; border-radius: 20px; text-align: center; }
+        .modal-content { background: white; width: 100%; max-width: 400px; padding: 25px; border-radius: 25px; text-align: center; }
 
         #loading { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 5000; flex-direction: column; align-items: center; justify-content: center; }
         
         #pdf-content { position: absolute; left: -5000px; width: 600px; background: white; padding: 40px; }
-        .galeria-minis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 10px; }
-        .mini-foto { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; }
+        .mini-foto { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; margin-top: 5px; border: 1px solid #ddd; }
     </style>
 </head>
 <body>
 
-<div id="loading"><h2 id="load-msg">⌛ PROCESANDO...</h2></div>
+<div id="loading"><h2 id="load-msg">🚀 ENVIANDO...</h2></div>
 
 <div class="tabs">
-    <button class="tab-btn active" id="t-calidad" onclick="verTab('calidad')">CALIDAD</button>
-    <button class="tab-btn" id="t-final" onclick="verTab('final')">FINAL</button>
+    <button class="tab-btn active" id="t-calidad" onclick="verTab('calidad')">Calidad</button>
+    <button class="tab-btn" id="t-final" onclick="verTab('final')">Final</button>
 </div>
 
 <input type="file" id="camera-input" accept="image/*" capture="environment" style="display:none" onchange="procesarFoto(event)">
@@ -72,9 +78,9 @@
                     <option>Mañana</option><option>Tarde</option><option>Noche</option>
                 </select>
             </div>
-            <div class="campo"><label>OF</label><input type="text" id="inp-of" placeholder="Orden"></div>
-            <div class="campo"><label>Sustrato</label><input type="text" id="inp-sustrato" placeholder="Mat."></div>
-            <div class="campo" style="grid-column: span 2;"><label>Gráfica / Modelo</label><input type="text" id="inp-grafica"></div>
+            <div class="campo"><label>Orden (OF)</label><input type="text" id="inp-of" placeholder="0000"></div>
+            <div class="campo"><label>Sustrato</label><input type="text" id="inp-sustrato" placeholder="Material"></div>
+            <div class="campo" style="grid-column: span 2;"><label>Gráfica / Modelo</label><input type="text" id="inp-grafica" placeholder="Nombre del diseño"></div>
         </div>
     </div>
 
@@ -99,7 +105,7 @@
             <button class="btn-accion" onclick="editar('nook')">✏️ EDITAR</button>
         </div>
         <div id="lista-fallos" style="margin-top:10px;"></div>
-        <div id="mini-galeria" class="galeria-minis"></div>
+        <div id="mini-galeria" style="display:grid; grid-template-columns: repeat(4,1fr); gap:5px; margin-top:10px;"></div>
     </div>
 
     <div class="stats-grid">
@@ -109,18 +115,19 @@
         </div>
         <div class="stat-box">
             <span class="stat-num" id="st-pct" style="color:#2ecc71">0%</span>
-            <span class="stat-label">% OK</span>
+            <span class="stat-label">% RENDIMIENTO</span>
         </div>
     </div>
 
-    <button class="btn-principal" style="background:var(--primary); margin-top:15px; min-height:60px;" onclick="finalizarReporte()">🚀 FINALIZAR Y ENVIAR</button>
+    <button class="btn-principal" style="background:var(--primary); margin-top:15px; min-height:65px; box-shadow: 0 5px 0 #1a252f;" onclick="finalizarReporte()">🚀 FINALIZAR Y ENVIAR</button>
+    <p style="text-align:center; color:#95a5a6; font-size:11px; margin-top:15px;" onclick="resetearTodo()">Limpiar datos (Nueva Orden)</p>
 </div>
 
 <div id="modal-fallos" class="modal">
     <div class="modal-content">
-        <h3 id="modal-titulo" style="margin-top:0">Defecto</h3>
+        <h3 id="modal-titulo" style="margin-top:0; color:var(--primary)">Defecto</h3>
         <div id="modal-body"></div>
-        <button onclick="cerrarModal()" style="width:100%; margin-top:15px; padding:12px; border:none; background:#eee; border-radius:10px;">Cancelar</button>
+        <button onclick="cerrarModal()" style="width:100%; margin-top:15px; padding:12px; border:none; background:#eee; border-radius:12px; font-weight:bold;">Cancelar</button>
     </div>
 </div>
 
@@ -133,8 +140,8 @@
         <h2 style="margin:0">TOTAL OK: <span id="pdf-ok"></span> | TOTAL FALLOS: <span id="pdf-nook"></span></h2>
     </div>
     <h3>Detalle de Defectos:</h3>
-    <ul id="pdf-lista" style="font-size:16px;"></ul>
-    <h3>Fotos de Evidencia (Defecto + Lote):</h3>
+    <ul id="pdf-lista"></ul>
+    <h3>Fotos (Defecto + Lote):</h3>
     <div id="pdf-fotos" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;"></div>
 </div>
 
@@ -146,7 +153,7 @@
     };
 
     let tabActual = 'calidad';
-    let pasoFoto = 0; // 0: elegir, 1: foto defecto, 2: foto lote
+    let pasoFoto = 0; 
     let db = { calidad: { ok: 0, nook: 0, fallos: {}, fotos: [] }, final: { ok: 0, nook: 0, fallos: {}, fotos: [] } };
 
     function verTab(t) {
@@ -168,7 +175,7 @@
         const body = document.getElementById('modal-body');
         body.innerHTML = '';
         defectologia[tabActual].forEach(f => {
-            body.innerHTML += `<button onclick="iniciarDobleFoto('${f}')" style="width:100%; padding:15px; margin-bottom:10px; border:none; background:#f8f9fa; border-left:6px solid var(--danger); text-align:left; font-weight:bold; font-size:16px;">${f}</button>`;
+            body.innerHTML += `<button onclick="iniciarDobleFoto('${f}')" style="width:100%; padding:18px; margin-bottom:10px; border:none; background:#f8f9fa; border-left:6px solid var(--danger); text-align:left; font-weight:bold; font-size:16px; border-radius:10px;">${f}</button>`;
         });
         document.getElementById('modal-fallos').style.display = 'flex';
     }
@@ -181,12 +188,13 @@
     }
 
     function mostrarPasoCamara() {
-        const titulo = pasoFoto === 1 ? "PASO 1: FOTO DEFECTO" : "PASO 2: FOTO LOTE / ETIQUETA";
-        const color = pasoFoto === 1 ? "var(--danger)" : "var(--primary)";
+        const titulo = pasoFoto === 1 ? "1. FOTO DEL DEFECTO" : "2. FOTO DEL LOTE";
         document.getElementById('modal-titulo').innerText = titulo;
         document.getElementById('modal-body').innerHTML = `
-            <p style="font-size:14px; color:#666;">Por favor, captura la imagen para continuar.</p>
-            <button onclick="document.getElementById('camera-input').click()" style="width:100%; padding:25px; background:${color}; color:white; border:none; border-radius:15px; font-weight:bold; font-size:18px;">📸 ABRIR CÁMARA</button>
+            <div style="padding:20px; background:#fff9f9; border-radius:15px; border:1px dashed var(--danger); margin-bottom:15px;">
+                <p style="font-size:14px;">Toma la foto para el reporte</p>
+            </div>
+            <button onclick="document.getElementById('camera-input').click()" style="width:100%; padding:25px; background:var(--primary); color:white; border:none; border-radius:15px; font-weight:bold; font-size:18px; box-shadow: 0 4px 0 #1a252f;">📸 ABRIR CÁMARA</button>
         `;
     }
 
@@ -195,13 +203,8 @@
         const r = new FileReader();
         r.onload = (ev) => {
             db[tabActual].fotos.push(ev.target.result);
-            if(pasoFoto === 1) {
-                pasoFoto = 2;
-                mostrarPasoCamara();
-            } else {
-                cerrarModal();
-                actualizarUI();
-            }
+            if(pasoFoto === 1) { pasoFoto = 2; mostrarPasoCamara(); } 
+            else { cerrarModal(); actualizarUI(); }
         };
         r.readAsDataURL(f);
     }
@@ -216,13 +219,13 @@
         
         const lista = document.getElementById('lista-fallos');
         lista.innerHTML = '';
-        for(let f in d.fallos) if(d.fallos[f]>0) lista.innerHTML += `<div style="display:flex; justify-content:space-between; padding:5px; border-bottom:1px solid #eee; font-size:13px;"><span>${f}</span><b>${d.fallos[f]}</b></div>`;
+        for(let f in d.fallos) if(d.fallos[f]>0) lista.innerHTML += `<div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #eee; font-size:13px; color:#2c3e50;"><span>${f}</span><b>${d.fallos[f]}</b></div>`;
         
         const gal = document.getElementById('mini-galeria');
         gal.innerHTML = '';
-        d.fotos.forEach(img => gal.innerHTML += `<img src="${img}" class="mini-foto">`);
+        d.fotos.slice(-4).forEach(img => gal.innerHTML += `<img src="${img}" class="mini-foto">`);
         
-        localStorage.setItem('QA_V2.7', JSON.stringify(db));
+        localStorage.setItem('QA_V2.8', JSON.stringify(db));
     }
 
     async function finalizarReporte() {
@@ -249,24 +252,26 @@
         document.getElementById('pdf-ok').innerText = pay.ok;
         document.getElementById('pdf-nook').innerText = pay.nook;
         const pl = document.getElementById('pdf-lista'); pl.innerHTML = '';
-        for(let f in d.fallos) if(d.fallos[f]>0) pl.innerHTML += `<li>${f}: ${d.fallos[f]} unidades</li>`;
+        for(let f in d.fallos) if(d.fallos[f]>0) pl.innerHTML += `<li>${f}: ${d.fallos[f]} uds</li>`;
         const pg = document.getElementById('pdf-fotos'); pg.innerHTML = '';
-        d.fotos.forEach(img => pg.innerHTML += `<img src="${img}" style="width:100%; border:1px solid #eee;">`);
+        d.fotos.forEach(img => pg.innerHTML += `<img src="${img}" style="width:100%; border:1px solid #eee; margin-bottom:5px;">`);
 
-        html2canvas(document.getElementById('pdf-content'), {scale:1.2}).then(canvas => {
+        html2canvas(document.getElementById('pdf-content'), {scale:1.5}).then(canvas => {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'pt', 'a4');
             doc.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 595, (canvas.height * 595) / canvas.width);
-            const file = new File([doc.output('blob')], `Reporte_${pay.of}.pdf`, { type: 'application/pdf' });
+            const file = new File([doc.output('blob')], `Reporte_OF_${pay.of}.pdf`, { type: 'application/pdf' });
             load.style.display = 'none';
-            if (navigator.share) navigator.share({ files: [file], title: 'Reporte' }); else doc.save(`Reporte_${pay.of}.pdf`);
+            if (navigator.share) navigator.share({ files: [file], title: 'Reporte Calidad' }); 
+            else doc.save(`Reporte_OF_${pay.of}.pdf`);
         });
     }
 
+    function resetearTodo() { if(confirm("¿Borrar todos los datos de esta OF?")) { localStorage.clear(); location.reload(); } }
     function cerrarModal() { document.getElementById('modal-fallos').style.display = 'none'; }
 
     window.onload = () => {
-        const s = localStorage.getItem('QA_V2.7'); if(s) db = JSON.parse(s);
+        const s = localStorage.getItem('QA_V2.8'); if(s) db = JSON.parse(s);
         document.getElementById('inp-fecha').value = new Date().toISOString().split('T')[0];
         actualizarUI();
     };
