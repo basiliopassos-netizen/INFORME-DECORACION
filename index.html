@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>UNIDAD DE DECORACIÓN</title>
+    <title>INFORME DE PRODUCCIÓN</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --primary: #2c3e50; --success: #27ae60; --danger: #e74c3c; --warning: #f39c12; --bg: #f0f2f5; }
@@ -22,6 +22,7 @@
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 12px; }
         .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .campo { display: flex; flex-direction: column; margin-bottom: 5px; }
+        .full-width { grid-column: span 2; }
         label { font-size: 10px; font-weight: 800; color: #7f8c8d; margin-bottom: 3px; text-transform: uppercase; }
         input, select { padding: 10px; border: 1px solid #dce1e5; border-radius: 10px; font-size: 14px; width: 100%; background: #fff; }
 
@@ -47,12 +48,12 @@
 </head>
 <body>
 
-<div id="loading"><h2>🚀 GENERANDO INFORME...</h2><p>Por favor, espera.</p></div>
+<div id="loading"><h2>🚀 GENERANDO INFORME...</h2><p>Preparando datos y fotos.</p></div>
 
 <div class="fixed-top">
     <header>
         <div class="logo-u">U</div>
-        <div style="font-weight: bold; font-size: 16px;">UNIDAD DE DECORACIÓN</div>
+        <div style="font-weight: bold; font-size: 14px;">INFORME PRODUCCIÓN DECORACIÓN</div>
     </header>
     <div class="tabs">
         <button class="tab-btn active" id="btn-calidad" onclick="cambiarTab('calidad')">Calidad</button>
@@ -65,8 +66,9 @@
         <div class="grid-inputs">
             <div class="campo"><label>Fecha</label><input type="date" id="fecha"></div>
             <div class="campo"><label>Turno</label><select id="turno"><option>Mañana</option><option>Tarde</option><option>Noche</option></select></div>
-            <div class="campo"><label>OF</label><input type="text" id="of" placeholder="Nº Orden"></div>
-            <div class="campo"><label>Sustrato</label><input type="text" id="sustrato" placeholder="Nombre sustrato..."></div>
+            <div class="campo"><label>OF (Orden Fabricación)</label><input type="text" id="of" placeholder="Nº Orden"></div>
+            <div class="campo"><label>Gráfica</label><input type="text" id="grafica" placeholder="Nombre gráfica"></div>
+            <div class="campo full-width"><label>Sustrato</label><input type="text" id="sustrato" placeholder="Nombre sustrato..."></div>
         </div>
     </div>
 
@@ -88,7 +90,7 @@
 
     <div class="stats">
         <div class="stat-item"><span id="val-total" style="font-size:24px; font-weight:bold;">0</span><br><small>TOTAL</small></div>
-        <div class="stat-item"><span id="val-pct" style="font-size:24px; font-weight:bold; color:var(--success);">0%</span><br><small>CALIDAD</small></div>
+        <div class="stat-item"><span id="val-pct" style="font-size:24px; font-weight:bold; color:var(--success);">0%</span><br><small>EFICIENCIA</small></div>
     </div>
 
     <button class="btn-finalizar" onclick="compartirInforme()">📤 GENERAR Y ENVIAR PDF</button>
@@ -165,55 +167,54 @@
 
         const of = document.getElementById('of').value || "S/N";
         const sus = document.getElementById('sustrato').value || "N/A";
+        const graf = document.getElementById('grafica').value || "N/A";
         const tur = document.getElementById('turno').value;
         const fec = document.getElementById('fecha').value;
 
-        // CABECERA DEL INFORME
-        doc.setFontSize(20); doc.setTextColor(44, 62, 80);
-        doc.text("REPORTE DE CALIDAD DECORACIÓN", 20, 20);
+        // CABECERA
+        doc.setFontSize(18); doc.setTextColor(44, 62, 80);
+        doc.text("INFORME DE PRODUCCIÓN - LÍNEA DECORACIÓN", 20, 20);
         
-        doc.setFontSize(11); doc.setTextColor(100);
-        doc.text(`OF: ${of}`, 20, 30);
-        doc.text(`Sustrato: ${sus}`, 20, 35);
-        doc.text(`Fecha: ${fec} | Turno: ${tur}`, 20, 40);
+        doc.setFontSize(10); doc.setTextColor(80);
+        doc.text(`OF: ${of} | Gráfica: ${graf}`, 20, 30);
+        doc.text(`Sustrato: ${sus}`, 20, 36);
+        doc.text(`Fecha: ${fec} | Turno: ${tur}`, 20, 42);
         
-        doc.setLineWidth(0.5); doc.line(20, 45, 190, 45);
+        doc.line(20, 46, 190, 46);
 
-        // RESUMEN NUMÉRICO
+        // RESUMEN
         doc.setFontSize(12); doc.setTextColor(0);
-        doc.text("RESUMEN DE PRODUCCIÓN:", 20, 55);
+        doc.text("RESUMEN DE PIEZAS:", 20, 56);
         doc.setFontSize(10);
-        doc.text(`CALIDAD -> OK: ${db.calidad.ok} | NO OK: ${db.calidad.nook}`, 25, 62);
-        doc.text(`FINAL   -> OK: ${db.final.ok} | NO OK: ${db.final.nook}`, 25, 68);
+        doc.text(`- CALIDAD: OK: ${db.calidad.ok} | NO OK: ${db.calidad.nook}`, 25, 64);
+        doc.text(`- FINAL:   OK: ${db.final.ok} | NO OK: ${db.final.nook}`, 25, 70);
 
-        doc.line(20, 75, 190, 75);
+        doc.line(20, 78, 190, 78);
 
-        // DETALLE DE FALLOS CON FOTOS
-        let y = 85;
-        const todosLosFallos = [...db.calidad.registros, ...db.final.registros];
+        // FALLOS
+        let y = 88;
+        const fallos = [...db.calidad.registros, ...db.final.registros];
 
-        todosLosFallos.forEach((r, index) => {
+        fallos.forEach((r, idx) => {
             if (y > 220) { doc.addPage(); y = 20; }
-            
-            doc.setFontSize(11); doc.setTextColor(231, 76, 60); // Color rojo para el fallo
-            doc.text(`${index + 1}. FALLO: ${r.defecto.toUpperCase()} (${r.seccion.toUpperCase()})`, 20, y);
+            doc.setFontSize(11); doc.setTextColor(231, 76, 60);
+            doc.text(`${idx + 1}. FALLO: ${r.defecto.toUpperCase()} (${r.seccion.toUpperCase()})`, 20, y);
             doc.setFontSize(9); doc.setTextColor(100);
-            doc.text(`Hora de captura: ${r.hora}`, 20, y + 5);
+            doc.text(`Hora: ${r.hora}`, 20, y + 5);
 
             if(r.foto1) doc.addImage(r.foto1, 'JPEG', 20, y + 8, 80, 55);
             if(r.foto2) doc.addImage(r.foto2, 'JPEG', 105, y + 8, 80, 55);
-            
             y += 75;
         });
 
         const pdfBlob = doc.output('blob');
-        const file = new File([pdfBlob], `Reporte_OF_${of}.pdf`, { type: 'application/pdf' });
+        const file = new File([pdfBlob], `Informe_Prod_OF_${of}.pdf`, { type: 'application/pdf' });
         document.getElementById('loading').style.display = 'none';
 
         if (navigator.share) {
-            await navigator.share({ files: [file], title: `Reporte OF ${of}` });
+            await navigator.share({ files: [file], title: `Informe Producción OF ${of}` });
         } else {
-            doc.save(`Reporte_OF_${of}.pdf`);
+            doc.save(`Informe_Produccion_${of}.pdf`);
         }
     }
     document.getElementById('fecha').valueAsDate = new Date();
