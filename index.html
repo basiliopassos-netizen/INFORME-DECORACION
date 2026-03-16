@@ -7,44 +7,85 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --primary: #2c3e50; --success: #27ae60; --danger: #e74c3c; --warning: #f39c12; --bg: #f0f2f5; }
+        
+        /* Ajuste total a la pantalla del móvil */
+        html, body { height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden; background: var(--bg); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--bg); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-        header { background: var(--primary); color: white; flex-shrink: 0; }
-        .app-header { padding: 15px; display: flex; align-items: center; gap: 12px; }
-        .logo-u { background: white; color: var(--primary); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+
+        /* Cabecera Azul Bloqueada */
+        header { 
+            background: var(--primary); 
+            color: white; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000;
+            width: 100%;
+        }
+        .app-header { padding: 12px 15px; display: flex; align-items: center; gap: 12px; }
+        
+        /* Icono de la U */
+        .logo-u { 
+            background: white; 
+            color: var(--primary); 
+            width: 35px; 
+            height: 35px; 
+            border-radius: 8px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: 900; 
+            font-size: 22px;
+        }
+        
         .tabs { display: flex; background: #34495e; }
-        .tab-btn { flex: 1; padding: 14px; border: none; background: transparent; color: #bdc3c7; font-weight: bold; font-size: 11px; text-transform: uppercase; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #bdc3c7; font-weight: bold; font-size: 11px; text-transform: uppercase; }
         .tab-btn.active { color: white; border-bottom: 4px solid var(--warning); background: rgba(255,255,255,0.1); }
-        .contenido { flex: 1; overflow-y: auto; padding: 12px; padding-bottom: 30px; }
+
+        /* Contenido con scroll independiente */
+        .contenido { 
+            height: calc(100vh - 100px); 
+            overflow-y: auto; 
+            padding: 12px; 
+            padding-bottom: 80px; /* Espacio para que el botón de enviar no tape nada */
+        }
+
         .card { background: white; padding: 12px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 12px; }
-        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .campo { display: flex; flex-direction: column; margin-bottom: 5px; }
-        label { font-size: 10px; font-weight: 800; color: #7f8c8d; margin-bottom: 3px; text-transform: uppercase; }
-        input, select { padding: 10px; border: 1px solid #dce1e5; border-radius: 10px; font-size: 14px; }
-        .control-row { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
-        .btn-main { flex: 1; border: none; border-radius: 18px; padding: 15px; color: white; min-height: 90px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .btn-edit { width: 55px; height: 90px; border: none; border-radius: 15px; background: #fff; border: 2px solid #dce1e5; color: var(--primary); font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .btn-ok { background: var(--success); box-shadow: 0 5px 0 #1e8449; }
-        .btn-nook { background: var(--danger); box-shadow: 0 5px 0 #b03a2e; }
-        .num-big { font-size: 42px; font-weight: bold; line-height: 1; }
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .campo { display: flex; flex-direction: column; margin-bottom: 4px; }
+        label { font-size: 9px; font-weight: 800; color: #7f8c8d; margin-bottom: 2px; text-transform: uppercase; }
+        input, select { padding: 8px; border: 1px solid #dce1e5; border-radius: 8px; font-size: 14px; width: 100%; }
+
+        /* Controles */
+        .control-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+        .btn-main { flex: 1; border: none; border-radius: 15px; padding: 12px; color: white; min-height: 85px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .btn-edit { width: 50px; height: 85px; border: none; border-radius: 12px; background: #fff; border: 1px solid #dce1e5; color: var(--primary); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        
+        .btn-ok { background: var(--success); box-shadow: 0 4px 0 #1e8449; }
+        .btn-nook { background: var(--danger); box-shadow: 0 4px 0 #b03a2e; }
+        .num-big { font-size: 38px; font-weight: bold; line-height: 1; }
+
         .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .stat-item { background: #1a252f; color: white; padding: 15px; border-radius: 15px; text-align: center; }
+        .stat-item { background: #1a252f; color: white; padding: 12px; border-radius: 12px; text-align: center; }
+
+        .btn-finalizar { background: #007bff; color: white; border: none; width: 100%; padding: 16px; border-radius: 15px; margin-top: 15px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+
+        /* Modales */
         .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; align-items:center; justify-content:center; }
-        .modal-box { background:white; width:90%; padding:25px; border-radius:25px; text-align: center; }
-        .defecto-btn { width: 100%; padding: 15px; margin-bottom: 10px; border: none; background: #f8f9fa; border-left: 6px solid var(--danger); border-radius: 12px; text-align: left; font-weight: bold; }
-        .btn-finalizar { background: #007bff; color: white; border: none; width: 100%; padding: 18px; border-radius: 15px; margin-top: 20px; font-weight: bold; font-size: 16px; }
-        #loading { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 5000; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .modal-box { background:white; width:90%; padding:20px; border-radius:20px; text-align: center; }
+        .defecto-btn { width: 100%; padding: 15px; margin-bottom: 8px; border: none; background: #f8f9fa; border-left: 6px solid var(--danger); border-radius: 10px; text-align: left; font-weight: bold; }
+        
+        #loading { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:5000; flex-direction:column; align-items:center; justify-content:center; }
     </style>
 </head>
 <body>
 
-<div id="loading">
-    <h2 id="loading-text">🚀 PROCESANDO IMÁGENES...</h2>
-    <p>Esto puede tardar unos segundos dependiendo del número de fotos.</p>
-</div>
+<div id="loading"><h2>🚀 GENERANDO PDF...</h2><p>Procesando fotos, espera un momento.</p></div>
 
 <header>
-    <div class="app-header"><div class="logo-u">U</div><div style="font-weight:bold">UNIDAD DE DECORACIÓN</div></div>
+    <div class="app-header">
+        <div class="logo-u">U</div>
+        <div style="font-weight: bold; font-size: 15px; letter-spacing: 0.5px;">UNIDAD DE DECORACIÓN</div>
+    </div>
     <div class="tabs">
         <button class="tab-btn active" id="btn-calidad" onclick="cambiarTab('calidad')">Calidad</button>
         <button class="tab-btn" id="btn-final" onclick="cambiarTab('final')">Final</button>
@@ -56,14 +97,14 @@
         <div class="grid-inputs">
             <div class="campo"><label>Fecha</label><input type="date" id="fecha"></div>
             <div class="campo"><label>Turno</label><select id="turno"><option>Mañana</option><option>Tarde</option><option>Noche</option></select></div>
-            <div class="campo"><label>OF</label><input type="text" id="of" placeholder="Orden..."></div>
+            <div class="campo"><label>OF</label><input type="text" id="of" placeholder="Nº Orden"></div>
             <div class="campo"><label>Sustrato</label><input type="text" id="sustrato" placeholder="Tipo..."></div>
         </div>
     </div>
 
     <div class="control-row">
         <button class="btn-main btn-ok" onclick="sumarUno('ok')">
-            <span style="font-size:10px;font-weight:bold">PIEZAS OK</span>
+            <span style="font-size:10px;font-weight:bold;opacity:0.9">PIEZAS OK</span>
             <span class="num-big" id="val-ok">0</span>
         </button>
         <button class="btn-edit" onclick="editarManual('ok')">✎</button>
@@ -71,15 +112,15 @@
 
     <div class="control-row">
         <button class="btn-main btn-nook" onclick="abrirDefectos()">
-            <span style="font-size:10px;font-weight:bold">PIEZAS NO OK</span>
+            <span style="font-size:10px;font-weight:bold;opacity:0.9">PIEZAS NO OK</span>
             <span class="num-big" id="val-nook">0</span>
         </button>
         <button class="btn-edit" onclick="editarManual('nook')">✎</button>
     </div>
 
     <div class="stats">
-        <div class="stat-item"><span id="val-total" style="font-size:24px;font-weight:bold">0</span><br><small>TOTAL</small></div>
-        <div class="stat-item"><span id="val-pct" style="font-size:24px;font-weight:bold;color:var(--success)">0%</span><br><small>CALIDAD</small></div>
+        <div class="stat-item"><span id="val-total" style="font-size:22px;font-weight:bold">0</span><br><small style="font-size:9px">TOTAL</small></div>
+        <div class="stat-item"><span id="val-pct" style="font-size:22px;font-weight:bold;color:var(--success)">0%</span><br><small style="font-size:9px">CALIDAD</small></div>
     </div>
 
     <button class="btn-finalizar" onclick="compartirInforme()">📤 GENERAR Y ENVIAR PDF</button>
@@ -91,10 +132,7 @@
 <script>
     const config = { calidad: ["Bultos", "Malla suelta", "Rota", "Sucia"], final: ["Gota Kerajet", "Tono", "Rascada", "Manchada"] };
     let tabActual = 'calidad', pasoFoto = 0, currentDefecto = "";
-    let db = { 
-        calidad: { ok: 0, nook: 0, registros: [] }, 
-        final: { ok: 0, nook: 0, registros: [] } 
-    };
+    let db = { calidad: { ok: 0, nook: 0, registros: [] }, final: { ok: 0, nook: 0, registros: [] } };
 
     function cambiarTab(t) {
         tabActual = t;
@@ -106,108 +144,10 @@
     function sumarUno(tipo) { db[tabActual][tipo]++; actualizarUI(); }
 
     function editarManual(tipo) {
-        let valor = prompt("Total " + tipo.toUpperCase(), db[tabActual][tipo]);
+        let valor = prompt("Escribe el total de " + tipo.toUpperCase(), db[tabActual][tipo]);
         if (valor !== null && !isNaN(valor)) { db[tabActual][tipo] = parseInt(valor || 0); actualizarUI(); }
     }
 
     function abrirDefectos() {
         const mc = document.getElementById('modal-content');
-        mc.innerHTML = `<h3>Selecciona Defecto</h3><div id="lista"></div><button onclick="cerrarModal()" style="width:100%;margin-top:15px;padding:10px;border:none;background:#eee;border-radius:10px;">Cancelar</button>`;
-        config[tabActual].forEach(d => {
-            mc.querySelector('#lista').innerHTML += `<button class="defecto-btn" onclick="iniciarFotos('${d}')">${d}</button>`;
-        });
-        document.getElementById('modal-app').style.display = 'flex';
-    }
-
-    function iniciarFotos(defecto) {
-        currentDefecto = defecto;
-        pasoFoto = 1;
-        mostrarPasoFoto();
-    }
-
-    function mostrarPasoFoto() {
-        const mc = document.getElementById('modal-content');
-        const titulo = pasoFoto === 1 ? "📸 FOTO DEFECTO" : "📸 FOTO LOTE";
-        mc.innerHTML = `<h3>${titulo}</h3><button class="defecto-btn" style="background:var(--primary);color:white;text-align:center" onclick="document.getElementById('cam-input').click()">HACER FOTO</button>`;
-    }
-
-    function fotoProcesada(event) {
-        const file = event.target.files[0];
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const base64 = e.target.result;
-            if (pasoFoto === 1) {
-                db[tabActual].nook++;
-                db[tabActual].registros.push({ defecto: currentDefecto, hora: new Date().toLocaleTimeString(), fotoDefecto: base64, fotoLote: null });
-                pasoFoto = 2;
-                mostrarPasoFoto();
-            } else {
-                db[tabActual].registros[db[tabActual].registros.length - 1].fotoLote = base64;
-                cerrarModal();
-                actualizarUI();
-            }
-        };
-        reader.readAsDataURL(file);
-    }
-
-    function cerrarModal() { document.getElementById('modal-app').style.display = 'none'; }
-
-    function actualizarUI() {
-        const d = db[tabActual];
-        document.getElementById('val-ok').innerText = d.ok;
-        document.getElementById('val-nook').innerText = d.nook;
-        const total = d.ok + d.nook;
-        document.getElementById('val-total').innerText = total;
-        document.getElementById('val-pct').innerText = total > 0 ? ((d.ok / total) * 100).toFixed(1) + "%" : "0%";
-    }
-
-    async function compartirInforme() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        const of = document.getElementById('of').value || "S_N";
-        
-        document.getElementById('loading').style.display = 'flex';
-
-        // Encabezado
-        doc.setFontSize(18); doc.text("REPORTE DE CALIDAD - DECORACIÓN", 20, 20);
-        doc.setFontSize(12); doc.text(`OF: ${of} | Fecha: ${document.getElementById('fecha').value} | Turno: ${document.getElementById('turno').value}`, 20, 30);
-        doc.text(`Sustrato: ${document.getElementById('sustrato').value}`, 20, 38);
-        
-        doc.line(20, 42, 190, 42);
-        doc.text("RESUMEN:", 20, 50);
-        doc.text(`CALIDAD -> OK: ${db.calidad.ok} | NO OK: ${db.calidad.nook}`, 30, 58);
-        doc.text(`FINAL   -> OK: ${db.final.ok} | NO OK: ${db.final.nook}`, 30, 66);
-
-        // Añadir fotos de defectos
-        let y = 80;
-        const todasLasFotos = [...db.calidad.registros, ...db.final.registros];
-
-        for (const reg of todasLasFotos) {
-            if (y > 240) { doc.addPage(); y = 20; }
-            doc.setFontSize(10);
-            doc.text(`DEFECTO: ${reg.defecto} (${reg.hora})`, 20, y);
-            
-            if (reg.fotoDefecto) {
-                doc.addImage(reg.fotoDefecto, 'JPEG', 20, y + 5, 80, 60);
-            }
-            if (reg.fotoLote) {
-                doc.addImage(reg.fotoLote, 'JPEG', 110, y + 5, 80, 60);
-            }
-            y += 75;
-        }
-
-        const pdfOutput = doc.output('blob');
-        const file = new File([pdfOutput], `Reporte_OF_${of}.pdf`, { type: 'application/pdf' });
-        document.getElementById('loading').style.display = 'none';
-
-        if (navigator.share) {
-            await navigator.share({ files: [file], title: 'Reporte Calidad' });
-        } else {
-            doc.save(`Reporte_OF_${of}.pdf`);
-        }
-    }
-
-    document.getElementById('fecha').valueAsDate = new Date();
-</script>
-</body>
-</html>
+        mc.innerHTML = `<h3>¿Qué defecto es?</h3><div id="lista"></div><button onclick="cerrarModal()" style="width:100%;margin-top:15px;padding:10px;border:none;background:#eee;border-radius:10px;">Cerrar</button
