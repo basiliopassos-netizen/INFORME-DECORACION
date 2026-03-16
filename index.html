@@ -7,56 +7,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --primary: #2c3e50; --success: #27ae60; --danger: #e74c3c; --warning: #f39c12; --bg: #f0f2f5; }
-        
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', sans-serif; }
-        
-        /* Permitimos que el cuerpo haga scroll si es necesario, pero fijamos la cabecera */
         body { margin: 0; padding: 0; background: var(--bg); color: #2c3e50; min-height: 100vh; }
 
-        /* CABECERA FIJA ARRIBA */
-        .fixed-top {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            width: 100%;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
+        .fixed-top { position: sticky; top: 0; z-index: 1000; width: 100%; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         header { background: var(--primary); color: white; padding: 12px 15px; display: flex; align-items: center; gap: 12px; }
-        
-        .logo-u { 
-            background: white; 
-            color: var(--primary); 
-            width: 35px; 
-            height: 35px; 
-            border-radius: 8px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-weight: 900; 
-            font-size: 22px;
-        }
+        .logo-u { background: white; color: var(--primary); width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 22px; }
 
         .tabs { display: flex; background: #34495e; }
-        .tab-btn { 
-            flex: 1; 
-            padding: 15px; 
-            border: none; 
-            background: transparent; 
-            color: #bdc3c7; 
-            font-weight: bold; 
-            font-size: 12px; 
-            text-transform: uppercase;
-        }
+        .tab-btn { flex: 1; padding: 15px; border: none; background: transparent; color: #bdc3c7; font-weight: bold; font-size: 12px; text-transform: uppercase; }
         .tab-btn.active { color: white; border-bottom: 4px solid var(--warning); background: rgba(255,255,255,0.1); }
 
-        /* CONTENIDO - Ahora ajustado para que siempre se vea en el móvil */
-        .contenido { 
-            padding: 12px; 
-            display: block; /* Asegura que no se oculte nada */
-            width: 100%;
-        }
-
+        .contenido { padding: 12px; width: 100%; }
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 12px; }
         .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .campo { display: flex; flex-direction: column; margin-bottom: 5px; }
@@ -64,31 +26,8 @@
         input, select { padding: 10px; border: 1px solid #dce1e5; border-radius: 10px; font-size: 14px; width: 100%; background: #fff; }
 
         .control-row { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; width: 100%; }
-        
-        /* BOTONES PRINCIPALES */
-        .btn-main { 
-            flex: 1; 
-            border: none; 
-            border-radius: 18px; 
-            padding: 15px; 
-            color: white; 
-            min-height: 90px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center;
-            text-align: center;
-        }
-        .btn-edit { 
-            width: 55px; 
-            height: 90px; 
-            border: none; 
-            border-radius: 15px; 
-            background: #fff; 
-            border: 2px solid #dce1e5; 
-            color: var(--primary); 
-            font-size: 24px;
-        }
+        .btn-main { flex: 1; border: none; border-radius: 18px; padding: 15px; color: white; min-height: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .btn-edit { width: 55px; height: 90px; border: none; border-radius: 15px; background: #fff; border: 2px solid #dce1e5; color: var(--primary); font-size: 24px; }
 
         .btn-ok { background: var(--success); box-shadow: 0 5px 0 #1e8449; }
         .btn-nook { background: var(--danger); box-shadow: 0 5px 0 #b03a2e; }
@@ -97,21 +36,8 @@
         .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
         .stat-item { background: #1a252f; color: white; padding: 15px; border-radius: 15px; text-align: center; }
 
-        .btn-finalizar { 
-            background: #007bff; 
-            color: white; 
-            border: none; 
-            width: 100%; 
-            padding: 20px; 
-            border-radius: 15px; 
-            font-weight: bold; 
-            font-size: 16px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            margin-top: 20px;
-            margin-bottom: 50px; /* Espacio para no chocar con el borde inferior del móvil */
-        }
+        .btn-finalizar { background: #007bff; color: white; border: none; width: 100%; padding: 20px; border-radius: 15px; font-weight: bold; font-size: 16px; margin-top: 20px; margin-bottom: 50px; }
 
-        /* MODALES */
         .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; align-items:center; justify-content:center; }
         .modal-box { background:white; width:90%; padding:25px; border-radius:25px; text-align: center; }
         .defecto-btn { width: 100%; padding: 15px; margin-bottom: 10px; border: none; background: #f8f9fa; border-left: 6px solid var(--danger); border-radius: 12px; text-align: left; font-weight: bold; font-size: 16px; }
@@ -121,7 +47,7 @@
 </head>
 <body>
 
-<div id="loading"><h2>🚀 PROCESANDO...</h2></div>
+<div id="loading"><h2>🚀 GENERANDO INFORME...</h2><p>Por favor, espera.</p></div>
 
 <div class="fixed-top">
     <header>
@@ -140,7 +66,7 @@
             <div class="campo"><label>Fecha</label><input type="date" id="fecha"></div>
             <div class="campo"><label>Turno</label><select id="turno"><option>Mañana</option><option>Tarde</option><option>Noche</option></select></div>
             <div class="campo"><label>OF</label><input type="text" id="of" placeholder="Nº Orden"></div>
-            <div class="campo"><label>Sustrato</label><input type="text" id="sustrato" placeholder="Tipo..."></div>
+            <div class="campo"><label>Sustrato</label><input type="text" id="sustrato" placeholder="Nombre sustrato..."></div>
         </div>
     </div>
 
@@ -208,13 +134,13 @@
 
     function fotoProcesada(e) {
         const reader = new FileReader();
-        reader.onload = (event) => {
+        reader.onload = (ev) => {
             if(pasoFoto === 1) {
                 db[tabActual].nook++;
-                db[tabActual].registros.push({ defecto: defectoSeleccionado, hora: new Date().toLocaleTimeString(), foto1: event.target.result, foto2: null });
+                db[tabActual].registros.push({ defecto: defectoSeleccionado, hora: new Date().toLocaleTimeString(), foto1: ev.target.result, foto2: null, seccion: tabActual });
                 pasoFoto = 2; mostrarPasoFoto();
             } else {
-                db[tabActual].registros[db[tabActual].registros.length - 1].foto2 = event.target.result;
+                db[tabActual].registros[db[tabActual].registros.length - 1].foto2 = ev.target.result;
                 cerrarModal(); actualizarUI();
             }
         };
@@ -236,19 +162,59 @@
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         document.getElementById('loading').style.display = 'flex';
-        doc.text("REPORTE CALIDAD", 20, 20);
-        let y = 30;
-        [...db.calidad.registros, ...db.final.registros].forEach(r => {
-            if (y > 240) { doc.addPage(); y = 20; }
-            doc.text(`${r.defecto} (${r.hora})`, 20, y);
-            if(r.foto1) doc.addImage(r.foto1, 'JPEG', 20, y+5, 80, 50);
-            if(r.foto2) doc.addImage(r.foto2, 'JPEG', 105, y+5, 80, 50);
-            y += 60;
+
+        const of = document.getElementById('of').value || "S/N";
+        const sus = document.getElementById('sustrato').value || "N/A";
+        const tur = document.getElementById('turno').value;
+        const fec = document.getElementById('fecha').value;
+
+        // CABECERA DEL INFORME
+        doc.setFontSize(20); doc.setTextColor(44, 62, 80);
+        doc.text("REPORTE DE CALIDAD DECORACIÓN", 20, 20);
+        
+        doc.setFontSize(11); doc.setTextColor(100);
+        doc.text(`OF: ${of}`, 20, 30);
+        doc.text(`Sustrato: ${sus}`, 20, 35);
+        doc.text(`Fecha: ${fec} | Turno: ${tur}`, 20, 40);
+        
+        doc.setLineWidth(0.5); doc.line(20, 45, 190, 45);
+
+        // RESUMEN NUMÉRICO
+        doc.setFontSize(12); doc.setTextColor(0);
+        doc.text("RESUMEN DE PRODUCCIÓN:", 20, 55);
+        doc.setFontSize(10);
+        doc.text(`CALIDAD -> OK: ${db.calidad.ok} | NO OK: ${db.calidad.nook}`, 25, 62);
+        doc.text(`FINAL   -> OK: ${db.final.ok} | NO OK: ${db.final.nook}`, 25, 68);
+
+        doc.line(20, 75, 190, 75);
+
+        // DETALLE DE FALLOS CON FOTOS
+        let y = 85;
+        const todosLosFallos = [...db.calidad.registros, ...db.final.registros];
+
+        todosLosFallos.forEach((r, index) => {
+            if (y > 220) { doc.addPage(); y = 20; }
+            
+            doc.setFontSize(11); doc.setTextColor(231, 76, 60); // Color rojo para el fallo
+            doc.text(`${index + 1}. FALLO: ${r.defecto.toUpperCase()} (${r.seccion.toUpperCase()})`, 20, y);
+            doc.setFontSize(9); doc.setTextColor(100);
+            doc.text(`Hora de captura: ${r.hora}`, 20, y + 5);
+
+            if(r.foto1) doc.addImage(r.foto1, 'JPEG', 20, y + 8, 80, 55);
+            if(r.foto2) doc.addImage(r.foto2, 'JPEG', 105, y + 8, 80, 55);
+            
+            y += 75;
         });
-        const pdf = doc.output('blob');
-        const file = new File([pdf], `Reporte.pdf`, { type: 'application/pdf' });
+
+        const pdfBlob = doc.output('blob');
+        const file = new File([pdfBlob], `Reporte_OF_${of}.pdf`, { type: 'application/pdf' });
         document.getElementById('loading').style.display = 'none';
-        if (navigator.share) await navigator.share({ files: [file] }); else doc.save(`Reporte.pdf`);
+
+        if (navigator.share) {
+            await navigator.share({ files: [file], title: `Reporte OF ${of}` });
+        } else {
+            doc.save(`Reporte_OF_${of}.pdf`);
+        }
     }
     document.getElementById('fecha').valueAsDate = new Date();
 </script>
