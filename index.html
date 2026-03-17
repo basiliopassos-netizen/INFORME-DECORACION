@@ -37,7 +37,7 @@
 </head>
 <body onload="cargarTodo()">
 
-<div id="loading"><h2>🚀 GENERANDO PDF...</h2><p>Esto puede tardar unos segundos según el número de fotos.</p></div>
+<div id="loading"><h2>🚀 GENERANDO PDF...</h2><p>Procesando imágenes y datos del turno.</p></div>
 
 <div class="fixed-top">
     <header><div class="logo-u">U</div><div style="font-weight: bold; font-size: 14px;">GESTIÓN PRODUCCIÓN</div></header>
@@ -93,8 +93,8 @@
                 <div class="campo"><label>Fin</label><input type="time" id="ev-fin"></div>
             </div>
             <div class="campo"><label>Motivo</label><textarea id="ev-desc" rows="2" placeholder="Describa la parada..."></textarea></div>
-            <button class="btn-finalizar" style="background:var(--info); padding:12px;" onclick="document.getElementById('cam-input-event').click()">📸 FOTO / ARCHIVO</button>
-            <p id="ev-foto-status" style="display:none; color:var(--success); text-align:center; font-size:12px; margin:5px;">✓ Imagen cargada</p>
+            <button class="btn-finalizar" style="background:var(--info); padding:12px;" onclick="document.getElementById('cam-input-event').click()">📸 FOTO / GALERÍA</button>
+            <p id="ev-foto-status" style="display:none; color:var(--success); text-align:center; font-size:12px; margin:5px;">✓ Imagen lista</p>
             <button class="btn-finalizar" style="background:var(--primary);" onclick="guardarEvento()">💾 GUARDAR PARADA</button>
         </div>
     </div>
@@ -104,12 +104,27 @@
 </div>
 
 <div id="modal-app" class="modal"><div class="modal-box" id="modal-content"></div></div>
+
 <input type="file" id="cam-input" accept="image/*" style="display:none" onchange="fotoProcesada(event)">
 <input type="file" id="cam-input-event" accept="image/*" style="display:none" onchange="fotoEventoProcesada(event)">
 
 <script>
-    const CONFIG = { calidad: ["Bultos", "Malla suelta", "Rota", "Sucia"], final: ["Gota Kerajet", "Tono", "Rascada", "Manchada"] };
-    const STORAGE_KEY = 'PROD_FINAL_ESTABLE_V8';
+    // CONFIGURACIÓN DE DEFECTOS ACTUALIZADA
+    const CONFIG = { 
+        calidad: ["Bultos", "Malla suelta", "Rota", "Sucia"], 
+        final: [
+            "Gota Kerajet", 
+            "Tono", 
+            "Rascada", 
+            "Manchada", 
+            "Impresión cancelada a mitad", 
+            "Esquina rota", 
+            "Borde roto"
+        ] 
+    };
+    
+    // CLAVE ÚNICA DE MEMORIA
+    const STORAGE_KEY = 'PRODUCCION_BLINDADA_V10';
     
     let db = { 
         calidad: { ok: 0, nook: 0, registros: [] }, 
@@ -120,6 +135,7 @@
 
     let tabActual = 'calidad', pasoFoto = 0, defectoSeleccionado = "", tempFotoEvento = null;
 
+    // --- SISTEMA DE GUARDADO ---
     function guardarTodo() {
         db.cabecera = {
             fecha: document.getElementById('fecha').value,
@@ -147,12 +163,13 @@
     }
 
     function resetearTodo() {
-        if(confirm("⚠️ ¿BORRAR DATOS? Se vaciará la memoria del turno actual.")) {
+        if(confirm("⚠️ ¿BORRAR TODO? Se limpiará la memoria para un nuevo turno.")) {
             localStorage.removeItem(STORAGE_KEY);
             location.reload();
         }
     }
 
+    // --- NAVEGACIÓN ---
     function cambiarTab(t) {
         tabActual = t;
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -162,16 +179,26 @@
         actualizarUI();
     }
 
-    function sumarUno(tipo) { db[tabActual][tipo]++; actualizarUI(); guardarTodo(); }
+    // --- LÓGICA DE CONTADORES ---
+    function sumarUno(tipo) { 
+        db[tabActual][tipo]++; 
+        actualizarUI(); 
+        guardarTodo(); 
+    }
     
     function editarManual(tipo) { 
-        let v = prompt("Cantidad:", db[tabActual][tipo]);
-        if(v !== null) { db[tabActual][tipo] = parseInt(v) || 0; actualizarUI(); guardarTodo(); }
+        let v = prompt("Cantidad manual:", db[tabActual][tipo]);
+        if(v !== null) { 
+            db[tabActual][tipo] = parseInt(v) || 0; 
+            actualizarUI(); 
+            guardarTodo(); 
+        }
     }
 
+    // --- GESTIÓN DE FALLOS Y FOTOS ---
     function abrirDefectos() {
         const mc = document.getElementById('modal-content');
-        mc.innerHTML = `<h3>Tipo de Fallo</h3><div id="btns-d"></div><button onclick="cerrarModal()" style="margin-top:15px; width:100%; padding:10px; border-radius:10px; border:1px solid #ccc;">Cerrar</button>`;
+        mc.innerHTML = `<h3>Defecto en ${tabActual.toUpperCase()}</h3><div id="btns-d"></div><button onclick="cerrarModal()" style="margin-top:15px; width:100%; padding:10px; border-radius:10px;">Cerrar</button>`;
         CONFIG[tabActual].forEach(d => {
             mc.querySelector('#btns-d').innerHTML += `<button class="defecto-btn" onclick="iniciarFotos('${d}')">${d}</button>`;
         });
@@ -181,7 +208,12 @@
     function iniciarFotos(d) { defectoSeleccionado = d; pasoFoto = 1; mostrarPasoFoto(); }
     
     function mostrarPasoFoto() {
-        document.getElementById('modal-content').innerHTML = `<h3>${pasoFoto === 1 ? '📸 FOTO DEFECTO' : '📸 FOTO LOTE'}</h3><p>Fallo: ${defectoSeleccionado}</p><button class="defecto-btn" style="background:var(--primary); color:white; text-align:center;" onclick="document.getElementById('cam-input').click()">AÑADIR DESDE CÁMARA O ARCHIVO</button>`;
+        document.getElementById('modal-content').innerHTML = `
+            <h3>${pasoFoto === 1 ? '📸 FOTO DEL DEFECTO' : '📸 FOTO DEL LOTE'}</h3>
+            <p><strong>Fallo:</strong> ${defectoSeleccionado}</p>
+            <button class="defecto-btn" style="background:var(--primary); color:white; text-align:center;" onclick="document.getElementById('cam-input').click()">
+                HACER FOTO O ELEGIR ARCHIVO
+            </button>`;
     }
 
     function fotoProcesada(e) {
@@ -200,6 +232,7 @@
         r.readAsDataURL(e.target.files[0]);
     }
 
+    // --- GESTIÓN DE EVENTOS ---
     function fotoEventoProcesada(e) {
         if(!e.target.files[0]) return;
         const r = new FileReader();
@@ -216,7 +249,7 @@
               fin = document.getElementById('ev-fin').value, 
               des = document.getElementById('ev-desc').value;
               
-        if (!ini || !fin || !des) return alert("Rellena hora y motivo.");
+        if (!ini || !fin || !des) return alert("Por favor, rellena tiempos y motivo.");
         
         const [h1, m1] = ini.split(':').map(Number), [h2, m2] = fin.split(':').map(Number);
         let d1 = new Date(), d2 = new Date(); d1.setHours(h1, m1, 0); d2.setHours(h2, m2, 0);
@@ -232,7 +265,7 @@
         document.getElementById('ev-desc').value = "";
         
         guardarTodo();
-        alert("✅ Parada de " + mins + " min registrada correctamente.");
+        alert("✅ Parada guardada (" + mins + " min)");
         actualizarUI();
     }
 
@@ -247,12 +280,12 @@
         document.getElementById('val-pct').innerText = total > 0 ? ((d.ok / total) * 100).toFixed(1) + "%" : "0%";
     }
 
+    // --- GENERACIÓN DE PDF ---
     async function compartirInforme() {
         const { jsPDF } = window.jspdf; const doc = new jsPDF();
         document.getElementById('loading').style.display = 'flex';
         const { of, turno, fecha, grafica, sustrato } = db.cabecera;
 
-        // PAGINA 1: CABECERA Y RESUMEN
         doc.setFontSize(18); doc.setTextColor(44, 62, 80); doc.text("INFORME DE PRODUCCIÓN", 20, 20);
         doc.setFontSize(10); doc.setTextColor(100);
         doc.text(`OF: ${of || '---'} | Gráfica: ${grafica || '---'} | Material: ${sustrato}`, 20, 28);
@@ -260,10 +293,10 @@
         doc.line(20, 38, 190, 38);
 
         doc.setFontSize(12); doc.setTextColor(0); doc.text("1. RESUMEN DE PIEZAS", 20, 48);
-        doc.text(`CALIDAD -> OK: ${db.calidad.ok} | FALLOS: ${db.calidad.nook}`, 25, 56);
-        doc.text(`FINAL   -> OK: ${db.final.ok} | FALLOS: ${db.final.nook}`, 25, 64);
+        doc.text(`CALIDAD -> OK: ${db.calidad.ok} | NO OK: ${db.calidad.nook}`, 25, 56);
+        doc.text(`FINAL   -> OK: ${db.final.ok} | NO OK: ${db.final.nook}`, 25, 64);
 
-        doc.text("2. RESUMEN TIEMPOS POR ESTACIÓN", 20, 78);
+        doc.text("2. TIEMPOS POR ESTACIÓN", 20, 78);
         const res = {}; db.eventos.forEach(e => {
             if(!res[e.estacion]) res[e.estacion] = { m: 0, c: 0 };
             res[e.estacion].m += e.minutos; res[e.estacion].c++;
@@ -300,7 +333,7 @@
         }
 
         const pdfBlob = doc.output('blob');
-        const file = new File([pdfBlob], `Informe_${of || 'SinOF'}.pdf`, { type: 'application/pdf' });
+        const file = new File([pdfBlob], `Informe_OF_${of || 'SinOF'}.pdf`, { type: 'application/pdf' });
         document.getElementById('loading').style.display = 'none';
         
         if (navigator.share) {
