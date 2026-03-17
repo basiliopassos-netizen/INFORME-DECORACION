@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PROD V17 - EDICIÓN MANUAL</title>
+    <title>PROD V18 - BOTÓN COMPARTIR</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --primary: #2c3e50; --success: #27ae60; --danger: #e74c3c; --warning: #f39c12; --bg: #f0f2f5; --info: #3498db; }
@@ -18,14 +18,11 @@
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         label { font-size: 9px; font-weight: 800; color: #7f8c8d; text-transform: uppercase; margin-bottom: 2px; display: block; }
         input, select, textarea { padding: 10px; border: 1px solid #dce1e5; border-radius: 8px; width: 100%; font-size: 14px; margin-bottom: 5px; }
-        
-        /* BOTONES CONTADORES CON EDICIÓN */
         .fila-contador { display: flex; gap: 8px; margin-bottom: 10px; align-items: stretch; }
         .btn-count { flex: 1; border: none; border-radius: 15px; padding: 15px; color: white; min-height: 70px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .btn-ok { background: var(--success); box-shadow: 0 4px 0 #1e8449; }
         .btn-nook { background: var(--danger); box-shadow: 0 4px 0 #b03a2e; }
         .btn-edit-manual { width: 50px; background: white; border: 2px solid #dce1e5; border-radius: 12px; font-size: 20px; color: var(--info); display: flex; align-items: center; justify-content: center; }
-
         .btn-action { background: #007bff; color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; font-weight: bold; margin-top: 8px; }
         .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; align-items:center; justify-content:center; }
         .modal-box { background:white; width:92%; padding:15px; border-radius:15px; max-height: 85vh; overflow-y: auto; }
@@ -37,7 +34,7 @@
 
 <div id="loading"><h2 id="load-txt">🚀 PROCESANDO...</h2></div>
 
-<header><b>PRODUCCIÓN V17</b> <span id="mem-status" style="font-size:10px; opacity:0.8;">Memoria OK</span></header>
+<header><b>PRODUCCIÓN V18</b> <span id="mem-status" style="font-size:10px; opacity:0.7;">Memoria OK</span></header>
 
 <div class="tabs">
     <button class="tab-btn active" id="btn-calidad" onclick="cambiarTab('calidad')">CALIDAD</button>
@@ -51,8 +48,8 @@
             <div><label>OF</label><input type="text" id="of" placeholder="Nº Orden" oninput="guardarTodo()"></div>
             <div><label>Turno</label><select id="turno" onchange="guardarTodo()"><option>Mañana</option><option>Tarde</option><option>Noche</option></select></div>
         </div>
-        <div style="margin-top:5px;"><label>Gráfica</label><input type="text" id="grafica" placeholder="Nombre del diseño" oninput="guardarTodo()"></div>
-        <div style="margin-top:5px;"><label>Material / Sustrato</label><input type="text" id="material" placeholder="Tipo de base" oninput="guardarTodo()"></div>
+        <div style="margin-top:5px;"><label>Gráfica</label><input type="text" id="grafica" placeholder="Nombre diseño" oninput="guardarTodo()"></div>
+        <div style="margin-top:5px;"><label>Material</label><input type="text" id="material" placeholder="Sustrato" oninput="guardarTodo()"></div>
     </div>
 
     <div id="vista-produccion">
@@ -70,7 +67,7 @@
         <div class="card">
             <label>Estación</label>
             <select id="ev-estacion"><option>HORNOS</option><option>ROBOTTIONS</option><option>CABINA 1</option><option>KERAJET</option><option>CABINA 2</option><option>ERRECE</option></select>
-            <label>Motivo de la parada</label><textarea id="ev-desc" rows="2"></textarea>
+            <label>Motivo</label><textarea id="ev-desc" rows="2"></textarea>
             <div class="grid" style="margin-top:5px;">
                 <div><label>Inicio</label><input type="time" id="ev-ini"></div>
                 <div><label>Fin</label><input type="time" id="ev-fin"></div>
@@ -81,12 +78,11 @@
         </div>
     </div>
 
-    <button class="btn-action" style="height:70px; font-size:16px; margin-top:20px; background:#2c3e50;" onclick="generarPDF()">📤 GENERAR INFORME PDF</button>
+    <button class="btn-action" style="height:70px; font-size:16px; margin-top:20px; background:#2c3e50;" onclick="generarPDF()">📤 COMPARTIR INFORME (PDF)</button>
     <button onclick="resetearTodo()" style="width:100%; border:none; background:none; color:#bbb; margin-top:40px; font-size:10px;">BORRAR TODO Y REINICIAR</button>
 </div>
 
 <div id="modal-app" class="modal"><div class="modal-box" id="modal-content"></div></div>
-
 <input type="file" id="in-cam" accept="image/*" capture="environment" style="display:none" onchange="procesarFoto(event)">
 <input type="file" id="in-gal" accept="image/*" style="display:none" onchange="procesarFoto(event)">
 
@@ -97,11 +93,11 @@
 
     function guardarTodo() { 
         db.cabecera = { of: document.getElementById('of').value, turno: document.getElementById('turno').value, grafica: document.getElementById('grafica').value, material: document.getElementById('material').value }; 
-        try { localStorage.setItem('PROD_V17', JSON.stringify(db)); document.getElementById('mem-status').innerText = "Memoria OK"; } catch(e) { document.getElementById('mem-status').innerText = "⚠️ LLENO"; }
+        try { localStorage.setItem('PROD_V18', JSON.stringify(db)); document.getElementById('mem-status').innerText = "Memoria OK"; } catch(e) { document.getElementById('mem-status').innerText = "⚠️ LLENO"; }
     }
 
     function cargarTodo() { 
-        const g = localStorage.getItem('PROD_V17'); 
+        const g = localStorage.getItem('PROD_V18'); 
         if(g){ 
             db = JSON.parse(g); 
             document.getElementById('of').value = db.cabecera.of || ""; 
@@ -113,11 +109,11 @@
     }
 
     function editarCifra(tipo) {
-        let n = prompt("Introduce la cantidad total:", db[tabActual][tipo]);
+        let n = prompt("Introduce cantidad:", db[tabActual][tipo]);
         if(n !== null) { db[tabActual][tipo] = parseInt(n) || 0; actualizarUI(); guardarTodo(); }
     }
 
-    function resetearTodo() { if(confirm("¿Reiniciar turno?")) { localStorage.removeItem('PROD_V17'); location.reload(); } }
+    function resetearTodo() { if(confirm("¿Borrar todo?")) { localStorage.removeItem('PROD_V18'); location.reload(); } }
     function cambiarTab(t) { tabActual = t; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-'+t).classList.add('active'); document.getElementById('vista-produccion').classList.toggle('hidden', t === 'eventos'); document.getElementById('vista-eventos').classList.toggle('hidden', t !== 'eventos'); actualizarUI(); }
     function sumarUno(tipo) { db[tabActual][tipo]++; actualizarUI(); guardarTodo(); }
 
@@ -130,15 +126,9 @@
     }
 
     function seleccionarDefecto(d) { defectoActivo = d; pasoFoto = 1; abrirFoto('registro'); }
-
     function abrirFoto(modo) {
         modoFoto = modo;
-        document.getElementById('modal-content').innerHTML = `
-            <h3>${modo === 'evento' ? 'Foto de Parada' : 'Foto Fallo '+pasoFoto+'/2'}</h3>
-            <button class="btn-action" style="background:#27ae60;" onclick="document.getElementById('in-cam').click()">📸 CÁMARA</button>
-            <button class="btn-action" style="background:#3498db;" onclick="document.getElementById('in-gal').click()">🖼️ GALERÍA</button>
-        `;
-        document.getElementById('modal-app').style.display = 'flex';
+        document.getElementById('modal-content').innerHTML = `<h3>${modo === 'evento' ? 'Foto Parada' : 'Foto '+pasoFoto+'/2'}</h3><button class="btn-action" style="background:#27ae60;" onclick="document.getElementById('in-cam').click()">📸 CÁMARA</button><button class="btn-action" style="background:#3498db;" onclick="document.getElementById('in-gal').click()">🖼️ GALERÍA</button>`;
     }
 
     function procesarFoto(e) {
@@ -155,24 +145,12 @@
                 canvas.width = w; canvas.height = h;
                 canvas.getContext('2d').drawImage(img, 0, 0, w, h);
                 const dataUrl = canvas.toDataURL('image/jpeg', 0.5);
-
-                if(modoFoto === 'evento') {
-                    fotoTempEv = dataUrl;
-                    document.getElementById('st-foto-ev').style.display = 'block';
-                    cerrarModal();
-                } else {
-                    if(pasoFoto === 1) {
-                        db[tabActual].nook++;
-                        db[tabActual].registros.push({ defecto: defectoActivo, hora: new Date().toLocaleTimeString(), foto1: dataUrl, foto2: null });
-                        pasoFoto = 2;
-                        abrirFoto('registro');
-                    } else {
-                        db[tabActual].registros[db[tabActual].registros.length - 1].foto2 = dataUrl;
-                        cerrarModal();
-                    }
+                if(modoFoto === 'evento') { fotoTempEv = dataUrl; document.getElementById('st-foto-ev').style.display = 'block'; cerrarModal(); } 
+                else {
+                    if(pasoFoto === 1) { db[tabActual].nook++; db[tabActual].registros.push({ defecto: defectoActivo, hora: new Date().toLocaleTimeString(), foto1: dataUrl, foto2: null }); pasoFoto = 2; abrirFoto('registro'); } 
+                    else { db[tabActual].registros[db[tabActual].registros.length - 1].foto2 = dataUrl; cerrarModal(); }
                 }
-                actualizarUI(); guardarTodo();
-                document.getElementById('loading').style.display = 'none';
+                actualizarUI(); guardarTodo(); document.getElementById('loading').style.display = 'none';
             };
             img.src = f.target.result;
         };
@@ -183,8 +161,7 @@
         const est = document.getElementById('ev-estacion').value, des = document.getElementById('ev-desc').value, ini = document.getElementById('ev-ini').value, fin = document.getElementById('ev-fin').value;
         if(!ini || !fin || !des) return alert("Faltan datos");
         db.eventos.push({ estacion: est, desc: des, inicio: ini, fin: fin, foto: fotoTempEv });
-        fotoTempEv = null; document.getElementById('st-foto-ev').style.display = 'none';
-        document.getElementById('ev-desc').value = ""; guardarTodo(); alert("Guardada");
+        fotoTempEv = null; document.getElementById('st-foto-ev').style.display = 'none'; document.getElementById('ev-desc').value = ""; guardarTodo(); alert("Guardada");
     }
 
     function cerrarModal() { document.getElementById('modal-app').style.display = 'none'; }
@@ -194,21 +171,16 @@
         document.getElementById('loading').style.display = 'flex';
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        
         doc.setFontSize(16); doc.text("INFORME DE PRODUCCIÓN", 14, 20);
-        doc.setFontSize(10); 
-        doc.text(`OF: ${db.cabecera.of} | Turno: ${db.cabecera.turno}`, 14, 28);
+        doc.setFontSize(10); doc.text(`OF: ${db.cabecera.of} | Turno: ${db.cabecera.turno}`, 14, 28);
         doc.text(`Gráfica: ${db.cabecera.grafica} | Material: ${db.cabecera.material}`, 14, 33);
         doc.line(14, 36, 196, 36);
-
         let y = 44;
         const addTxt = (t, s=11) => { if(y>270){doc.addPage(); y=20;} doc.setFontSize(s); doc.text(t, 14, y); y+=7; };
-        
         addTxt("1. RESUMEN PIEZAS", 14);
         addTxt(`CALIDAD: OK ${db.calidad.ok} / FALLOS ${db.calidad.nook}`);
-        addTxt(`FINAL:   OK ${db.final.ok} / FALLOS ${db.final.nook}`);
+        addTxt(`FINAL: OK ${db.final.ok} / FALLOS ${db.final.nook}`);
         y += 5;
-
         const renderSec = (tit, reg) => {
             if(reg.length === 0) return;
             addTxt(tit, 13);
@@ -220,24 +192,39 @@
                 y += 45;
             });
         };
-
         renderSec("DETALLE CALIDAD", db.calidad.registros);
         renderSec("DETALLE FINAL", db.final.registros);
-
         if(db.eventos.length > 0) {
             addTxt("2. PARADAS", 13);
             db.eventos.forEach(ev => {
                 if(y > 240) { doc.addPage(); y = 20; }
                 let lines = doc.splitTextToSize(`${ev.estacion} (${ev.inicio}-${ev.fin}): ${ev.desc}`, 170);
-                doc.text(lines, 14, y);
-                y += (lines.length * 5);
+                doc.text(lines, 14, y); y += (lines.length * 5);
                 if(ev.foto) { doc.addImage(ev.foto, 'JPEG', 14, y, 50, 40); y += 45; }
                 y += 5;
             });
         }
-
+        
+        // --- AQUÍ EL CAMBIO PARA COMPARTIR ---
+        const pdfBlob = doc.output('blob');
+        const fileName = `Informe_${db.cabecera.of || 'produccion'}.pdf`;
+        const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
+        
         document.getElementById('loading').style.display = 'none';
-        doc.save(`Informe_${db.cabecera.of}.pdf`);
+        
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    files: [file],
+                    title: 'Informe de Producción',
+                    text: 'Se adjunta informe de producción decorativa.'
+                });
+            } catch (err) {
+                doc.save(fileName);
+            }
+        } else {
+            doc.save(fileName);
+        }
     }
 </script>
 </body>
