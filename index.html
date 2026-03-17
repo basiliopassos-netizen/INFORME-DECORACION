@@ -37,7 +37,7 @@
 </head>
 <body onload="cargarTodo()">
 
-<div id="loading"><h2>🚀 GENERANDO PDF...</h2><p>Ajustando textos y organizando fotos...</p></div>
+<div id="loading"><h2>🚀 GENERANDO PDF...</h2><p>Organizando datos y fotos...</p></div>
 
 <div class="fixed-top">
     <header><div class="logo-u">U</div><div style="font-weight: bold; font-size: 14px;">GESTIÓN PRODUCCIÓN</div></header>
@@ -93,7 +93,7 @@
                 <div class="campo"><label>Fin</label><input type="time" id="ev-fin"></div>
             </div>
             <div class="campo"><label>Motivo</label><textarea id="ev-desc" rows="2" placeholder="Describa la parada..."></textarea></div>
-            <button class="btn-finalizar" style="background:var(--info); padding:12px;" onclick="document.getElementById('cam-input-event').click()">📸 CÁMARA / GALERÍA</button>
+            <button class="btn-finalizar" style="background:var(--info); padding:12px;" onclick="document.getElementById('cam-input-event').click()">📸 FOTO / GALERÍA</button>
             <p id="ev-foto-status" style="display:none; color:var(--success); text-align:center; font-size:12px; margin:5px;">✓ Imagen cargada</p>
             <button class="btn-finalizar" style="background:var(--primary);" onclick="guardarEvento()">💾 GUARDAR PARADA</button>
         </div>
@@ -105,15 +105,15 @@
 
 <div id="modal-app" class="modal"><div class="modal-box" id="modal-content"></div></div>
 
-<input type="file" id="cam-input" accept="image/*" capture="environment" style="display:none" onchange="fotoProcesada(event)">
-<input type="file" id="cam-input-event" accept="image/*" capture="environment" style="display:none" onchange="fotoEventoProcesada(event)">
+<input type="file" id="cam-input" accept="image/*" style="display:none" onchange="fotoProcesada(event)">
+<input type="file" id="cam-input-event" accept="image/*" style="display:none" onchange="fotoEventoProcesada(event)">
 
 <script>
     const CONFIG = { 
         calidad: ["Bultos", "Malla suelta", "Rota", "Sucia"], 
         final: ["Gota Kerajet", "Tono", "Rascada", "Manchada", "Impresión cancelada a mitad", "Esquina rota", "Borde roto"] 
     };
-    const STORAGE_KEY = 'PROD_V12_FINAL';
+    const STORAGE_KEY = 'PROD_V13_DUAL';
     let db = { calidad: { ok: 0, nook: 0, registros: [] }, final: { ok: 0, nook: 0, registros: [] }, eventos: [], cabecera: { fecha: "", turno: "Mañana", of: "", grafica: "", sustrato: "" } };
     let tabActual = 'calidad', pasoFoto = 0, defectoSeleccionado = "", tempFotoEvento = null;
 
@@ -126,12 +126,12 @@
 
     function abrirDefectos() {
         const mc = document.getElementById('modal-content');
-        mc.innerHTML = `<h3>Defecto en ${tabActual.toUpperCase()}</h3><div id="btns-d"></div><button onclick="cerrarModal()" style="margin-top:15px; width:100%; padding:10px; border-radius:10px;">Cerrar</button>`;
+        mc.innerHTML = `<h3>Fallo en ${tabActual.toUpperCase()}</h3><div id="btns-d"></div><button onclick="cerrarModal()" style="margin-top:15px; width:100%; padding:10px; border-radius:10px;">Cerrar</button>`;
         CONFIG[tabActual].forEach(d => { mc.querySelector('#btns-d').innerHTML += `<button class="defecto-btn" onclick="iniciarFotos('${d}')">${d}</button>`; });
         document.getElementById('modal-app').style.display = 'flex';
     }
     function iniciarFotos(d) { defectoSeleccionado = d; pasoFoto = 1; mostrarPasoFoto(); }
-    function mostrarPasoFoto() { document.getElementById('modal-content').innerHTML = `<h3>${pasoFoto === 1 ? '📸 FOTO DEFECTO' : '📸 FOTO LOTE'}</h3><p>${defectoSeleccionado}</p><button class="defecto-btn" style="background:var(--primary); color:white; text-align:center;" onclick="document.getElementById('cam-input').click()">USAR CÁMARA / GALERÍA</button>`; }
+    function mostrarPasoFoto() { document.getElementById('modal-content').innerHTML = `<h3>${pasoFoto === 1 ? '📸 FOTO DEFECTO' : '📸 FOTO LOTE'}</h3><p>${defectoSeleccionado}</p><button class="defecto-btn" style="background:var(--primary); color:white; text-align:center;" onclick="document.getElementById('cam-input').click()">HACER FOTO O ELEGIR GALERÍA</button>`; }
     function fotoProcesada(e) { if(!e.target.files[0]) return; const r = new FileReader(); r.onload = (f) => { if(pasoFoto === 1) { db[tabActual].nook++; db[tabActual].registros.push({ defecto: defectoSeleccionado, hora: new Date().toLocaleTimeString(), foto1: f.target.result, foto2: null }); pasoFoto = 2; mostrarPasoFoto(); } else { db[tabActual].registros[db[tabActual].registros.length - 1].foto2 = f.target.result; cerrarModal(); actualizarUI(); guardarTodo(); } }; r.readAsDataURL(e.target.files[0]); }
     function fotoEventoProcesada(e) { if(!e.target.files[0]) return; const r = new FileReader(); r.onload = (f) => { tempFotoEvento = f.target.result; document.getElementById('ev-foto-status').style.display = 'block'; }; r.readAsDataURL(e.target.files[0]); }
 
