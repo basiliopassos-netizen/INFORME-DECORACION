@@ -37,7 +37,7 @@
 </head>
 <body onload="cargarTodo()">
 
-<div id="loading"><h2>🚀 GENERANDO PDF...</h2><p>Organizando datos y ajustando textos...</p></div>
+<div id="loading"><h2>🚀 GENERANDO PDF...</h2><p>Ajustando textos y organizando fotos...</p></div>
 
 <div class="fixed-top">
     <header><div class="logo-u">U</div><div style="font-weight: bold; font-size: 14px;">GESTIÓN PRODUCCIÓN</div></header>
@@ -93,7 +93,7 @@
                 <div class="campo"><label>Fin</label><input type="time" id="ev-fin"></div>
             </div>
             <div class="campo"><label>Motivo</label><textarea id="ev-desc" rows="2" placeholder="Describa la parada..."></textarea></div>
-            <button class="btn-finalizar" style="background:var(--info); padding:12px;" onclick="document.getElementById('cam-input-event').click()">📸 FOTO / ARCHIVO</button>
+            <button class="btn-finalizar" style="background:var(--info); padding:12px;" onclick="document.getElementById('cam-input-event').click()">📸 CÁMARA / GALERÍA</button>
             <p id="ev-foto-status" style="display:none; color:var(--success); text-align:center; font-size:12px; margin:5px;">✓ Imagen cargada</p>
             <button class="btn-finalizar" style="background:var(--primary);" onclick="guardarEvento()">💾 GUARDAR PARADA</button>
         </div>
@@ -104,33 +104,34 @@
 </div>
 
 <div id="modal-app" class="modal"><div class="modal-box" id="modal-content"></div></div>
-<input type="file" id="cam-input" accept="image/*" style="display:none" onchange="fotoProcesada(event)">
-<input type="file" id="cam-input-event" accept="image/*" style="display:none" onchange="fotoEventoProcesada(event)">
+
+<input type="file" id="cam-input" accept="image/*" capture="environment" style="display:none" onchange="fotoProcesada(event)">
+<input type="file" id="cam-input-event" accept="image/*" capture="environment" style="display:none" onchange="fotoEventoProcesada(event)">
 
 <script>
     const CONFIG = { 
         calidad: ["Bultos", "Malla suelta", "Rota", "Sucia"], 
         final: ["Gota Kerajet", "Tono", "Rascada", "Manchada", "Impresión cancelada a mitad", "Esquina rota", "Borde roto"] 
     };
-    const STORAGE_KEY = 'PROD_V11_AJUSTADA';
+    const STORAGE_KEY = 'PROD_V12_FINAL';
     let db = { calidad: { ok: 0, nook: 0, registros: [] }, final: { ok: 0, nook: 0, registros: [] }, eventos: [], cabecera: { fecha: "", turno: "Mañana", of: "", grafica: "", sustrato: "" } };
     let tabActual = 'calidad', pasoFoto = 0, defectoSeleccionado = "", tempFotoEvento = null;
 
     function guardarTodo() { db.cabecera = { fecha: document.getElementById('fecha').value, turno: document.getElementById('turno').value, of: document.getElementById('of').value, grafica: document.getElementById('grafica').value, sustrato: document.getElementById('sustrato').value }; localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); }
     function cargarTodo() { const guardado = localStorage.getItem(STORAGE_KEY); if (guardado) { db = JSON.parse(guardado); document.getElementById('fecha').value = db.cabecera.fecha || ""; document.getElementById('turno').value = db.cabecera.turno || "Mañana"; document.getElementById('of').value = db.cabecera.of || ""; document.getElementById('grafica').value = db.cabecera.grafica || ""; document.getElementById('sustrato').value = db.cabecera.sustrato || ""; } else { document.getElementById('fecha').valueAsDate = new Date(); } actualizarUI(); }
-    function resetearTodo() { if(confirm("⚠️ ¿Borrar datos del turno?")) { localStorage.removeItem(STORAGE_KEY); location.reload(); } }
+    function resetearTodo() { if(confirm("⚠️ ¿Borrar datos?")) { localStorage.removeItem(STORAGE_KEY); location.reload(); } }
     function cambiarTab(t) { tabActual = t; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-' + t).classList.add('active'); document.getElementById('vista-produccion').classList.toggle('hidden', t === 'eventos'); document.getElementById('vista-eventos').classList.toggle('hidden', t !== 'eventos'); actualizarUI(); }
     function sumarUno(tipo) { db[tabActual][tipo]++; actualizarUI(); guardarTodo(); }
     function editarManual(tipo) { let v = prompt("Cantidad:", db[tabActual][tipo]); if(v !== null) { db[tabActual][tipo] = parseInt(v) || 0; actualizarUI(); guardarTodo(); } }
 
     function abrirDefectos() {
         const mc = document.getElementById('modal-content');
-        mc.innerHTML = `<h3>Fallo en ${tabActual.toUpperCase()}</h3><div id="btns-d"></div><button onclick="cerrarModal()" style="margin-top:15px; width:100%; padding:10px; border-radius:10px;">Cerrar</button>`;
+        mc.innerHTML = `<h3>Defecto en ${tabActual.toUpperCase()}</h3><div id="btns-d"></div><button onclick="cerrarModal()" style="margin-top:15px; width:100%; padding:10px; border-radius:10px;">Cerrar</button>`;
         CONFIG[tabActual].forEach(d => { mc.querySelector('#btns-d').innerHTML += `<button class="defecto-btn" onclick="iniciarFotos('${d}')">${d}</button>`; });
         document.getElementById('modal-app').style.display = 'flex';
     }
     function iniciarFotos(d) { defectoSeleccionado = d; pasoFoto = 1; mostrarPasoFoto(); }
-    function mostrarPasoFoto() { document.getElementById('modal-content').innerHTML = `<h3>${pasoFoto === 1 ? '📸 FOTO DEFECTO' : '📸 FOTO LOTE'}</h3><p>${defectoSeleccionado}</p><button class="defecto-btn" style="background:var(--primary); color:white; text-align:center;" onclick="document.getElementById('cam-input').click()">AÑADIR IMAGEN</button>`; }
+    function mostrarPasoFoto() { document.getElementById('modal-content').innerHTML = `<h3>${pasoFoto === 1 ? '📸 FOTO DEFECTO' : '📸 FOTO LOTE'}</h3><p>${defectoSeleccionado}</p><button class="defecto-btn" style="background:var(--primary); color:white; text-align:center;" onclick="document.getElementById('cam-input').click()">USAR CÁMARA / GALERÍA</button>`; }
     function fotoProcesada(e) { if(!e.target.files[0]) return; const r = new FileReader(); r.onload = (f) => { if(pasoFoto === 1) { db[tabActual].nook++; db[tabActual].registros.push({ defecto: defectoSeleccionado, hora: new Date().toLocaleTimeString(), foto1: f.target.result, foto2: null }); pasoFoto = 2; mostrarPasoFoto(); } else { db[tabActual].registros[db[tabActual].registros.length - 1].foto2 = f.target.result; cerrarModal(); actualizarUI(); guardarTodo(); } }; r.readAsDataURL(e.target.files[0]); }
     function fotoEventoProcesada(e) { if(!e.target.files[0]) return; const r = new FileReader(); r.onload = (f) => { tempFotoEvento = f.target.result; document.getElementById('ev-foto-status').style.display = 'block'; }; r.readAsDataURL(e.target.files[0]); }
 
@@ -144,7 +145,7 @@
         db.eventos.push({ estacion: est, inicio: ini, fin: fin, desc: des, foto: tempFotoEvento, minutos: mins });
         tempFotoEvento = null; document.getElementById('ev-foto-status').style.display = 'none';
         document.getElementById('ev-inicio').value = ""; document.getElementById('ev-fin').value = ""; document.getElementById('ev-desc').value = "";
-        guardarTodo(); actualizarUI(); alert("Guardado.");
+        guardarTodo(); actualizarUI(); alert("Parada guardada.");
     }
 
     function cerrarModal() { document.getElementById('modal-app').style.display = 'none'; }
@@ -155,13 +156,11 @@
         document.getElementById('loading').style.display = 'flex';
         const { of, turno, fecha, grafica, sustrato } = db.cabecera;
 
-        // Título y Cabecera
         doc.setFontSize(18); doc.setTextColor(44, 62, 80); doc.text("INFORME DE PRODUCCIÓN", 14, 20);
         doc.setFontSize(10); doc.text(`OF: ${of} | Gráfica: ${grafica} | Material: ${sustrato}`, 14, 28);
         doc.text(`Turno: ${turno} | Fecha: ${fecha}`, 14, 34);
         doc.line(14, 38, 196, 38);
 
-        // SECCIÓN 1: PIEZAS (SEPARADO)
         doc.setFontSize(14); doc.text("1. RESUMEN DE PIEZAS", 14, 48);
         doc.setFontSize(11);
         doc.setFillColor(245, 245, 245); doc.rect(14, 52, 182, 12, 'F');
@@ -169,30 +168,24 @@
         doc.setFillColor(245, 245, 245); doc.rect(14, 66, 182, 12, 'F');
         doc.text(`SECCIÓN FINAL:      OK: ${db.final.ok}   |   FALLOS: ${db.final.nook}`, 20, 74);
 
-        // SECCIÓN 2: TIEMPOS (TOTAL Y DESGLOSE)
         let totalMins = db.eventos.reduce((a, b) => a + b.minutos, 0);
         doc.setFontSize(14); doc.text("2. TIEMPOS DE PARADA", 14, 92);
         doc.setFontSize(11); doc.setTextColor(231, 76, 60);
-        doc.text(`TIEMPO TOTAL PARADO EN TURNO: ${totalMins} minutos`, 14, 100);
+        doc.text(`TIEMPO TOTAL PARADO: ${totalMins} minutos`, 14, 100);
         
         doc.setTextColor(0); doc.setFontSize(10);
         let res = {}; db.eventos.forEach(e => { res[e.estacion] = (res[e.estacion] || 0) + e.minutos; });
         let yRes = 108;
-        for (const st in res) {
-            doc.text(`• ${st}: ${res[st]} min.`, 20, yRes);
-            yRes += 6;
-        }
+        for (const st in res) { doc.text(`• ${st}: ${res[st]} min.`, 20, yRes); yRes += 6; }
 
         let currentY = yRes + 10;
         const checkP = (h) => { if(currentY + h > 280) { doc.addPage(); currentY = 20; } };
 
-        // Función para texto multilínea (evita que se salga del margen)
         const imprimirSeccion = (titulo, registros) => {
             if(registros.length === 0) return;
             checkP(20); doc.setFontSize(14); doc.text(titulo, 14, currentY); currentY += 10;
             registros.forEach(r => {
-                checkP(60);
-                doc.setFontSize(9); doc.setFont(undefined, 'bold');
+                checkP(60); doc.setFontSize(9); doc.setFont(undefined, 'bold');
                 doc.text(`${r.defecto} (${r.hora})`, 14, currentY);
                 doc.setFont(undefined, 'normal');
                 if(r.foto1) doc.addImage(r.foto1, 'JPEG', 14, currentY+2, 85, 48);
@@ -204,25 +197,15 @@
         imprimirSeccion("DETALLE FALLOS CALIDAD", db.calidad.registros);
         imprimirSeccion("DETALLE FALLOS FINAL", db.final.registros);
 
-        // Detalle de Paradas con ajuste de texto automático
         if(db.eventos.length > 0) {
             checkP(20); doc.setFontSize(14); doc.text("DETALLE DE PARADAS", 14, currentY); currentY += 10;
             db.eventos.forEach(ev => {
-                // Ajustamos el texto para que no se salga (ancho máx 170mm)
                 let descLineas = doc.splitTextToSize(`${ev.estacion} (${ev.minutos} min): ${ev.desc}`, 170);
                 let altoTexto = descLineas.length * 5;
                 checkP(ev.foto ? 70 : altoTexto + 5);
-                
-                doc.setFontSize(9);
-                doc.text(descLineas, 14, currentY);
+                doc.setFontSize(9); doc.text(descLineas, 14, currentY);
                 currentY += altoTexto;
-
-                if(ev.foto) { 
-                    doc.addImage(ev.foto, 'JPEG', 14, currentY, 80, 50); 
-                    currentY += 55; 
-                } else {
-                    currentY += 5;
-                }
+                if(ev.foto) { doc.addImage(ev.foto, 'JPEG', 14, currentY, 80, 50); currentY += 55; } else { currentY += 5; }
             });
         }
 
