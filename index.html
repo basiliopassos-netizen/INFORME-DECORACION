@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PROD V21 - INFORME ESTRUCTURADO</title>
+    <title>PROD V22 - REPARADA</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --primary: #2c3e50; --success: #27ae60; --danger: #e74c3c; --warning: #f39c12; --bg: #f0f2f5; --info: #3498db; }
@@ -34,7 +34,7 @@
 
 <div id="loading"><h2 id="load-txt">🚀 PROCESANDO...</h2></div>
 
-<header><b>PRODUCCIÓN V21</b> <span id="mem-status" style="font-size:10px; opacity:0.8;">Memoria OK</span></header>
+<header><b>PRODUCCIÓN V22</b> <span id="mem-status" style="font-size:10px; opacity:0.8;">Memoria OK</span></header>
 
 <div class="tabs">
     <button class="tab-btn active" id="btn-calidad" onclick="cambiarTab('calidad')">CALIDAD</button>
@@ -66,7 +66,10 @@
     <div id="vista-eventos" class="hidden">
         <div class="card">
             <label>Estación</label>
-            <select id="ev-estacion"><option>HORNOS</option><option>ROBOTTIONS</option><option>CABINA 1</option><option>KERAJET</option><option>CABINA 2</option><option>ERRECE</option></select>
+            <select id="ev-estacion">
+                <option>HORNOS</option><option>ROBOTTIONS</option><option>CABINA 1</option>
+                <option>KERAJET</option><option>CABINA 2</option><option>ERRECE</option>
+            </select>
             <label>Motivo</label><textarea id="ev-desc" rows="2"></textarea>
             <div class="grid" style="margin-top:5px;">
                 <div><label>Inicio</label><input type="time" id="ev-ini"></div>
@@ -78,7 +81,7 @@
         </div>
     </div>
 
-    <button class="btn-action" style="height:70px; font-size:16px; margin-top:20px; background:#2c3e50;" onclick="generarPDF()">📤 COMPARTIR INFORME ESTRUCTURADO</button>
+    <button class="btn-action" style="height:70px; font-size:16px; margin-top:20px; background:#2c3e50;" onclick="generarPDF()">📤 COMPARTIR INFORME</button>
     <button onclick="resetearTodo()" style="width:100%; border:none; background:none; color:#bbb; margin-top:40px; font-size:10px;">BORRAR TODO Y REINICIAR</button>
 </div>
 
@@ -93,11 +96,11 @@
 
     function guardarTodo() { 
         db.cabecera = { of: document.getElementById('of').value, turno: document.getElementById('turno').value, grafica: document.getElementById('grafica').value, material: document.getElementById('material').value }; 
-        localStorage.setItem('PROD_V21', JSON.stringify(db));
+        localStorage.setItem('PROD_V22', JSON.stringify(db));
     }
 
     function cargarTodo() { 
-        const g = localStorage.getItem('PROD_V21'); 
+        const g = localStorage.getItem('PROD_V22'); 
         if(g){ 
             db = JSON.parse(g); 
             document.getElementById('of').value = db.cabecera.of || ""; 
@@ -118,14 +121,21 @@
         return Math.floor((d2 - d1) / 60000);
     }
 
+    function cambiarTab(t) { 
+        tabActual = t; 
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
+        document.getElementById('btn-'+t).classList.add('active'); 
+        document.getElementById('vista-produccion').classList.toggle('hidden', t === 'eventos'); 
+        document.getElementById('vista-eventos').classList.toggle('hidden', t !== 'eventos'); 
+        actualizarUI(); 
+    }
+
+    function sumarUno(tipo) { db[tabActual][tipo]++; actualizarUI(); guardarTodo(); }
+
     function editarCifra(tipo) {
         let n = prompt("Introduce cantidad:", db[tabActual][tipo]);
         if(n !== null) { db[tabActual][tipo] = parseInt(n) || 0; actualizarUI(); guardarTodo(); }
     }
-
-    function resetearTodo() { if(confirm("¿Borrar todo?")) { localStorage.removeItem('PROD_V21'); location.reload(); } }
-    function cambiarTab(t) { tabActual = t; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-'+t).classList.add('active'); document.getElementById('vista-produccion').classList.toggle('hidden', t === 'eventos'); document.getElementById('vista-eventos').classList.toggle('hidden', t !== 'eventos'); actualizarUI(); }
-    function sumarUno(tipo) { db[tabActual][tipo]++; actualizarUI(); guardarTodo(); }
 
     function abrirDefectos() {
         let h = `<h3>Fallo en ${tabActual.toUpperCase()}</h3>`;
@@ -136,6 +146,7 @@
     }
 
     function seleccionarDefecto(d) { defectoActivo = d; pasoFoto = 1; abrirFoto('registro'); }
+
     function abrirFoto(modo) {
         modoFoto = modo;
         document.getElementById('modal-content').innerHTML = `<h3>${modo === 'evento' ? 'Foto Parada' : 'Foto Fallo '+pasoFoto+'/2'}</h3><button class="btn-action" style="background:#27ae60;" onclick="document.getElementById('in-cam').click()">📸 CÁMARA</button><button class="btn-action" style="background:#3498db;" onclick="document.getElementById('in-gal').click()">🖼️ GALERÍA</button>`;
@@ -184,14 +195,76 @@
 
     function cerrarModal() { document.getElementById('modal-app').style.display = 'none'; }
     function actualizarUI() { document.getElementById('val-ok').innerText = db[tabActual].ok; document.getElementById('val-nook').innerText = db[tabActual].nook; }
+    function resetearTodo() { if(confirm("¿Borrar todo?")) { localStorage.removeItem('PROD_V22'); location.reload(); } }
 
     async function generarPDF() {
         document.getElementById('loading').style.display = 'flex';
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        // CÁLCULOS
         let totalMins = 0;
         let sumarioEstaciones = {};
         db.eventos.forEach(e => {
-            totalMins += (e.minutos ||
+            totalMins += (e.minutos || 0);
+            sumarioEstaciones[e.estacion] = (sumarioEstaciones[e.estacion] || 0) + (e.minutos || 0);
+        });
+
+        doc.setFontSize(18); doc.text("INFORME DE PRODUCCIÓN", 14, 20);
+        doc.setFontSize(10); doc.text(`OF: ${db.cabecera.of} | Turno: ${db.cabecera.turno} | Gráfica: ${db.cabecera.grafica}`, 14, 28);
+        doc.line(14, 34, 196, 34);
+
+        let y = 45;
+        const addTxt = (t, s=11, bold=false) => { 
+            if(y>275){doc.addPage(); y=20;} 
+            doc.setFontSize(s); 
+            doc.setFont("helvetica", bold ? "bold" : "normal");
+            doc.text(t, 14, y); y+=7; 
+        };
+
+        // 1. RESUMEN
+        addTxt("1. RESUMEN DE DATOS", 14, true);
+        addTxt(`- CALIDAD: OK [ ${db.calidad.ok} ] | FALLOS [ ${db.calidad.nook} ]`);
+        addTxt(`- FINAL: OK [ ${db.final.ok} ] | FALLOS [ ${db.final.nook} ]`);
+        addTxt(`- TIEMPO TOTAL PARADAS: ${totalMins} min`);
+        
+        y += 3;
+        addTxt("SUMATORIO POR ESTACIÓN:", 11, true);
+        for (let st in sumarioEstaciones) { addTxt(`   • ${st}: ${sumarioEstaciones[st]} min`); }
+
+        // 2. DETALLE CALIDAD
+        y += 5; addTxt("2. DETALLE CALIDAD", 14, true);
+        db.calidad.registros.forEach(r => {
+            if(y > 230) { doc.addPage(); y = 20; }
+            addTxt(`${r.defecto} (${r.hora})`, 10);
+            if(r.foto1) doc.addImage(r.foto1, 'JPEG', 14, y, 40, 30);
+            if(r.foto2) doc.addImage(r.foto2, 'JPEG', 60, y, 40, 30);
+            y += 35;
+        });
+
+        // 3. DETALLE FINAL
+        y += 5; addTxt("3. DETALLE FINAL", 14, true);
+        db.final.registros.forEach(r => {
+            if(y > 230) { doc.addPage(); y = 20; }
+            addTxt(`${r.defecto} (${r.hora})`, 10);
+            if(r.foto1) doc.addImage(r.foto1, 'JPEG', 14, y, 40, 30);
+            if(r.foto2) doc.addImage(r.foto2, 'JPEG', 60, y, 40, 30);
+            y += 35;
+        });
+
+        // 4. PARADAS
+        y += 5; addTxt("4. DESCRIPCIÓN DE PARADAS", 14, true);
+        db.eventos.forEach(ev => {
+            if(y > 240) { doc.addPage(); y = 20; }
+            addTxt(`${ev.estacion} (${ev.inicio}-${ev.fin}) = ${ev.minutos} min`, 10, true);
+            let lines = doc.splitTextToSize(`Motivo: ${ev.desc}`, 170);
+            doc.text(lines, 14, y); y += (lines.length * 6);
+            if(ev.foto) { doc.addImage(ev.foto, 'JPEG', 14, y, 45, 35); y += 40; }
+            y += 4;
+        });
+
+        document.getElementById('loading').style.display = 'none';
+        doc.save(`Informe_${db.cabecera.of}.pdf`);
+    }
+</script>
+</body>
+</html>
