@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PROD V18 - BOTÓN COMPARTIR</title>
+    <title>PROD V19 - FIX FOTO EVENTOS</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --primary: #2c3e50; --success: #27ae60; --danger: #e74c3c; --warning: #f39c12; --bg: #f0f2f5; --info: #3498db; }
@@ -34,7 +34,7 @@
 
 <div id="loading"><h2 id="load-txt">🚀 PROCESANDO...</h2></div>
 
-<header><b>PRODUCCIÓN V18</b> <span id="mem-status" style="font-size:10px; opacity:0.7;">Memoria OK</span></header>
+<header><b>PRODUCCIÓN V19</b> <span id="mem-status" style="font-size:10px; opacity:0.7;">Memoria OK</span></header>
 
 <div class="tabs">
     <button class="tab-btn active" id="btn-calidad" onclick="cambiarTab('calidad')">CALIDAD</button>
@@ -72,8 +72,8 @@
                 <div><label>Inicio</label><input type="time" id="ev-ini"></div>
                 <div><label>Fin</label><input type="time" id="ev-fin"></div>
             </div>
-            <button class="btn-action" style="background:var(--info);" onclick="abrirFoto('evento')">📸 FOTO PARADA</button>
-            <p id="st-foto-ev" style="display:none; color:green; text-align:center; font-size:11px; margin:5px;">✓ Foto lista</p>
+            <button class="btn-action" style="background:var(--info);" onclick="abrirFoto('evento')">📸 AÑADIR FOTO PARADA</button>
+            <p id="st-foto-ev" style="display:none; color:green; text-align:center; font-weight:bold; margin:5px;">✓ Foto lista</p>
             <button class="btn-action" onclick="guardarEvento()">💾 GUARDAR PARADA</button>
         </div>
     </div>
@@ -93,11 +93,11 @@
 
     function guardarTodo() { 
         db.cabecera = { of: document.getElementById('of').value, turno: document.getElementById('turno').value, grafica: document.getElementById('grafica').value, material: document.getElementById('material').value }; 
-        try { localStorage.setItem('PROD_V18', JSON.stringify(db)); document.getElementById('mem-status').innerText = "Memoria OK"; } catch(e) { document.getElementById('mem-status').innerText = "⚠️ LLENO"; }
+        try { localStorage.setItem('PROD_V19', JSON.stringify(db)); document.getElementById('mem-status').innerText = "Memoria OK"; } catch(e) { document.getElementById('mem-status').innerText = "⚠️ LLENO"; }
     }
 
     function cargarTodo() { 
-        const g = localStorage.getItem('PROD_V18'); 
+        const g = localStorage.getItem('PROD_V19'); 
         if(g){ 
             db = JSON.parse(g); 
             document.getElementById('of').value = db.cabecera.of || ""; 
@@ -113,7 +113,7 @@
         if(n !== null) { db[tabActual][tipo] = parseInt(n) || 0; actualizarUI(); guardarTodo(); }
     }
 
-    function resetearTodo() { if(confirm("¿Borrar todo?")) { localStorage.removeItem('PROD_V18'); location.reload(); } }
+    function resetearTodo() { if(confirm("¿Borrar todo?")) { localStorage.removeItem('PROD_V19'); location.reload(); } }
     function cambiarTab(t) { tabActual = t; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-'+t).classList.add('active'); document.getElementById('vista-produccion').classList.toggle('hidden', t === 'eventos'); document.getElementById('vista-eventos').classList.toggle('hidden', t !== 'eventos'); actualizarUI(); }
     function sumarUno(tipo) { db[tabActual][tipo]++; actualizarUI(); guardarTodo(); }
 
@@ -126,9 +126,16 @@
     }
 
     function seleccionarDefecto(d) { defectoActivo = d; pasoFoto = 1; abrirFoto('registro'); }
+    
     function abrirFoto(modo) {
         modoFoto = modo;
-        document.getElementById('modal-content').innerHTML = `<h3>${modo === 'evento' ? 'Foto Parada' : 'Foto '+pasoFoto+'/2'}</h3><button class="btn-action" style="background:#27ae60;" onclick="document.getElementById('in-cam').click()">📸 CÁMARA</button><button class="btn-action" style="background:#3498db;" onclick="document.getElementById('in-gal').click()">🖼️ GALERÍA</button>`;
+        document.getElementById('modal-content').innerHTML = `
+            <h3>${modo === 'evento' ? 'Foto de la Parada' : 'Foto Fallo '+pasoFoto+'/2'}</h3>
+            <button class="btn-action" style="background:#27ae60;" onclick="document.getElementById('in-cam').click()">📸 CÁMARA</button>
+            <button class="btn-action" style="background:#3498db;" onclick="document.getElementById('in-gal').click()">🖼️ GALERÍA</button>
+            <button onclick="cerrarModal()" style="margin-top:15px; width:100%; background:none; border:none; color:grey;">Cancelar</button>
+        `;
+        document.getElementById('modal-app').style.display = 'flex';
     }
 
     function procesarFoto(e) {
@@ -145,12 +152,24 @@
                 canvas.width = w; canvas.height = h;
                 canvas.getContext('2d').drawImage(img, 0, 0, w, h);
                 const dataUrl = canvas.toDataURL('image/jpeg', 0.5);
-                if(modoFoto === 'evento') { fotoTempEv = dataUrl; document.getElementById('st-foto-ev').style.display = 'block'; cerrarModal(); } 
-                else {
-                    if(pasoFoto === 1) { db[tabActual].nook++; db[tabActual].registros.push({ defecto: defectoActivo, hora: new Date().toLocaleTimeString(), foto1: dataUrl, foto2: null }); pasoFoto = 2; abrirFoto('registro'); } 
-                    else { db[tabActual].registros[db[tabActual].registros.length - 1].foto2 = dataUrl; cerrarModal(); }
+
+                if(modoFoto === 'evento') {
+                    fotoTempEv = dataUrl;
+                    document.getElementById('st-foto-ev').style.display = 'block';
+                    cerrarModal();
+                } else {
+                    if(pasoFoto === 1) {
+                        db[tabActual].nook++;
+                        db[tabActual].registros.push({ defecto: defectoActivo, hora: new Date().toLocaleTimeString(), foto1: dataUrl, foto2: null });
+                        pasoFoto = 2;
+                        abrirFoto('registro');
+                    } else {
+                        db[tabActual].registros[db[tabActual].registros.length - 1].foto2 = dataUrl;
+                        cerrarModal();
+                    }
                 }
-                actualizarUI(); guardarTodo(); document.getElementById('loading').style.display = 'none';
+                actualizarUI(); guardarTodo();
+                document.getElementById('loading').style.display = 'none';
             };
             img.src = f.target.result;
         };
@@ -161,7 +180,11 @@
         const est = document.getElementById('ev-estacion').value, des = document.getElementById('ev-desc').value, ini = document.getElementById('ev-ini').value, fin = document.getElementById('ev-fin').value;
         if(!ini || !fin || !des) return alert("Faltan datos");
         db.eventos.push({ estacion: est, desc: des, inicio: ini, fin: fin, foto: fotoTempEv });
-        fotoTempEv = null; document.getElementById('st-foto-ev').style.display = 'none'; document.getElementById('ev-desc').value = ""; guardarTodo(); alert("Guardada");
+        fotoTempEv = null; 
+        document.getElementById('st-foto-ev').style.display = 'none';
+        document.getElementById('ev-desc').value = ""; 
+        guardarTodo(); 
+        alert("Parada guardada con éxito");
     }
 
     function cerrarModal() { document.getElementById('modal-app').style.display = 'none'; }
@@ -171,16 +194,21 @@
         document.getElementById('loading').style.display = 'flex';
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
+        
         doc.setFontSize(16); doc.text("INFORME DE PRODUCCIÓN", 14, 20);
-        doc.setFontSize(10); doc.text(`OF: ${db.cabecera.of} | Turno: ${db.cabecera.turno}`, 14, 28);
+        doc.setFontSize(10); 
+        doc.text(`OF: ${db.cabecera.of} | Turno: ${db.cabecera.turno}`, 14, 28);
         doc.text(`Gráfica: ${db.cabecera.grafica} | Material: ${db.cabecera.material}`, 14, 33);
         doc.line(14, 36, 196, 36);
+
         let y = 44;
         const addTxt = (t, s=11) => { if(y>270){doc.addPage(); y=20;} doc.setFontSize(s); doc.text(t, 14, y); y+=7; };
+        
         addTxt("1. RESUMEN PIEZAS", 14);
         addTxt(`CALIDAD: OK ${db.calidad.ok} / FALLOS ${db.calidad.nook}`);
-        addTxt(`FINAL: OK ${db.final.ok} / FALLOS ${db.final.nook}`);
+        addTxt(`FINAL:   OK ${db.final.ok} / FALLOS ${db.final.nook}`);
         y += 5;
+
         const renderSec = (tit, reg) => {
             if(reg.length === 0) return;
             addTxt(tit, 13);
@@ -192,39 +220,33 @@
                 y += 45;
             });
         };
+
         renderSec("DETALLE CALIDAD", db.calidad.registros);
         renderSec("DETALLE FINAL", db.final.registros);
+
         if(db.eventos.length > 0) {
-            addTxt("2. PARADAS", 13);
+            addTxt("2. PARADAS DE MÁQUINA", 13);
             db.eventos.forEach(ev => {
                 if(y > 240) { doc.addPage(); y = 20; }
                 let lines = doc.splitTextToSize(`${ev.estacion} (${ev.inicio}-${ev.fin}): ${ev.desc}`, 170);
-                doc.text(lines, 14, y); y += (lines.length * 5);
-                if(ev.foto) { doc.addImage(ev.foto, 'JPEG', 14, y, 50, 40); y += 45; }
+                doc.text(lines, 14, y);
+                y += (lines.length * 5);
+                if(ev.foto) { 
+                    doc.addImage(ev.foto, 'JPEG', 14, y, 50, 40); 
+                    y += 45; 
+                }
                 y += 5;
             });
         }
-        
-        // --- AQUÍ EL CAMBIO PARA COMPARTIR ---
+
         const pdfBlob = doc.output('blob');
-        const fileName = `Informe_${db.cabecera.of || 'produccion'}.pdf`;
-        const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
-        
+        const file = new File([pdfBlob], `Informe_${db.cabecera.of || 'produccion'}.pdf`, { type: 'application/pdf' });
         document.getElementById('loading').style.display = 'none';
         
         if (navigator.share) {
-            try {
-                await navigator.share({
-                    files: [file],
-                    title: 'Informe de Producción',
-                    text: 'Se adjunta informe de producción decorativa.'
-                });
-            } catch (err) {
-                doc.save(fileName);
-            }
-        } else {
-            doc.save(fileName);
-        }
+            try { await navigator.share({ files: [file], title: 'Informe' }); } 
+            catch (err) { doc.save(file.name); }
+        } else { doc.save(file.name); }
     }
 </script>
 </body>
