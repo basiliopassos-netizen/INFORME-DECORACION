@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PROD V15 - MODO LIGERO</title>
+    <title>PROD V16 - CABECERA CORREGIDA</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --primary: #2c3e50; --success: #27ae60; --danger: #e74c3c; --warning: #f39c12; --bg: #f0f2f5; --info: #3498db; }
@@ -16,8 +16,8 @@
         .contenido { padding: 10px; }
         .card { background: white; padding: 12px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 10px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        label { font-size: 9px; font-weight: 800; color: #7f8c8d; text-transform: uppercase; }
-        input, select, textarea { padding: 10px; border: 1px solid #dce1e5; border-radius: 8px; width: 100%; font-size: 14px; }
+        label { font-size: 9px; font-weight: 800; color: #7f8c8d; text-transform: uppercase; margin-bottom: 2px; display: block; }
+        input, select, textarea { padding: 10px; border: 1px solid #dce1e5; border-radius: 8px; width: 100%; font-size: 14px; margin-bottom: 5px; }
         .btn-count { border: none; border-radius: 15px; padding: 15px; color: white; min-height: 70px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
         .btn-ok { background: var(--success); }
         .btn-nook { background: var(--danger); }
@@ -30,9 +30,9 @@
 </head>
 <body onload="cargarTodo()">
 
-<div id="loading"><h2 id="load-txt">🚀 CARGANDO...</h2></div>
+<div id="loading"><h2 id="load-txt">🚀 PROCESANDO...</h2></div>
 
-<header><b>PRODUCCIÓN V15</b> <span id="mem-status" style="font-size:10px; opacity:0.7;">Memoria OK</span></header>
+<header><b>PRODUCCIÓN V16</b> <span id="mem-status" style="font-size:10px; opacity:0.8;">Memoria OK</span></header>
 
 <div class="tabs">
     <button class="tab-btn active" id="btn-calidad" onclick="cambiarTab('calidad')">CALIDAD</button>
@@ -43,16 +43,17 @@
 <div class="contenido">
     <div class="card">
         <div class="grid">
-            <div><label>OF</label><input type="text" id="of" oninput="guardarTodo()"></div>
+            <div><label>OF</label><input type="text" id="of" placeholder="Nº Orden" oninput="guardarTodo()"></div>
             <div><label>Turno</label><select id="turno" onchange="guardarTodo()"><option>Mañana</option><option>Tarde</option><option>Noche</option></select></div>
-            <div style="grid-column: span 2;"><label>Gráfica / Material</label><input type="text" id="grafica" oninput="guardarTodo()"></div>
         </div>
+        <div style="margin-top:5px;"><label>Gráfica</label><input type="text" id="grafica" placeholder="Nombre del diseño" oninput="guardarTodo()"></div>
+        <div style="margin-top:5px;"><label>Material / Sustrato</label><input type="text" id="material" placeholder="Tipo de base" oninput="guardarTodo()"></div>
     </div>
 
     <div id="vista-produccion">
         <div class="grid">
-            <button class="btn-count btn-ok" onclick="sumarUno('ok')">OK <b id="val-ok" style="font-size:22px;">0</b></button>
-            <button class="btn-count btn-nook" onclick="abrirDefectos()">FALLO <b id="val-nook" style="font-size:22px;">0</b></button>
+            <button class="btn-count btn-ok" onclick="sumarUno('ok')">PIEZAS OK <b id="val-ok" style="font-size:22px;">0</b></button>
+            <button class="btn-count btn-nook" onclick="abrirDefectos()">FALLOS <b id="val-nook" style="font-size:22px;">0</b></button>
         </div>
     </div>
 
@@ -60,16 +61,19 @@
         <div class="card">
             <label>Estación</label>
             <select id="ev-estacion"><option>HORNOS</option><option>ROBOTTIONS</option><option>CABINA 1</option><option>KERAJET</option><option>CABINA 2</option><option>ERRECE</option></select>
-            <label>Motivo</label><textarea id="ev-desc" rows="2"></textarea>
-            <div class="grid" style="margin-top:5px;"><input type="time" id="ev-ini"><input type="time" id="ev-fin"></div>
-            <button class="btn-action" style="background:var(--info);" onclick="abrirFoto('evento')">📸 AÑADIR FOTO</button>
-            <p id="st-foto-ev" style="display:none; color:green; text-align:center; font-size:11px; margin:5px;">✓ Foto preparada</p>
+            <label>Motivo de la parada</label><textarea id="ev-desc" rows="2"></textarea>
+            <div class="grid" style="margin-top:5px;">
+                <div><label>Inicio</label><input type="time" id="ev-ini"></div>
+                <div><label>Fin</label><input type="time" id="ev-fin"></div>
+            </div>
+            <button class="btn-action" style="background:var(--info);" onclick="abrirFoto('evento')">📸 AÑADIR FOTO PARADA</button>
+            <p id="st-foto-ev" style="display:none; color:green; text-align:center; font-size:11px; margin:5px;">✓ Foto cargada</p>
             <button class="btn-action" onclick="guardarEvento()">💾 GUARDAR PARADA</button>
         </div>
     </div>
 
     <button class="btn-action" style="height:70px; font-size:16px; margin-top:20px; background:#2c3e50;" onclick="generarPDF()">📤 GENERAR INFORME PDF</button>
-    <button onclick="resetearTodo()" style="width:100%; border:none; background:none; color:#bbb; margin-top:40px; font-size:10px;">BORRAR TODO Y REINICIAR</button>
+    <button onclick="resetearTodo()" style="width:100%; border:none; background:none; color:#bbb; margin-top:40px; font-size:10px;">BORRAR TODO Y REINICIAR TURNO</button>
 </div>
 
 <div id="modal-app" class="modal"><div class="modal-box" id="modal-content"></div></div>
@@ -79,28 +83,44 @@
 
 <script>
     const CONFIG = { calidad: ["Bultos", "Malla suelta", "Rota", "Sucia"], final: ["Gota Kerajet", "Tono", "Rascada", "Manchada", "Corte Impresión", "Esquina rota", "Borde roto"] };
-    let db = { calidad: { ok: 0, nook: 0, registros: [] }, final: { ok: 0, nook: 0, registros: [] }, eventos: [], cabecera: { of: "", turno: "Mañana", grafica: "" } };
+    let db = { calidad: { ok: 0, nook: 0, registros: [] }, final: { ok: 0, nook: 0, registros: [] }, eventos: [], cabecera: { of: "", turno: "Mañana", grafica: "", material: "" } };
     let tabActual = 'calidad', modoFoto = "", pasoFoto = 1, defectoActivo = "", fotoTempEv = null;
 
     function guardarTodo() { 
-        db.cabecera = { of: document.getElementById('of').value, turno: document.getElementById('turno').value, grafica: document.getElementById('grafica').value }; 
+        db.cabecera = { 
+            of: document.getElementById('of').value, 
+            turno: document.getElementById('turno').value, 
+            grafica: document.getElementById('grafica').value,
+            material: document.getElementById('material').value 
+        }; 
         try {
-            localStorage.setItem('PROD_V15', JSON.stringify(db));
+            localStorage.setItem('PROD_V16', JSON.stringify(db));
             document.getElementById('mem-status').innerText = "Memoria OK";
             document.getElementById('mem-status').style.color = "white";
         } catch(e) {
-            document.getElementById('mem-status').innerText = "⚠️ MEMORIA LLENA - GENERA PDF YA";
+            document.getElementById('mem-status').innerText = "⚠️ MEMORIA LLENA - GENERA PDF";
             document.getElementById('mem-status').style.color = "yellow";
         }
     }
 
-    function cargarTodo() { const g = localStorage.getItem('PROD_V15'); if(g){ db = JSON.parse(g); document.getElementById('of').value = db.cabecera.of; document.getElementById('turno').value = db.cabecera.turno; document.getElementById('grafica').value = db.cabecera.grafica; } actualizarUI(); }
-    function resetearTodo() { if(confirm("¿Borrar todo?")) { localStorage.removeItem('PROD_V15'); location.reload(); } }
+    function cargarTodo() { 
+        const g = localStorage.getItem('PROD_V16'); 
+        if(g){ 
+            db = JSON.parse(g); 
+            document.getElementById('of').value = db.cabecera.of || ""; 
+            document.getElementById('turno').value = db.cabecera.turno || "Mañana"; 
+            document.getElementById('grafica').value = db.cabecera.grafica || ""; 
+            document.getElementById('material').value = db.cabecera.material || "";
+        } 
+        actualizarUI(); 
+    }
+
+    function resetearTodo() { if(confirm("¿Borrar todo el turno actual?")) { localStorage.removeItem('PROD_V16'); location.reload(); } }
     function cambiarTab(t) { tabActual = t; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-'+t).classList.add('active'); document.getElementById('vista-produccion').classList.toggle('hidden', t === 'eventos'); document.getElementById('vista-eventos').classList.toggle('hidden', t !== 'eventos'); actualizarUI(); }
     function sumarUno(tipo) { db[tabActual][tipo]++; actualizarUI(); guardarTodo(); }
 
     function abrirDefectos() {
-        let h = `<h3>Fallo en ${tabActual}</h3>`;
+        let h = `<h3>Fallo en ${tabActual.toUpperCase()}</h3>`;
         CONFIG[tabActual].forEach(d => { h += `<button class="btn-action" style="background:#f8f9fa; color:black; text-align:left; border:1px solid #ddd;" onclick="seleccionarDefecto('${d}')">${d}</button>`; });
         h += `<button onclick="cerrarModal()" style="margin-top:10px; width:100%;">Cerrar</button>`;
         document.getElementById('modal-content').innerHTML = h;
@@ -112,7 +132,7 @@
     function abrirFoto(modo) {
         modoFoto = modo;
         document.getElementById('modal-content').innerHTML = `
-            <h3>${modo === 'evento' ? 'Foto de Parada' : 'Foto '+pasoFoto+'/2'}</h3>
+            <h3>${modo === 'evento' ? 'Foto de Parada' : 'Foto Fallo '+pasoFoto+'/2'}</h3>
             <button class="btn-action" style="background:#27ae60;" onclick="document.getElementById('in-cam').click()">📸 USAR CÁMARA</button>
             <button class="btn-action" style="background:#3498db;" onclick="document.getElementById('in-gal').click()">🖼️ GALERÍA</button>
         `;
@@ -122,19 +142,17 @@
     function procesarFoto(e) {
         if(!e.target.files[0]) return;
         document.getElementById('loading').style.display = 'flex';
-        document.getElementById('load-txt').innerText = "COMPRIMIENDO...";
-        
         const reader = new FileReader();
         reader.onload = (f) => {
             const img = new Image();
             img.onload = () => {
                 const canvas = document.createElement('canvas');
-                const MAX = 600; // Calidad optimizada para no llenar memoria
+                const MAX = 600;
                 let w = img.width, h = img.height;
                 if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } } else { if (h > MAX) { w *= MAX / h; h = MAX; } }
                 canvas.width = w; canvas.height = h;
                 canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                const dataUrl = canvas.toDataURL('image/jpeg', 0.5); // Compresión al 50%
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.5);
 
                 if(modoFoto === 'evento') {
                     fotoTempEv = dataUrl;
@@ -164,7 +182,7 @@
         if(!ini || !fin || !des) return alert("Faltan datos");
         db.eventos.push({ estacion: est, desc: des, inicio: ini, fin: fin, foto: fotoTempEv });
         fotoTempEv = null; document.getElementById('st-foto-ev').style.display = 'none';
-        document.getElementById('ev-desc').value = ""; guardarTodo(); alert("Guardado");
+        document.getElementById('ev-desc').value = ""; guardarTodo(); alert("Parada Guardada");
     }
 
     function cerrarModal() { document.getElementById('modal-app').style.display = 'none'; }
@@ -172,25 +190,27 @@
 
     async function generarPDF() {
         document.getElementById('loading').style.display = 'flex';
-        document.getElementById('load-txt').innerText = "CREANDO PDF...";
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
         doc.setFontSize(16); doc.text("INFORME DE PRODUCCIÓN", 14, 20);
-        doc.setFontSize(10); doc.text(`OF: ${db.cabecera.of} | Turno: ${db.cabecera.turno} | Gráfica: ${db.cabecera.grafica}`, 14, 28);
-        doc.line(14, 32, 196, 32);
+        doc.setFontSize(10); 
+        doc.text(`OF: ${db.cabecera.of} | Turno: ${db.cabecera.turno}`, 14, 28);
+        doc.text(`Gráfica: ${db.cabecera.grafica}`, 14, 33);
+        doc.text(`Material: ${db.cabecera.material}`, 14, 38);
+        doc.line(14, 40, 196, 40);
 
-        let y = 40;
-        const addTxt = (t, s=11, b=false) => { if(y>270){doc.addPage(); y=20;} doc.setFontSize(s); doc.text(t, 14, y); y+=7; };
+        let y = 48;
+        const addTxt = (t, s=11) => { if(y>270){doc.addPage(); y=20;} doc.setFontSize(s); doc.text(t, 14, y); y+=7; };
         
-        addTxt("1. RESUMEN PIEZAS", 14, true);
+        addTxt("1. RESUMEN PIEZAS", 14);
         addTxt(`CALIDAD: OK ${db.calidad.ok} / FALLOS ${db.calidad.nook}`);
         addTxt(`FINAL:   OK ${db.final.ok} / FALLOS ${db.final.nook}`);
         y += 5;
 
         const renderSec = (tit, reg) => {
             if(reg.length === 0) return;
-            addTxt(tit, 13, true);
+            addTxt(tit, 13);
             reg.forEach(r => {
                 if(y > 240) { doc.addPage(); y = 20; }
                 doc.setFontSize(9); doc.text(`${r.defecto} (${r.hora})`, 14, y);
@@ -204,7 +224,7 @@
         renderSec("DETALLE FINAL", db.final.registros);
 
         if(db.eventos.length > 0) {
-            addTxt("2. PARADAS", 13, true);
+            addTxt("2. PARADAS DE MÁQUINA", 13);
             db.eventos.forEach(ev => {
                 if(y > 240) { doc.addPage(); y = 20; }
                 let lines = doc.splitTextToSize(`${ev.estacion} (${ev.inicio}-${ev.fin}): ${ev.desc}`, 170);
