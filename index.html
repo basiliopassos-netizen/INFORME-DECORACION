@@ -37,7 +37,7 @@
 </head>
 <body onload="cargarTodo()">
 
-<div id="loading"><h2>🚀 GENERANDO PDF...</h2><p>Procesando imágenes y datos del turno.</p></div>
+<div id="loading"><h2>🚀 GENERANDO PDF...</h2><p>Organizando datos y ajustando textos...</p></div>
 
 <div class="fixed-top">
     <header><div class="logo-u">U</div><div style="font-weight: bold; font-size: 14px;">GESTIÓN PRODUCCIÓN</div></header>
@@ -93,8 +93,8 @@
                 <div class="campo"><label>Fin</label><input type="time" id="ev-fin"></div>
             </div>
             <div class="campo"><label>Motivo</label><textarea id="ev-desc" rows="2" placeholder="Describa la parada..."></textarea></div>
-            <button class="btn-finalizar" style="background:var(--info); padding:12px;" onclick="document.getElementById('cam-input-event').click()">📸 FOTO / GALERÍA</button>
-            <p id="ev-foto-status" style="display:none; color:var(--success); text-align:center; font-size:12px; margin:5px;">✓ Imagen lista</p>
+            <button class="btn-finalizar" style="background:var(--info); padding:12px;" onclick="document.getElementById('cam-input-event').click()">📸 FOTO / ARCHIVO</button>
+            <p id="ev-foto-status" style="display:none; color:var(--success); text-align:center; font-size:12px; margin:5px;">✓ Imagen cargada</p>
             <button class="btn-finalizar" style="background:var(--primary);" onclick="guardarEvento()">💾 GUARDAR PARADA</button>
         </div>
     </div>
@@ -104,219 +104,99 @@
 </div>
 
 <div id="modal-app" class="modal"><div class="modal-box" id="modal-content"></div></div>
-
 <input type="file" id="cam-input" accept="image/*" style="display:none" onchange="fotoProcesada(event)">
 <input type="file" id="cam-input-event" accept="image/*" style="display:none" onchange="fotoEventoProcesada(event)">
 
 <script>
-    // CONFIGURACIÓN DE DEFECTOS ACTUALIZADA
     const CONFIG = { 
         calidad: ["Bultos", "Malla suelta", "Rota", "Sucia"], 
-        final: [
-            "Gota Kerajet", 
-            "Tono", 
-            "Rascada", 
-            "Manchada", 
-            "Impresión cancelada a mitad", 
-            "Esquina rota", 
-            "Borde roto"
-        ] 
+        final: ["Gota Kerajet", "Tono", "Rascada", "Manchada", "Impresión cancelada a mitad", "Esquina rota", "Borde roto"] 
     };
-    
-    // CLAVE ÚNICA DE MEMORIA
-    const STORAGE_KEY = 'PRODUCCION_BLINDADA_V10';
-    
-    let db = { 
-        calidad: { ok: 0, nook: 0, registros: [] }, 
-        final: { ok: 0, nook: 0, registros: [] }, 
-        eventos: [],
-        cabecera: { fecha: "", turno: "Mañana", of: "", grafica: "", sustrato: "" }
-    };
-
+    const STORAGE_KEY = 'PROD_V11_AJUSTADA';
+    let db = { calidad: { ok: 0, nook: 0, registros: [] }, final: { ok: 0, nook: 0, registros: [] }, eventos: [], cabecera: { fecha: "", turno: "Mañana", of: "", grafica: "", sustrato: "" } };
     let tabActual = 'calidad', pasoFoto = 0, defectoSeleccionado = "", tempFotoEvento = null;
 
-    // --- SISTEMA DE GUARDADO ---
-    function guardarTodo() {
-        db.cabecera = {
-            fecha: document.getElementById('fecha').value,
-            turno: document.getElementById('turno').value,
-            of: document.getElementById('of').value,
-            grafica: document.getElementById('grafica').value,
-            sustrato: document.getElementById('sustrato').value
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
-    }
+    function guardarTodo() { db.cabecera = { fecha: document.getElementById('fecha').value, turno: document.getElementById('turno').value, of: document.getElementById('of').value, grafica: document.getElementById('grafica').value, sustrato: document.getElementById('sustrato').value }; localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); }
+    function cargarTodo() { const guardado = localStorage.getItem(STORAGE_KEY); if (guardado) { db = JSON.parse(guardado); document.getElementById('fecha').value = db.cabecera.fecha || ""; document.getElementById('turno').value = db.cabecera.turno || "Mañana"; document.getElementById('of').value = db.cabecera.of || ""; document.getElementById('grafica').value = db.cabecera.grafica || ""; document.getElementById('sustrato').value = db.cabecera.sustrato || ""; } else { document.getElementById('fecha').valueAsDate = new Date(); } actualizarUI(); }
+    function resetearTodo() { if(confirm("⚠️ ¿Borrar datos del turno?")) { localStorage.removeItem(STORAGE_KEY); location.reload(); } }
+    function cambiarTab(t) { tabActual = t; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-' + t).classList.add('active'); document.getElementById('vista-produccion').classList.toggle('hidden', t === 'eventos'); document.getElementById('vista-eventos').classList.toggle('hidden', t !== 'eventos'); actualizarUI(); }
+    function sumarUno(tipo) { db[tabActual][tipo]++; actualizarUI(); guardarTodo(); }
+    function editarManual(tipo) { let v = prompt("Cantidad:", db[tabActual][tipo]); if(v !== null) { db[tabActual][tipo] = parseInt(v) || 0; actualizarUI(); guardarTodo(); } }
 
-    function cargarTodo() {
-        const guardado = localStorage.getItem(STORAGE_KEY);
-        if (guardado) {
-            db = JSON.parse(guardado);
-            document.getElementById('fecha').value = db.cabecera.fecha || "";
-            document.getElementById('turno').value = db.cabecera.turno || "Mañana";
-            document.getElementById('of').value = db.cabecera.of || "";
-            document.getElementById('grafica').value = db.cabecera.grafica || "";
-            document.getElementById('sustrato').value = db.cabecera.sustrato || "";
-        } else {
-            document.getElementById('fecha').valueAsDate = new Date();
-        }
-        actualizarUI();
-    }
-
-    function resetearTodo() {
-        if(confirm("⚠️ ¿BORRAR TODO? Se limpiará la memoria para un nuevo turno.")) {
-            localStorage.removeItem(STORAGE_KEY);
-            location.reload();
-        }
-    }
-
-    // --- NAVEGACIÓN ---
-    function cambiarTab(t) {
-        tabActual = t;
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('btn-' + t).classList.add('active');
-        document.getElementById('vista-produccion').classList.toggle('hidden', t === 'eventos');
-        document.getElementById('vista-eventos').classList.toggle('hidden', t !== 'eventos');
-        actualizarUI();
-    }
-
-    // --- LÓGICA DE CONTADORES ---
-    function sumarUno(tipo) { 
-        db[tabActual][tipo]++; 
-        actualizarUI(); 
-        guardarTodo(); 
-    }
-    
-    function editarManual(tipo) { 
-        let v = prompt("Cantidad manual:", db[tabActual][tipo]);
-        if(v !== null) { 
-            db[tabActual][tipo] = parseInt(v) || 0; 
-            actualizarUI(); 
-            guardarTodo(); 
-        }
-    }
-
-    // --- GESTIÓN DE FALLOS Y FOTOS ---
     function abrirDefectos() {
         const mc = document.getElementById('modal-content');
-        mc.innerHTML = `<h3>Defecto en ${tabActual.toUpperCase()}</h3><div id="btns-d"></div><button onclick="cerrarModal()" style="margin-top:15px; width:100%; padding:10px; border-radius:10px;">Cerrar</button>`;
-        CONFIG[tabActual].forEach(d => {
-            mc.querySelector('#btns-d').innerHTML += `<button class="defecto-btn" onclick="iniciarFotos('${d}')">${d}</button>`;
-        });
+        mc.innerHTML = `<h3>Fallo en ${tabActual.toUpperCase()}</h3><div id="btns-d"></div><button onclick="cerrarModal()" style="margin-top:15px; width:100%; padding:10px; border-radius:10px;">Cerrar</button>`;
+        CONFIG[tabActual].forEach(d => { mc.querySelector('#btns-d').innerHTML += `<button class="defecto-btn" onclick="iniciarFotos('${d}')">${d}</button>`; });
         document.getElementById('modal-app').style.display = 'flex';
     }
-
     function iniciarFotos(d) { defectoSeleccionado = d; pasoFoto = 1; mostrarPasoFoto(); }
-    
-    function mostrarPasoFoto() {
-        document.getElementById('modal-content').innerHTML = `
-            <h3>${pasoFoto === 1 ? '📸 FOTO DEL DEFECTO' : '📸 FOTO DEL LOTE'}</h3>
-            <p><strong>Fallo:</strong> ${defectoSeleccionado}</p>
-            <button class="defecto-btn" style="background:var(--primary); color:white; text-align:center;" onclick="document.getElementById('cam-input').click()">
-                HACER FOTO O ELEGIR ARCHIVO
-            </button>`;
-    }
-
-    function fotoProcesada(e) {
-        if(!e.target.files[0]) return;
-        const r = new FileReader();
-        r.onload = (f) => {
-            if(pasoFoto === 1) {
-                db[tabActual].nook++;
-                db[tabActual].registros.push({ defecto: defectoSeleccionado, hora: new Date().toLocaleTimeString(), foto1: f.target.result, foto2: null });
-                pasoFoto = 2; mostrarPasoFoto();
-            } else {
-                db[tabActual].registros[db[tabActual].registros.length - 1].foto2 = f.target.result;
-                cerrarModal(); actualizarUI(); guardarTodo();
-            }
-        };
-        r.readAsDataURL(e.target.files[0]);
-    }
-
-    // --- GESTIÓN DE EVENTOS ---
-    function fotoEventoProcesada(e) {
-        if(!e.target.files[0]) return;
-        const r = new FileReader();
-        r.onload = (f) => { 
-            tempFotoEvento = f.target.result; 
-            document.getElementById('ev-foto-status').style.display = 'block'; 
-        };
-        r.readAsDataURL(e.target.files[0]);
-    }
+    function mostrarPasoFoto() { document.getElementById('modal-content').innerHTML = `<h3>${pasoFoto === 1 ? '📸 FOTO DEFECTO' : '📸 FOTO LOTE'}</h3><p>${defectoSeleccionado}</p><button class="defecto-btn" style="background:var(--primary); color:white; text-align:center;" onclick="document.getElementById('cam-input').click()">AÑADIR IMAGEN</button>`; }
+    function fotoProcesada(e) { if(!e.target.files[0]) return; const r = new FileReader(); r.onload = (f) => { if(pasoFoto === 1) { db[tabActual].nook++; db[tabActual].registros.push({ defecto: defectoSeleccionado, hora: new Date().toLocaleTimeString(), foto1: f.target.result, foto2: null }); pasoFoto = 2; mostrarPasoFoto(); } else { db[tabActual].registros[db[tabActual].registros.length - 1].foto2 = f.target.result; cerrarModal(); actualizarUI(); guardarTodo(); } }; r.readAsDataURL(e.target.files[0]); }
+    function fotoEventoProcesada(e) { if(!e.target.files[0]) return; const r = new FileReader(); r.onload = (f) => { tempFotoEvento = f.target.result; document.getElementById('ev-foto-status').style.display = 'block'; }; r.readAsDataURL(e.target.files[0]); }
 
     function guardarEvento() {
-        const est = document.getElementById('ev-estacion').value, 
-              ini = document.getElementById('ev-inicio').value, 
-              fin = document.getElementById('ev-fin').value, 
-              des = document.getElementById('ev-desc').value;
-              
-        if (!ini || !fin || !des) return alert("Por favor, rellena tiempos y motivo.");
-        
+        const est = document.getElementById('ev-estacion').value, ini = document.getElementById('ev-inicio').value, fin = document.getElementById('ev-fin').value, des = document.getElementById('ev-desc').value;
+        if (!ini || !fin || !des) return alert("Faltan datos.");
         const [h1, m1] = ini.split(':').map(Number), [h2, m2] = fin.split(':').map(Number);
         let d1 = new Date(), d2 = new Date(); d1.setHours(h1, m1, 0); d2.setHours(h2, m2, 0);
         if (d2 < d1) d2.setDate(d2.getDate() + 1);
         const mins = Math.floor((d2 - d1) / 60000);
-
         db.eventos.push({ estacion: est, inicio: ini, fin: fin, desc: des, foto: tempFotoEvento, minutos: mins });
-        
-        tempFotoEvento = null; 
-        document.getElementById('ev-foto-status').style.display = 'none';
-        document.getElementById('ev-inicio').value = ""; 
-        document.getElementById('ev-fin').value = ""; 
-        document.getElementById('ev-desc').value = "";
-        
-        guardarTodo();
-        alert("✅ Parada guardada (" + mins + " min)");
-        actualizarUI();
+        tempFotoEvento = null; document.getElementById('ev-foto-status').style.display = 'none';
+        document.getElementById('ev-inicio').value = ""; document.getElementById('ev-fin').value = ""; document.getElementById('ev-desc').value = "";
+        guardarTodo(); actualizarUI(); alert("Guardado.");
     }
 
     function cerrarModal() { document.getElementById('modal-app').style.display = 'none'; }
+    function actualizarUI() { const d = db[tabActual]; document.getElementById('val-ok').innerText = d.ok; document.getElementById('val-nook').innerText = d.nook; const total = d.ok + d.nook; document.getElementById('val-total').innerText = total; document.getElementById('val-pct').innerText = total > 0 ? ((d.ok / total) * 100).toFixed(1) + "%" : "0%"; }
 
-    function actualizarUI() {
-        const d = db[tabActual]; if(!d) return;
-        document.getElementById('val-ok').innerText = d.ok;
-        document.getElementById('val-nook').innerText = d.nook;
-        const total = d.ok + d.nook;
-        document.getElementById('val-total').innerText = total;
-        document.getElementById('val-pct').innerText = total > 0 ? ((d.ok / total) * 100).toFixed(1) + "%" : "0%";
-    }
-
-    // --- GENERACIÓN DE PDF ---
     async function compartirInforme() {
         const { jsPDF } = window.jspdf; const doc = new jsPDF();
         document.getElementById('loading').style.display = 'flex';
         const { of, turno, fecha, grafica, sustrato } = db.cabecera;
 
-        doc.setFontSize(18); doc.setTextColor(44, 62, 80); doc.text("INFORME DE PRODUCCIÓN", 20, 20);
-        doc.setFontSize(10); doc.setTextColor(100);
-        doc.text(`OF: ${of || '---'} | Gráfica: ${grafica || '---'} | Material: ${sustrato}`, 20, 28);
-        doc.text(`Turno: ${turno} | Fecha: ${fecha}`, 20, 34);
-        doc.line(20, 38, 190, 38);
+        // Título y Cabecera
+        doc.setFontSize(18); doc.setTextColor(44, 62, 80); doc.text("INFORME DE PRODUCCIÓN", 14, 20);
+        doc.setFontSize(10); doc.text(`OF: ${of} | Gráfica: ${grafica} | Material: ${sustrato}`, 14, 28);
+        doc.text(`Turno: ${turno} | Fecha: ${fecha}`, 14, 34);
+        doc.line(14, 38, 196, 38);
 
-        doc.setFontSize(12); doc.setTextColor(0); doc.text("1. RESUMEN DE PIEZAS", 20, 48);
-        doc.text(`CALIDAD -> OK: ${db.calidad.ok} | NO OK: ${db.calidad.nook}`, 25, 56);
-        doc.text(`FINAL   -> OK: ${db.final.ok} | NO OK: ${db.final.nook}`, 25, 64);
+        // SECCIÓN 1: PIEZAS (SEPARADO)
+        doc.setFontSize(14); doc.text("1. RESUMEN DE PIEZAS", 14, 48);
+        doc.setFontSize(11);
+        doc.setFillColor(245, 245, 245); doc.rect(14, 52, 182, 12, 'F');
+        doc.text(`SECCIÓN CALIDAD:    OK: ${db.calidad.ok}   |   FALLOS: ${db.calidad.nook}`, 20, 60);
+        doc.setFillColor(245, 245, 245); doc.rect(14, 66, 182, 12, 'F');
+        doc.text(`SECCIÓN FINAL:      OK: ${db.final.ok}   |   FALLOS: ${db.final.nook}`, 20, 74);
 
-        doc.text("2. TIEMPOS POR ESTACIÓN", 20, 78);
-        const res = {}; db.eventos.forEach(e => {
-            if(!res[e.estacion]) res[e.estacion] = { m: 0, c: 0 };
-            res[e.estacion].m += e.minutos; res[e.estacion].c++;
-        });
-        let yRes = 86;
-        for (const s in res) {
-            doc.text(`- ${s}: ${res[s].c} paradas (Total: ${res[s].m} min)`, 25, yRes);
-            yRes += 7;
+        // SECCIÓN 2: TIEMPOS (TOTAL Y DESGLOSE)
+        let totalMins = db.eventos.reduce((a, b) => a + b.minutos, 0);
+        doc.setFontSize(14); doc.text("2. TIEMPOS DE PARADA", 14, 92);
+        doc.setFontSize(11); doc.setTextColor(231, 76, 60);
+        doc.text(`TIEMPO TOTAL PARADO EN TURNO: ${totalMins} minutos`, 14, 100);
+        
+        doc.setTextColor(0); doc.setFontSize(10);
+        let res = {}; db.eventos.forEach(e => { res[e.estacion] = (res[e.estacion] || 0) + e.minutos; });
+        let yRes = 108;
+        for (const st in res) {
+            doc.text(`• ${st}: ${res[st]} min.`, 20, yRes);
+            yRes += 6;
         }
 
-        let currentY = yRes + 15;
+        let currentY = yRes + 10;
         const checkP = (h) => { if(currentY + h > 280) { doc.addPage(); currentY = 20; } };
 
+        // Función para texto multilínea (evita que se salga del margen)
         const imprimirSeccion = (titulo, registros) => {
             if(registros.length === 0) return;
-            checkP(15); doc.setFontSize(14); doc.text(titulo, 20, currentY); currentY += 10;
+            checkP(20); doc.setFontSize(14); doc.text(titulo, 14, currentY); currentY += 10;
             registros.forEach(r => {
-                checkP(55); doc.setFontSize(9); doc.text(`${r.defecto} (${r.hora})`, 20, currentY);
-                if(r.foto1) doc.addImage(r.foto1, 'JPEG', 20, currentY+2, 75, 45);
-                if(r.foto2) doc.addImage(r.foto2, 'JPEG', 100, currentY+2, 75, 45);
+                checkP(60);
+                doc.setFontSize(9); doc.setFont(undefined, 'bold');
+                doc.text(`${r.defecto} (${r.hora})`, 14, currentY);
+                doc.setFont(undefined, 'normal');
+                if(r.foto1) doc.addImage(r.foto1, 'JPEG', 14, currentY+2, 85, 48);
+                if(r.foto2) doc.addImage(r.foto2, 'JPEG', 105, currentY+2, 85, 48);
                 currentY += 55;
             });
         };
@@ -324,23 +204,33 @@
         imprimirSeccion("DETALLE FALLOS CALIDAD", db.calidad.registros);
         imprimirSeccion("DETALLE FALLOS FINAL", db.final.registros);
 
+        // Detalle de Paradas con ajuste de texto automático
         if(db.eventos.length > 0) {
-            checkP(15); doc.setFontSize(14); doc.text("DETALLE DE PARADAS", 20, currentY); currentY += 10;
+            checkP(20); doc.setFontSize(14); doc.text("DETALLE DE PARADAS", 14, currentY); currentY += 10;
             db.eventos.forEach(ev => {
-                checkP(65); doc.setFontSize(9); doc.text(`${ev.estacion} (${ev.minutos} min) - ${ev.desc}`, 20, currentY);
-                if(ev.foto) { doc.addImage(ev.foto, 'JPEG', 20, currentY+2, 80, 50); currentY += 60; } else currentY += 12;
+                // Ajustamos el texto para que no se salga (ancho máx 170mm)
+                let descLineas = doc.splitTextToSize(`${ev.estacion} (${ev.minutos} min): ${ev.desc}`, 170);
+                let altoTexto = descLineas.length * 5;
+                checkP(ev.foto ? 70 : altoTexto + 5);
+                
+                doc.setFontSize(9);
+                doc.text(descLineas, 14, currentY);
+                currentY += altoTexto;
+
+                if(ev.foto) { 
+                    doc.addImage(ev.foto, 'JPEG', 14, currentY, 80, 50); 
+                    currentY += 55; 
+                } else {
+                    currentY += 5;
+                }
             });
         }
 
         const pdfBlob = doc.output('blob');
-        const file = new File([pdfBlob], `Informe_OF_${of || 'SinOF'}.pdf`, { type: 'application/pdf' });
+        const file = new File([pdfBlob], `Informe_${of}.pdf`, { type: 'application/pdf' });
         document.getElementById('loading').style.display = 'none';
-        
-        if (navigator.share) {
-            await navigator.share({ files: [file], title: 'Informe Producción' }).catch(() => doc.save(`Informe_${of}.pdf`));
-        } else {
-            doc.save(`Informe_${of}.pdf`);
-        }
+        if (navigator.share) await navigator.share({ files: [file] }).catch(() => doc.save(`Informe_${of}.pdf`));
+        else doc.save(`Informe_${of}.pdf`);
     }
 </script>
 </body>
