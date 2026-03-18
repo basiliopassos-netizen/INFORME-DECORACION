@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PROD V36 - SEMÁFORO Y EDICIÓN</title>
+    <title>PROD V37 - CÓDIGO SAP</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
@@ -26,7 +26,6 @@
         label { font-size: 10px; font-weight: 800; color: #7f8c8d; text-transform: uppercase; margin-bottom: 5px; display: block; }
         input, select { padding: 12px; border: 1px solid #dce1e5; border-radius: 8px; width: 100%; font-size: 14px; margin-bottom: 10px; }
         
-        /* FILAS DE CONTADORES CON LÁPIZ */
         .fila-accion { display: flex; gap: 8px; margin-bottom: 12px; align-items: stretch; }
         .btn-count { flex: 1; border: none; border-radius: 16px; padding: 15px; color: white; font-weight: bold; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 0 rgba(0,0,0,0.15); }
         .btn-edit { width: 55px; background: white; border: 2px solid #eee; border-radius: 16px; color: var(--info); font-size: 20px; display: flex; align-items: center; justify-content: center; }
@@ -39,7 +38,7 @@
         #loading { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); z-index:5000; flex-direction: column; align-items:center; justify-content:center; }
         .hidden { display: none; }
         .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:2500; align-items:center; justify-content:center; }
-        .modal-box { background:white; width:92%; padding:20px; border-radius:15px; }
+        .modal-box { background:white; width:92%; padding:20px; border-radius:15px; max-height: 80vh; overflow-y: auto; }
     </style>
 </head>
 <body onload="cargarTodo()">
@@ -48,11 +47,10 @@
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
 <div class="sidebar" id="sidebar">
-    <div style="padding: 20px; font-size: 20px; border-bottom: 2px solid var(--r1); margin-bottom: 10px;"><b>PROD V36</b></div>
+    <div style="padding: 20px; font-size: 20px; border-bottom: 2px solid var(--r1); margin-bottom: 10px;"><b>PROD V37</b></div>
     <div class="sidebar-item" onclick="cambiarSeccion('id')">🆔 IDENTIFICACIÓN</div>
     <div class="sidebar-item" onclick="cambiarSeccion('calidad')">🏺 CALIDAD (CRUDO)</div>
     <div class="sidebar-item" onclick="cambiarSeccion('final')">📦 FINAL (EMBALAJE)</div>
-    <div class="sidebar-item" onclick="cambiarSeccion('eventos')">🛑 PARADAS</div>
     <div class="sidebar-item" onclick="cambiarSeccion('resumen')" style="color:var(--r1)">📊 RESUMEN TURNO</div>
 </div>
 
@@ -65,43 +63,54 @@
     
     <div id="sec-id" class="seccion">
         <div class="card">
-            <label>Fecha</label><input type="date" id="fecha" onchange="guardarTodo()">
-            <label>OF (Orden)</label><input type="text" id="of" placeholder="Nº de Orden" oninput="guardarTodo()">
+            <label>Fecha del Informe</label>
+            <input type="date" id="fecha" onchange="guardarTodo()">
+            
+            <label>Orden de Fabricación (OF)</label>
+            <input type="text" id="of" placeholder="Nº de Orden" oninput="guardarTodo()">
+            
+            <label>Código SAP</label>
+            <input type="text" id="sap" placeholder="Introduce Código SAP" oninput="guardarTodo()">
+            
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                 <div><label>Turno</label><select id="turno" onchange="guardarTodo()"><option>Mañana</option><option>Tarde</option><option>Noche</option></select></div>
-                <div><label>Equipo</label><select id="equipo" onchange="guardarTodo()"><option>T1</option><option>T2</option><option>T3</option></select></div>
+                <div><label>Mi Equipo</label><select id="equipo" onchange="guardarTodo()"><option>T1</option><option>T2</option><option>T3</option></select></div>
             </div>
-            <label>Sustrato</label><input type="text" id="sustrato" placeholder="Ej: Pasta Blanca" oninput="guardarTodo()">
-            <label>Gráfica</label><input type="text" id="grafica" placeholder="Ej: Marmol V2" oninput="guardarTodo()">
+            
+            <label>Sustrato</label>
+            <input type="text" id="sustrato" placeholder="Ej: Pasta Blanca" oninput="guardarTodo()">
+            
+            <label>Gráfica</label>
+            <input type="text" id="grafica" placeholder="Ej: Marmol V2" oninput="guardarTodo()">
         </div>
     </div>
 
     <div id="sec-calidad" class="seccion hidden">
         <div class="fila-accion">
-            <button class="btn-count btn-ok" onclick="sumarUno('ok')">OK <br><span id="val-ok-cal" style="font-size:28px">0</span></button>
+            <button class="btn-count btn-ok" onclick="sumarUno('ok')">OK (CRUDO) <br><span id="val-ok-cal" style="font-size:28px">0</span></button>
             <button class="btn-edit" onclick="editarCifra('ok')">✎</button>
         </div>
         <div class="fila-accion">
-            <button class="btn-count btn-r1" onclick="abrirDefectos('r1')">R1 <br><span id="val-r1-cal" style="font-size:28px">0</span></button>
+            <button class="btn-count btn-r1" onclick="abrirDefectos('r1')">R1 (REPROCESO) <br><span id="val-r1-cal" style="font-size:28px">0</span></button>
             <button class="btn-edit" onclick="editarCifra('r1')">✎</button>
         </div>
         <div class="fila-accion">
-            <button class="btn-count btn-ko" onclick="abrirDefectos('ko')">KO <br><span id="val-ko-cal" style="font-size:28px">0</span></button>
+            <button class="btn-count btn-ko" onclick="abrirDefectos('ko')">KO (RECHAZO) <br><span id="val-ko-cal" style="font-size:28px">0</span></button>
             <button class="btn-edit" onclick="editarCifra('ko')">✎</button>
         </div>
     </div>
 
     <div id="sec-final" class="seccion hidden">
         <div class="fila-accion">
-            <button class="btn-count btn-ok" onclick="sumarUno('ok')">OK EMBALAJE <br><span id="val-ok-fin" style="font-size:28px">0</span></button>
+            <button class="btn-count btn-ok" onclick="sumarUno('ok')">OK FINAL <br><span id="val-ok-fin" style="font-size:28px">0</span></button>
             <button class="btn-edit" onclick="editarCifra('ok')">✎</button>
         </div>
         <div class="fila-accion">
-            <button class="btn-count btn-r1" onclick="abrirDefectos('r1')">R1 <br><span id="val-r1-fin" style="font-size:28px">0</span></button>
+            <button class="btn-count btn-r1" onclick="abrirDefectos('r1')">R1 FINAL <br><span id="val-r1-fin" style="font-size:28px">0</span></button>
             <button class="btn-edit" onclick="editarCifra('r1')">✎</button>
         </div>
         <div class="fila-accion">
-            <button class="btn-count btn-ko" onclick="abrirDefectos('ko')">KO <br><span id="val-ko-fin" style="font-size:28px">0</span></button>
+            <button class="btn-count btn-ko" onclick="abrirDefectos('ko')">KO FINAL <br><span id="val-ko-fin" style="font-size:28px">0</span></button>
             <button class="btn-edit" onclick="editarCifra('ko')">✎</button>
         </div>
     </div>
@@ -117,12 +126,13 @@
 <input type="file" id="in-cam" accept="image/*" capture="environment" style="display:none" onchange="procesarFoto(event)">
 
 <script>
+    // Configuración de defectos
     const CONFIG = {
         calidad: { r1: ["Bultos", "Manchada", "1 malla suelta"], ko: ["Rota", "Malla suelta", "Playa"] },
         final: { r1: ["Fallo Kerajet", "Gota", "Rascada"], ko: ["Rota", "Mallas sueltas", "Fallo Flawmaster"] }
     };
 
-    let db = { calidad: { ok: 0, r1: 0, ko: 0, registros: [] }, final: { ok: 0, r1: 0, ko: 0, registros: [] }, cabecera: { fecha: new Date().toISOString().split('T')[0], of: "", equipo: "T1", turno: "Mañana", sustrato: "", grafica: "" } };
+    let db = { calidad: { ok: 0, r1: 0, ko: 0, registros: [] }, final: { ok: 0, r1: 0, ko: 0, registros: [] }, cabecera: { fecha: new Date().toISOString().split('T')[0], of: "", sap: "", equipo: "T1", turno: "Mañana", sustrato: "", grafica: "" } };
     let tabActual = 'calidad', pasoFoto = 1, defectoActivo = "", valoracionActiva = "";
 
     function toggleMenu() {
@@ -133,22 +143,31 @@
     function cambiarSeccion(sec) {
         document.querySelectorAll('.seccion').forEach(s => s.classList.add('hidden'));
         document.getElementById('sec-' + sec).classList.remove('hidden');
-        const nombres = { 'id': 'IDENTIFICACIÓN', 'calidad': 'CALIDAD (CRUDO)', 'final': 'FINAL (EMBALAJE)', 'eventos': 'PARADAS', 'resumen': 'RESUMEN TURNO' };
+        const nombres = { 'id': 'IDENTIFICACIÓN', 'calidad': 'CALIDAD (CRUDO)', 'final': 'FINAL (EMBALAJE)', 'resumen': 'RESUMEN TURNO' };
         document.getElementById('titulo-seccion').innerText = nombres[sec];
         if(sec === 'calidad' || sec === 'final') tabActual = sec;
         toggleMenu(); actualizarUI();
     }
 
     function guardarTodo() {
-        db.cabecera = { fecha: document.getElementById('fecha').value, of: document.getElementById('of').value, equipo: document.getElementById('equipo').value, turno: document.getElementById('turno').value, sustrato: document.getElementById('sustrato').value, grafica: document.getElementById('grafica').value };
-        localStorage.setItem('PROD_V36', JSON.stringify(db));
+        db.cabecera = { 
+            fecha: document.getElementById('fecha').value, 
+            of: document.getElementById('of').value, 
+            sap: document.getElementById('sap').value,
+            equipo: document.getElementById('equipo').value, 
+            turno: document.getElementById('turno').value, 
+            sustrato: document.getElementById('sustrato').value, 
+            grafica: document.getElementById('grafica').value 
+        };
+        localStorage.setItem('PROD_V37', JSON.stringify(db));
     }
 
     function cargarTodo() {
-        const g = localStorage.getItem('PROD_V36');
+        const g = localStorage.getItem('PROD_V37');
         if(g) db = JSON.parse(g);
         document.getElementById('fecha').value = db.cabecera.fecha;
         document.getElementById('of').value = db.cabecera.of;
+        document.getElementById('sap').value = db.cabecera.sap || "";
         document.getElementById('equipo').value = db.cabecera.equipo;
         document.getElementById('turno').value = db.cabecera.turno;
         document.getElementById('sustrato').value = db.cabecera.sustrato || "";
@@ -222,7 +241,10 @@
         document.getElementById('val-r1-fin').innerText = db.final.r1;
         document.getElementById('val-ko-fin').innerText = db.final.ko;
         
-        let h = `<div class="card" style="background:var(--sidebar); color:white"><b>RESUMEN OF: ${db.cabecera.of}</b></div>`;
+        let h = `<div class="card" style="background:var(--sidebar); color:white">
+                    <b>OF: ${db.cabecera.of}</b> | <b>SAP: ${db.cabecera.sap}</b><br>
+                    <small>${db.cabecera.sustrato} - ${db.cabecera.grafica}</small>
+                 </div>`;
         ['calidad', 'final'].forEach(z => {
             let eqCounts = { T1:0, T2:0, T3:0 };
             db[z].registros.forEach(r => { if(r.equipo!=="S/D") eqCounts[r.equipo]++; });
