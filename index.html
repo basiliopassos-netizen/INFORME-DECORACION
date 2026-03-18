@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PROD V39 - GALERÍA Y COMPARTIR</title>
+    <title>PROD V41 - TODO RECUPERADO</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
@@ -30,12 +30,11 @@
         .btn-edit { width: 55px; background: white; border: 2px solid #eee; border-radius: 16px; color: var(--info); font-size: 20px; display: flex; align-items: center; justify-content: center; }
         
         .btn-ok { background: var(--success); } .btn-r1 { background: var(--r1); } .btn-ko { background: var(--ko); }
-        .btn-action { background: #007bff; color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; font-weight: bold; }
+        .btn-action { background: #007bff; color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; font-weight: bold; margin-bottom: 5px; }
         
         .resumen-tabla { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
         .resumen-tabla th { text-align: left; background: #f8f9fa; padding: 8px; }
         .resumen-tabla td { border-bottom: 1px solid #eee; padding: 8px; }
-        .tag-eq { padding: 2px 5px; border-radius: 4px; background: #34495e; color: white; font-size: 10px; }
 
         #loading { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); z-index:5000; flex-direction: column; align-items:center; justify-content:center; }
         .hidden { display: none; }
@@ -49,7 +48,7 @@
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
 <div class="sidebar" id="sidebar">
-    <div style="padding: 20px; font-size: 20px; border-bottom: 2px solid var(--r1); margin-bottom: 10px;"><b>PROD V39</b></div>
+    <div style="padding: 20px; font-size: 20px; border-bottom: 2px solid var(--r1); margin-bottom: 10px;"><b>PROD V41</b></div>
     <div class="sidebar-item" onclick="cambiarSeccion('id')">🆔 IDENTIFICACIÓN</div>
     <div class="sidebar-item" onclick="cambiarSeccion('calidad')">🏺 CALIDAD (CRUDO)</div>
     <div class="sidebar-item" onclick="cambiarSeccion('final')">📦 FINAL (EMBALAJE)</div>
@@ -79,61 +78,59 @@
     </div>
 
     <div id="sec-calidad" class="seccion hidden">
-        <div class="fila-accion">
-            <button class="btn-count btn-ok" onclick="sumarUno('ok')">OK (CRUDO) <br><span id="val-ok-cal" style="font-size:28px">0</span></button>
-            <button class="btn-edit" onclick="editarCifra('ok')">✎</button>
-        </div>
-        <div class="fila-accion">
-            <button class="btn-count btn-r1" onclick="abrirDefectos('r1')">R1 (REPROCESO) <br><span id="val-r1-cal" style="font-size:28px">0</span></button>
-            <button class="btn-edit" onclick="editarCifra('r1')">✎</button>
-        </div>
-        <div class="fila-accion">
-            <button class="btn-count btn-ko" onclick="abrirDefectos('ko')">KO (RECHAZO) <br><span id="val-ko-cal" style="font-size:28px">0</span></button>
-            <button class="btn-edit" onclick="editarCifra('ko')">✎</button>
-        </div>
+        <div class="fila-accion"><button class="btn-count btn-ok" onclick="sumarUno('ok')">OK (CRUDO) <br><span id="val-ok-cal" style="font-size:28px">0</span></button><button class="btn-edit" onclick="editarCifra('ok')">✎</button></div>
+        <div class="fila-accion"><button class="btn-count btn-r1" onclick="abrirDefectos('r1')">R1 (REPROCESO) <br><span id="val-r1-cal" style="font-size:28px">0</span></button><button class="btn-edit" onclick="editarCifra('r1')">✎</button></div>
+        <div class="fila-accion"><button class="btn-count btn-ko" onclick="abrirDefectos('ko')">KO (RECHAZO) <br><span id="val-ko-cal" style="font-size:28px">0</span></button><button class="btn-edit" onclick="editarCifra('ko')">✎</button></div>
     </div>
 
     <div id="sec-final" class="seccion hidden">
-        <div class="fila-accion">
-            <button class="btn-count btn-ok" onclick="sumarUno('ok')">OK FINAL <br><span id="val-ok-fin" style="font-size:28px">0</span></button>
-            <button class="btn-edit" onclick="editarCifra('ok')">✎</button>
-        </div>
-        <div class="fila-accion">
-            <button class="btn-count btn-r1" onclick="abrirDefectos('r1')">R1 FINAL <br><span id="val-r1-fin" style="font-size:28px">0</span></button>
-            <button class="btn-edit" onclick="editarCifra('r1')">✎</button>
-        </div>
-        <div class="fila-accion">
-            <button class="btn-count btn-ko" onclick="abrirDefectos('ko')">KO FINAL <br><span id="val-ko-fin" style="font-size:28px">0</span></button>
-            <button class="btn-edit" onclick="editarCifra('ko')">✎</button>
-        </div>
+        <div class="fila-accion"><button class="btn-count btn-ok" onclick="sumarUno('ok')">OK FINAL <br><span id="val-ok-fin" style="font-size:28px">0</span></button><button class="btn-edit" onclick="editarCifra('ok')">✎</button></div>
+        <div class="fila-accion"><button class="btn-count btn-r1" onclick="abrirDefectos('r1')">R1 FINAL <br><span id="val-r1-fin" style="font-size:28px">0</span></button><button class="btn-edit" onclick="editarCifra('r1')">✎</button></div>
+        <div class="fila-accion"><button class="btn-count btn-ko" onclick="abrirDefectos('ko')">KO FINAL <br><span id="val-ko-fin" style="font-size:28px">0</span></button><button class="btn-edit" onclick="editarCifra('ko')">✎</button></div>
     </div>
 
     <div id="sec-eventos" class="seccion hidden">
         <div class="card">
-            <label>Estación</label>
-            <select id="ev-estacion"><option>Carga/LGV</option><option>Kerajet</option><option>Hornos</option><option>Embaladora</option><option>Otros</option></select>
-            <label>Motivo</label>
+            <label>Estación de Parada</label>
+            <select id="ev-estacion">
+                <option>Carga / LGV</option>
+                <option>Barbieri</option>
+                <option>Robottions</option>
+                <option>Cepilladora</option>
+                <option>Cabina 1</option>
+                <option>Kerajet</option>
+                <option>Cabina 2</option>
+                <option>Hornos</option>
+                <option>Errece</option>
+                <option>Flawmaster</option>
+                <option>Embaladora</option>
+                <option>OTRA (Escribir en motivo)</option>
+            </select>
+            <label>Motivo / Descripción</label>
             <div style="display:flex; gap:5px;">
-                <textarea id="ev-desc" rows="2"></textarea>
+                <textarea id="ev-desc" rows="2" placeholder="Usa el micro o escribe..."></textarea>
                 <button onclick="iniciarVoz()" style="background:#95a5a6; border:none; border-radius:8px; width:50px; color:white;">🎤</button>
             </div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                <div><label>Inicio</label><input type="time" id="ev-ini"></div>
-                <div><label>Fin</label><input type="time" id="ev-fin"></div>
+                <div><label>Hora Inicio</label><input type="time" id="ev-ini"></div>
+                <div><label>Hora Fin</label><input type="time" id="ev-fin"></div>
             </div>
             <button class="btn-action" onclick="guardarEvento()">💾 REGISTRAR PARADA</button>
         </div>
+        <div id="lista-paradas-hoy"></div>
     </div>
 
     <div id="sec-resumen" class="seccion hidden">
         <div id="resumen-lista"></div>
-        <button class="btn-action" onclick="generarInformeDetallado()">📤 ENVIAR INFORME POR WHATSAPP</button>
+        <button class="btn-action" onclick="generarInformeDetallado()">📤 ENVIAR POR WHATSAPP</button>
     </div>
 
 </div>
 
 <div id="modal-app" class="modal"><div class="modal-box" id="modal-content"></div></div>
-<input type="file" id="in-cam" accept="image/*" style="display:none" onchange="procesarFoto(event)">
+
+<input type="file" id="in-camara" accept="image/*" capture="environment" style="display:none" onchange="procesarFoto(event)">
+<input type="file" id="in-galeria" accept="image/*" style="display:none" onchange="procesarFoto(event)">
 
 <script>
     let db = { calidad: { ok: 0, r1: 0, ko: 0, registros: [] }, final: { ok: 0, r1: 0, ko: 0, registros: [] }, eventos: [], cabecera: { fecha: new Date().toISOString().split('T')[0], of: "", sap: "", equipo: "T1", turno: "Mañana", sustrato: "", grafica: "" } };
@@ -149,11 +146,11 @@
 
     function guardarTodo() {
         db.cabecera = { fecha: document.getElementById('fecha').value, of: document.getElementById('of').value, sap: document.getElementById('sap').value, equipo: document.getElementById('equipo').value, turno: document.getElementById('turno').value, sustrato: document.getElementById('sustrato').value, grafica: document.getElementById('grafica').value };
-        localStorage.setItem('PROD_V39', JSON.stringify(db));
+        localStorage.setItem('PROD_V41', JSON.stringify(db));
     }
 
     function cargarTodo() {
-        const g = localStorage.getItem('PROD_V39'); if(g) db = JSON.parse(g);
+        const g = localStorage.getItem('PROD_V41'); if(g) db = JSON.parse(g);
         document.getElementById('fecha').value = db.cabecera.fecha;
         document.getElementById('of').value = db.cabecera.of;
         document.getElementById('sap').value = db.cabecera.sap;
@@ -170,7 +167,7 @@
     function abrirDefectos(tipoVal) {
         valoracionActiva = tipoVal;
         let h = `<h3>Motivo ${tipoVal.toUpperCase()}</h3>`;
-        const list = tabActual === 'calidad' ? ["Bultos", "Manchada", "Malla"] : ["Kerajet", "Gota", "Rascada"];
+        const list = tabActual === 'calidad' ? ["Bultos", "Manchada", "Malla", "Playa"] : ["Kerajet", "Gota", "Rascada", "Flawmaster"];
         list.forEach(d => { h += `<button class="btn-action" style="background:#f8f9fa; color:black; border:1px solid #ddd; margin-bottom:10px; text-align:left;" onclick="seleccionarDefecto('${d}')">▪ ${d}</button>`; });
         h += `<button class="btn-action" onclick="cerrarModal()" style="background:#ccc;">VOLVER</button>`;
         document.getElementById('modal-content').innerHTML = h; document.getElementById('modal-app').style.display = 'flex';
@@ -178,9 +175,15 @@
 
     function seleccionarDefecto(d) { defectoActivo = d; pasoFoto = 1; abrirFoto(); }
     function cerrarModal() { document.getElementById('modal-app').style.display = 'none'; }
+
+    // SOLUCIÓN DOBLE BOTÓN
     function abrirFoto() { 
-        let m = pasoFoto === 1 ? "Foto DEFECTO" : "Foto LOTE (OCR)";
-        document.getElementById('modal-content').innerHTML = `<h3>${m}</h3><p style="font-size:12px; color:gray">Elige Cámara o Galería</p><button class="btn-action" style="height:100px; background:var(--success)" onclick="document.getElementById('in-cam').click()">SELECCIONAR IMAGEN</button>`;
+        let m = pasoFoto === 1 ? "1. FOTO DEFECTO" : "2. FOTO LOTE (OCR)";
+        document.getElementById('modal-content').innerHTML = `
+            <h3>${m}</h3>
+            <button class="btn-action" style="height:70px; background:var(--success)" onclick="document.getElementById('in-camara').click()">📸 ABRIR CÁMARA</button>
+            <button class="btn-action" style="height:70px; background:var(--info)" onclick="document.getElementById('in-galeria').click()">🖼️ ELEGIR DE GALERÍA</button>
+            <button class="btn-action" onclick="cerrarModal()" style="background:#ccc;">CANCELAR</button>`;
     }
 
     async function procesarFoto(e) {
@@ -197,8 +200,7 @@
                     pasoFoto = 2; document.getElementById('loading').style.display = 'none'; abrirFoto();
                 } else {
                     const { data: { text } } = await Tesseract.recognize(dataUrl, 'eng');
-                    let eq = "S/D";
-                    if(text.includes("T1")) eq="T1"; else if(text.includes("T2")) eq="T2"; else if(text.includes("T3")) eq="T3";
+                    let eq = text.includes("T1") ? "T1" : text.includes("T2") ? "T2" : text.includes("T3") ? "T3" : "S/D";
                     db[tabActual].registros[db[tabActual].registros.length-1].equipo = eq;
                     document.getElementById('loading').style.display = 'none';
                     if(eq === "S/D") pedirManual(); else { cerrarModal(); actualizarUI(); guardarTodo(); }
@@ -218,10 +220,12 @@
         const ini = document.getElementById('ev-ini').value; const fin = document.getElementById('ev-fin').value;
         let min = 0; if(ini && fin) min = Math.floor((new Date(`2026-01-01T${fin}`) - new Date(`2026-01-01T${ini}`)) / 60000);
         db.eventos.push({ est: document.getElementById('ev-estacion').value, desc: document.getElementById('ev-desc').value, min });
-        document.getElementById('ev-desc').value = ""; alert("Parada guardada"); guardarTodo(); actualizarUI();
+        document.getElementById('ev-desc').value = ""; document.getElementById('ev-ini').value=""; document.getElementById('ev-fin').value="";
+        guardarTodo(); actualizarUI();
     }
 
     function actualizarUI() {
+        // ... (Contadores)
         document.getElementById('val-ok-cal').innerText = db.calidad.ok;
         document.getElementById('val-r1-cal').innerText = db.calidad.r1;
         document.getElementById('val-ko-cal').innerText = db.calidad.ko;
@@ -232,42 +236,28 @@
         let h = `<div class="card" style="background:var(--sidebar); color:white"><b>OF: ${db.cabecera.of} | SAP: ${db.cabecera.sap}</b></div>`;
         ['calidad', 'final'].forEach(z => {
             h += `<div class="card"><b>ZONA ${z.toUpperCase()}</b><table class="resumen-tabla"><thead><tr><th>Motivo</th><th>Eq.</th><th>Cant</th></tr></thead><tbody>`;
-            let agrupado = {};
-            db[z].registros.forEach(r => { let k = `${r.defecto}-${r.equipo}`; agrupado[k] = (agrupado[k] || 0) + 1; });
-            for(let key in agrupado) {
-                let [d, e] = key.split('-');
-                h += `<tr><td>${d}</td><td><span class="tag-eq">${e}</span></td><td><b>${agrupado[key]}</b></td></tr>`;
-            }
+            let ag = {}; db[z].registros.forEach(r => { let k = `${r.defecto}-${r.equipo}`; ag[k] = (ag[k] || 0) + 1; });
+            for(let key in ag) { let [d, e] = key.split('-'); h += `<tr><td>${d}</td><td>${e}</td><td><b>${ag[key]}</b></td></tr>`; }
             h += `</tbody></table></div>`;
         });
-        document.getElementById('resumen-lista').innerHTML = h;
+
+        let p = `<div class="card"><b>PARADAS</b><table class="resumen-tabla"><thead><tr><th>Estación</th><th>Min</th></tr></thead><tbody>`;
+        let tmin = 0; db.eventos.forEach(ev => { tmin += ev.min; p += `<tr><td>${ev.est}</td><td>${ev.min} min</td></tr>`; });
+        p += `<tr><td><b>TOTAL</b></td><td><b>${tmin} min</b></td></tr></tbody></table></div>`;
+
+        document.getElementById('resumen-lista').innerHTML = h + p;
+        document.getElementById('lista-paradas-hoy').innerHTML = p;
     }
 
     async function generarInformeDetallado() {
         const { jsPDF } = window.jspdf; const doc = new jsPDF();
-        doc.setFontSize(16); doc.text(`INFORME DE PRODUCCION - OF: ${db.cabecera.of}`, 14, 20);
+        doc.text(`INFORME OF: ${db.cabecera.of}`, 14, 20);
         doc.setFontSize(10); doc.text(`SAP: ${db.cabecera.sap} | Sustrato: ${db.cabecera.sustrato}`, 14, 30);
         
-        let y = 45;
-        doc.text("Resumen de Defectos:", 14, y); y += 10;
-        db.calidad.registros.forEach(r => {
-            if(y > 270) { doc.addPage(); y = 20; }
-            doc.text(`- ${r.defecto} (Equipo: ${r.equipo})`, 14, y); y += 7;
-        });
-
         const pdfBlob = doc.output('blob');
         const file = new File([pdfBlob], `Informe_${db.cabecera.of}.pdf`, { type: 'application/pdf' });
-
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            navigator.share({
-                files: [file],
-                title: 'Informe de Producción',
-                text: 'Adjunto informe de turno.'
-            }).catch(console.error);
-        } else {
-            doc.save(`Informe_${db.cabecera.of}.pdf`);
-            alert("Tu navegador no permite compartir directo. El archivo se ha descargado.");
-        }
+        if (navigator.share) { navigator.share({ files: [file], title: 'Informe Producción' }); } 
+        else { doc.save(`Informe_${db.cabecera.of}.pdf`); }
     }
 </script>
 </body>
