@@ -3,128 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PROD COMMANDER V48</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <title>PROD V49 - EDICIÓN BASILIO</title>
     <style>
-        :root { --bg: #0a0a0c; --card: #16161a; --accent: #38bdf8; --success: #22c55e; --warning: #eab308; --danger: #ef4444; --text: #f3f4f6; }
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: var(--text); }
-        body { margin: 0; background: var(--bg); padding-bottom: 90px; }
+        :root { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --success: #22c55e; --danger: #ef4444; --text: #f8fafc; }
+        * { box-sizing: border-box; font-family: sans-serif; color: var(--text); }
+        body { margin: 0; background: var(--bg); padding-bottom: 80px; }
         
-        header { background: var(--card); padding: 15px; border-bottom: 2px solid var(--accent); position: sticky; top:0; z-index:100; display: flex; justify-content: space-between; }
-        .stat-box { background: #1e293b; padding: 10px; border-radius: 8px; text-align: center; flex: 1; margin: 0 5px; border: 1px solid #334155; }
-        .stat-val { display: block; font-size: 18px; font-weight: 900; color: var(--accent); }
-        
+        header { background: var(--card); padding: 15px; border-bottom: 2px solid var(--accent); text-align: center; position: sticky; top: 0; z-index: 100; }
         .container { padding: 12px; }
-        h2 { font-size: 14px; text-transform: uppercase; color: #94a3b8; margin: 15px 0 8px 5px; display: flex; justify-content: space-between; }
+        .card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid #334155; }
         
-        .card { background: var(--card); border-radius: 12px; padding: 12px; margin-bottom: 12px; border: 1px solid #262626; }
+        label { font-size: 11px; color: #94a3b8; font-weight: bold; display: block; margin-bottom: 5px; }
+        input, select { background: #0f172a; border: 1px solid #334155; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-size: 15px; }
         
-        /* Contadores en Semáforo */
-        .grid-count { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-        .btn-c { border: none; border-radius: 10px; padding: 15px 5px; font-weight: bold; position: relative; }
-        .btn-c b { font-size: 24px; display: block; }
-        .edit-pen { position: absolute; top: 4px; right: 4px; font-size: 10px; background: rgba(0,0,0,0.3); padding: 2px; border-radius: 3px; }
+        /* Contadores Semáforo */
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .btn-c { border: none; border-radius: 10px; padding: 15px 5px; font-weight: bold; position: relative; text-align: center; }
+        .btn-c b { font-size: 26px; display: block; }
+        .edit-pen { position: absolute; top: 2px; right: 2px; font-size: 12px; }
 
         /* Estaciones Parada */
-        .estacion-row { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #262626; }
-        .timer-unit { font-family: monospace; font-size: 20px; color: var(--danger); font-weight: bold; }
-        
-        input, select { background: #000; border: 1px solid #333; padding: 10px; border-radius: 6px; width: 100%; margin-bottom: 8px; }
+        .estacion-row { background: #0f172a; padding: 10px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #334155; }
+        .timer-val { font-family: monospace; font-size: 22px; color: var(--danger); font-weight: bold; }
+        .btn-play { background: var(--success); border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; }
 
-        nav { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; height: 65px; border-top: 1px solid #333; }
-        .nav-item { flex: 1; border: none; background: none; font-size: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.5; }
+        nav { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; height: 65px; border-top: 1px solid #334155; }
+        .nav-item { flex: 1; border: none; background: none; font-size: 11px; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.6; }
         .nav-item.active { opacity: 1; color: var(--accent); font-weight: bold; }
         
-        .btn-action { background: var(--accent); color: #000; border: none; padding: 15px; border-radius: 10px; width: 100%; font-weight: bold; margin-top: 5px; }
+        .btn-foto { background: #475569; border: none; padding: 10px; border-radius: 8px; width: 100%; margin-top: 8px; font-size: 12px; }
     </style>
 </head>
 <body onload="init()">
 
-<header>
-    <div class="stat-box">
-        <small>OBJETIVO</small>
-        <span class="stat-val">320</span>
-    </div>
-    <div class="stat-box">
-        <small>PREDICCIÓN</small>
-        <span class="stat-val" id="h-pred">---</span>
-    </div>
-    <div class="stat-box">
-        <small>ESTADO</small>
-        <span class="stat-val" id="h-diff" style="color:white">OK</span>
-    </div>
-</header>
+<header><b>PRODUCCIÓN - EQUIPO <span id="h-eq">T1</span></b></header>
 
 <div class="container">
     <div id="t-inicio" class="content">
         <div class="card">
-            <label>⚙️ CONFIGURACIÓN TURNO</label>
-            <div style="display:flex; gap:5px; margin-top:5px;">
-                <select id="turno" onchange="g()"><option>Mañana (06-14)</option><option>Tarde (14-22)</option><option>Noche (22-06)</option></select>
+            <label>EQUIPO / TURNO</label>
+            <div style="display:flex; gap:10px;">
                 <select id="equipo" onchange="g()"><option>T1</option><option>T2</option><option>T3</option></select>
+                <select id="turno" onchange="g()"><option>Mañana</option><option>Tarde</option><option>Noche</option></select>
             </div>
-            <input type="text" id="of" placeholder="Nº Orden de Fabricación" oninput="g()">
-            <input type="text" id="desc" placeholder="Modelo / Formato" oninput="g()">
+            <label>ORDEN DE FABRICACIÓN (OF)</label>
+            <input type="text" id="of" oninput="g()" placeholder="Ej: 1314129">
+            <label>CÓDIGO SAP</label>
+            <input type="text" id="sap" oninput="g()" placeholder="Ej: 100374597">
+            <label>NOMBRE GRÁFICA / MODELO</label>
+            <input type="text" id="desc" oninput="g()" placeholder="Ej: UNDORA TRAVERTINO">
+            <label>FORMATO</label>
+            <input type="text" id="formato" oninput="g()" placeholder="Ej: 1200X2700">
         </div>
     </div>
 
     <div id="t-calidad" class="content hidden">
-        <h2>🏺 ZONA CRUDO (Prensas/Esmalte)</h2>
+        <h3 style="font-size:14px; color:var(--accent)">1. ZONA CRUDO (Prensas/Esmalte)</h3>
         <div class="card">
-            <div class="grid-count">
+            <div class="grid-3">
                 <button class="btn-c" style="background:var(--success)" onclick="add('c','ok')"><span class="edit-pen" onclick="ed('c','ok',event)">✏️</span><b id="c-ok">0</b>OK</button>
-                <button class="btn-c" style="background:var(--warning); color:black" onclick="add('c','r1')"><span class="edit-pen" onclick="ed('c','r1',event)">✏️</span><b id="c-r1">0</b>R1</button>
+                <button class="btn-c" style="background:#eab308; color:black" onclick="add('c','r1')"><span class="edit-pen" onclick="ed('c','r1',event)">✏️</span><b id="c-r1">0</b>R1</button>
                 <button class="btn-c" style="background:var(--danger)" onclick="add('c','ko')"><span class="edit-pen" onclick="ed('c','ko',event)">✏️</span><b id="c-ko">0</b>KO</button>
             </div>
+            <button class="btn-foto" onclick="alert('Cámara abierta (Crudo)')">📸 FOTO DEFECTO CRUDO</button>
         </div>
 
-        <h2>📦 ZONA FINAL (Embalaje)</h2>
+        <h3 style="font-size:14px; color:var(--accent)">2. ZONA FINAL (Embalaje)</h3>
         <div class="card">
-            <div class="grid-count">
+            <div class="grid-3">
                 <button class="btn-c" style="background:var(--success)" onclick="add('e','ok')"><span class="edit-pen" onclick="ed('e','ok',event)">✏️</span><b id="e-ok">0</b>OK</button>
-                <button class="btn-c" style="background:var(--warning); color:black" onclick="add('e','r1')"><span class="edit-pen" onclick="ed('e','r1',event)">✏️</span><b id="e-r1">0</b>R1</button>
+                <button class="btn-c" style="background:#eab308; color:black" onclick="add('e','r1')"><span class="edit-pen" onclick="ed('e','r1',event)">✏️</span><b id="e-r1">0</b>R1</button>
                 <button class="btn-c" style="background:var(--danger)" onclick="add('e','ko')"><span class="edit-pen" onclick="ed('e','ko',event)">✏️</span><b id="e-ko">0</b>KO</button>
             </div>
+            <button class="btn-foto" onclick="alert('Cámara abierta (Embalaje)')">📸 FOTO DEFECTO EMBALAJE</button>
         </div>
     </div>
 
-    <div id="t-estaciones" class="content hidden">
+    <div id="t-paradas" class="content hidden">
         <div class="card">
-            <div class="estacion-row">
-                <b>KERAJET</b>
-                <div class="timer-unit" id="timer-0">00:00</div>
-                <button onclick="toggleT(0)" id="btn-0" style="background:var(--success); border:none; border-radius:5px; padding:8px;">PLAY</button>
-            </div>
-            <div class="estacion-row">
-                <b>ESMALTADO</b>
-                <div class="timer-unit" id="timer-1">00:00</div>
-                <button onclick="toggleT(1)" id="btn-1" style="background:var(--success); border:none; border-radius:5px; padding:8px;">PLAY</button>
-            </div>
-            <div class="estacion-row">
-                <b>MECÁNICO</b>
-                <div class="timer-unit" id="timer-2">00:00</div>
-                <button onclick="toggleT(2)" id="btn-2" style="background:var(--success); border:none; border-radius:5px; padding:8px;">PLAY</button>
-            </div>
+            <label>REGISTRO DE PARADAS POR ESTACIÓN</label>
+            <div id="estaciones-list">
+                </div>
         </div>
-        <button class="btn-action" onclick="enviarWA()">📤 ENVIAR INFORME WHATSAPP</button>
+        <button onclick="enviarWA()" style="background:#25d366; color:white; border:none; width:100%; padding:15px; border-radius:10px; font-weight:bold;">📤 ENVIAR INFORME WHATSAPP</button>
     </div>
 </div>
 
 <nav>
-    <button class="nav-item active" onclick="nav('inicio',this)">INICIO</button>
-    <button class="nav-item" onclick="nav('calidad',this)">CALIDAD</button>
-    <button class="nav-item" onclick="nav('estaciones',this)">PARADAS</button>
+    <button class="nav-item active" onclick="nav('inicio',this)">🏠 DATOS</button>
+    <button class="nav-item" onclick="nav('calidad',this)">🏺 CALIDAD</button>
+    <button class="nav-item" onclick="nav('paradas',this)">⏱️ PARADAS</button>
 </nav>
 
 <script>
-    let d = { of:'', desc:'', eq:'T1', trn:'Mañana (06-14)', c:{ok:0,r1:0,ko:0}, e:{ok:0,r1:0,ko:0}, paradas:[0,0,0], start:[null,null,null] };
-    const OBJETIVO = 320;
+    const estaciones = ["KERAJET", "SMALTEC", "PRENSAS", "SECADERO", "MECÁNICO", "ELÉCTRICO"];
+    let d = { of:'', sap:'', desc:'', formato:'', eq:'T1', trn:'Mañana', c:{ok:0,r1:0,ko:0}, e:{ok:0,r1:0,ko:0}, paradas: {}, starts: {} };
 
     function init() {
-        const s = localStorage.getItem('COMMANDER_V48');
+        const s = localStorage.getItem('PROD_V49');
         if(s) d = JSON.parse(s);
+        
+        // Inicializar paradas si no existen
+        estaciones.forEach(est => {
+            if(!d.paradas[est]) d.paradas[est] = 0;
+            if(!d.starts[est]) d.starts[est] = null;
+        });
+
+        renderEstaciones();
         render();
-        setInterval(recalculo, 10000); // Recalcula cada 10 seg
     }
 
     function nav(id, el) {
@@ -135,53 +121,51 @@
     }
 
     function add(z, t) { d[z][t]++; r(); g(); }
-    function ed(z, t, event) {
-        event.stopPropagation();
-        let n = prompt("Corregir total "+t.toUpperCase(), d[z][t]);
+    function ed(z, t, ev) {
+        ev.stopPropagation();
+        let n = prompt("Total " + t.toUpperCase(), d[z][t]);
         if(n !== null) { d[z][t] = parseInt(n) || 0; r(); g(); }
     }
 
-    function toggleT(i) {
-        const btn = document.getElementById('btn-'+i);
-        if(!d.start[i]) {
-            d.start[i] = Date.now();
+    function renderEstaciones() {
+        const container = document.getElementById('estaciones-list');
+        container.innerHTML = estaciones.map(est => `
+            <div class="estacion-row">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <b>${est}</b>
+                    <div class="timer-val" id="time-${est}">${fmtTime(d.paradas[est])}</div>
+                    <button class="btn-play" id="btn-${est}" onclick="toggleT('${est}')">${d.starts[est] ? 'STOP' : 'PLAY'}</button>
+                </div>
+                <input type="text" placeholder="Motivo / Observación..." style="margin-top:8px; font-size:12px;" id="obs-${est}">
+            </div>
+        `).join('');
+    }
+
+    function toggleT(est) {
+        const btn = document.getElementById('btn-'+est);
+        if(!d.starts[est]) {
+            d.starts[est] = Date.now();
             btn.innerText = "STOP"; btn.style.background = "var(--danger)";
         } else {
-            d.paradas[i] += Math.floor((Date.now() - d.start[i])/1000);
-            d.start[i] = null;
+            d.paradas[est] += Math.floor((Date.now() - d.starts[est]) / 1000);
+            d.starts[est] = null;
             btn.innerText = "PLAY"; btn.style.background = "var(--success)";
         }
         r(); g();
     }
 
-    function recalculo() {
-        const ahora = new Date();
-        let horaInicio = new Date(); horaInicio.setHours(6,0,0);
-        if(d.trn.includes("Tarde")) horaInicio.setHours(14,0,0);
-        if(d.trn.includes("Noche")) horaInicio.setHours(22,0,0);
-
-        let minsTranscurridos = (ahora - horaInicio) / 60000;
-        if(minsTranscurridos < 0) minsTranscurridos += 1440; // Ajuste noche
-
-        // Lógica Basilio: 30 min limpieza + 17 min tránsito = 47 min efectivos de "vacío"
-        const minsProduciendo = Math.max(0, minsTranscurridos - 47);
-        const piezasPorMinuto = OBJETIVO / (480 - 47); // 8h son 480min
-        
-        const objetivoActual = Math.floor(minsProduciendo * piezasPorMinuto);
-        const actual = d.e.ok;
-        const diff = actual - objetivoActual;
-
-        const hDiff = document.getElementById('h-diff');
-        hDiff.innerText = (diff > 0 ? "+" : "") + diff;
-        hDiff.style.color = diff >= 0 ? 'var(--success)' : 'var(--danger)';
-
-        const pred = Math.floor(actual + ((480 - minsTranscurridos) * (actual / Math.max(1, minsProduciendo))));
-        document.getElementById('h-pred').innerText = pred;
+    function fmtTime(s) {
+        const mins = String(Math.floor(s/60)).padStart(2,'0');
+        const secs = String(s%60).padStart(2,'0');
+        return `${mins}:${secs}`;
     }
 
     function r() {
+        document.getElementById('h-eq').innerText = d.eq;
         document.getElementById('of').value = d.of;
+        document.getElementById('sap').value = d.sap;
         document.getElementById('desc').value = d.desc;
+        document.getElementById('formato').value = d.formato;
         document.getElementById('equipo').value = d.eq;
         document.getElementById('turno').value = d.trn;
         
@@ -190,27 +174,25 @@
             document.getElementById('e-'+t).innerText = d.e[t];
         });
 
-        d.paradas.forEach((p, i) => {
-            const m = String(Math.floor(p/60)).padStart(2,'0');
-            const s = String(p%60).padStart(2,'0');
-            document.getElementById('timer-'+i).innerText = `${m}:${s}`;
+        estaciones.forEach(est => {
+            document.getElementById('time-'+est).innerText = fmtTime(d.paradas[est]);
         });
-        recalculo();
     }
 
     function g() {
         d.of = document.getElementById('of').value;
+        d.sap = document.getElementById('sap').value;
         d.desc = document.getElementById('desc').value;
+        d.formato = document.getElementById('formato').value;
         d.eq = document.getElementById('equipo').value;
         d.trn = document.getElementById('turno').value;
-        localStorage.setItem('COMMANDER_V48', JSON.stringify(d));
+        localStorage.setItem('PROD_V49', JSON.stringify(d));
     }
 
     function enviarWA() {
-        const totC = d.c.ok + d.c.r1 + d.c.ko;
-        const totE = d.e.ok + d.e.r1 + d.e.ko;
-        const texto = `*INFORME PROD PORCELANOSA*%0AOF: ${d.of} (${d.desc})%0AEquipo: ${d.eq} | ${d.trn}%0A%0A*CRUDO:* OK:${d.c.ok} R1:${d.c.r1} KO:${d.c.ko} (Total: ${totC})%0A*EMBALAJE:* OK:${d.e.ok} R1:${d.e.r1} KO:${d.e.ko} (Total: ${totE})%0A%0A*PARADAS:*%0AKerajet: ${Math.floor(d.paradas[0]/60)}min%0AEsmalte: ${Math.floor(d.paradas[1]/60)}min%0AMecánico: ${Math.floor(d.paradas[2]/60)}min`;
-        window.open(`https://wa.me/?text=${texto}`);
+        let txt = `*INFORME PRODUCCIÓN*%0AOF: ${d.of}%0ASAP: ${d.sap}%0AModelo: ${d.desc}%0AFormato: ${d.formato}%0AEquipo: ${d.eq} (${d.trn})%0A%0A*CRUDO:* OK:${d.c.ok} R1:${d.c.r1} KO:${d.c.ko}%0A*EMBALAJE:* OK:${d.e.ok} R1:${d.e.r1} KO:${d.e.ko}%0A%0A*PARADAS:*%0A`;
+        estaciones.forEach(est => { if(d.paradas[est] > 0) txt += `- ${est}: ${Math.floor(d.paradas[est]/60)} min%0A`; });
+        window.open(`https://wa.me/?text=${txt}`);
     }
 </script>
 </body>
