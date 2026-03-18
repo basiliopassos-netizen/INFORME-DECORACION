@@ -3,217 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SISTEMA PRODUCCIÓN DECORACIÓN</title>
+    <title>PROD V55 - ESTABLE</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        :root { --primary: #2c3e50; --success: #27ae60; --danger: #e74c3c; --warning: #f39c12; --bg: #f0f2f5; --info: #3498db; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', sans-serif; }
-        body { margin: 0; padding: 0; background: var(--bg); color: #2c3e50; min-height: 100vh; }
-        .fixed-top { position: sticky; top: 0; z-index: 1000; width: 100%; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        header { background: var(--primary); color: white; padding: 12px 15px; display: flex; align-items: center; gap: 12px; }
-        .logo-u { background: white; color: var(--primary); width: 30px; height: 30px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 900; }
-        .tabs { display: flex; background: #34495e; }
-        .tab-btn { flex: 1; padding: 15px 5px; border: none; background: transparent; color: #bdc3c7; font-weight: bold; font-size: 11px; text-transform: uppercase; }
-        .tab-btn.active { color: white; border-bottom: 4px solid var(--warning); background: rgba(255,255,255,0.1); }
-        .contenido { padding: 12px; }
-        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 12px; }
-        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .campo { display: flex; flex-direction: column; margin-bottom: 8px; }
-        .full-width { grid-column: span 2; }
-        label { font-size: 10px; font-weight: 800; color: #7f8c8d; margin-bottom: 3px; text-transform: uppercase; }
-        input, select, textarea { padding: 10px; border: 1px solid #dce1e5; border-radius: 10px; font-size: 14px; width: 100%; }
-        .btn-main { flex: 1; border: none; border-radius: 18px; padding: 15px; color: white; min-height: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .btn-ok { background: var(--success); box-shadow: 0 5px 0 #1e8449; }
-        .btn-nook { background: var(--danger); box-shadow: 0 5px 0 #b03a2e; }
-        .btn-edit { width: 50px; height: 90px; border: none; border-radius: 15px; background: #fff; border: 2px solid #dce1e5; font-size: 20px; }
-        .btn-finalizar { background: #007bff; color: white; border: none; width: 100%; padding: 20px; border-radius: 15px; font-weight: bold; font-size: 16px; margin-top: 10px; }
-        .btn-reset { background: #95a5a6; color: white; border: none; width: 100%; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 11px; margin-top: 40px; margin-bottom: 50px; }
-        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; align-items:center; justify-content:center; }
-        .modal-box { background:white; width:90%; padding:20px; border-radius:20px; text-align: center; max-height: 85vh; overflow-y: auto; }
-        .defecto-btn { width: 100%; padding: 15px; margin-bottom: 10px; border: none; background: #f8f9fa; border-left: 6px solid var(--danger); border-radius: 12px; text-align: left; font-weight: bold; }
-        #loading { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 5000; flex-direction: column; align-items: center; justify-content: center; }
+        :root { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --success: #22c55e; --warning: #eab308; --danger: #ef4444; --text: #f8fafc; }
+        * { box-sizing: border-box; font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 90px; }
+        header { background: var(--card); padding: 15px; border-bottom: 2px solid var(--accent); text-align: center; position: sticky; top: 0; z-index: 100; }
+        header h1 { margin: 0; font-size: 14px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+        nav { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; border-top: 1px solid #334155; height: 70px; z-index: 100; }
+        .nav-btn { flex: 1; border: none; background: none; padding: 10px; font-size: 10px; font-weight: bold; color: var(--text); opacity: 0.4; }
+        .nav-btn.active { opacity: 1; color: var(--accent); border-top: 3px solid var(--accent); }
+        .container { padding: 12px; }
+        .card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 12px; border: 1px solid #334155; }
+        label { font-size: 11px; color: #94a3b8; font-weight: bold; display: block; margin-bottom: 5px; }
+        input, select, textarea { background: #0f172a; border: 1px solid #334155; padding: 12px; border-radius: 8px; width: 100%; margin-bottom: 10px; color: white; font-size: 16px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .btn-c { border: none; border-radius: 10px; padding: 15px 5px; font-weight: bold; text-align: center; color: white; min-height: 80px; }
+        .btn-c b { font-size: 24px; display: block; margin-bottom: 4px; }
+        .estacion-row { background: #0f172a; padding: 12px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--accent); border-right: 1px solid #334155; }
+        .timer { font-family: monospace; font-size: 22px; color: var(--danger); font-weight: bold; }
+        .btn-action { background: var(--accent); color: #000; border: none; padding: 15px; border-radius: 10px; width: 100%; font-weight: bold; margin-top: 10px; font-size: 14px; }
         .hidden { display: none; }
+        .preview-img { width: 55px; height: 55px; object-fit: cover; border-radius: 6px; margin: 3px; border: 1px solid var(--accent); }
     </style>
 </head>
-<body onload="cargarTodo()">
+<body onload="init()">
 
-<div id="loading"><h2>🚀 GENERANDO PDF...</h2><p>Organizando datos y fotos...</p></div>
+<header><h1 id="h-title">IDENTIFICACIÓN</h1></header>
 
-<div class="fixed-top">
-    <header><div class="logo-u">U</div><div style="font-weight: bold; font-size: 14px;">GESTIÓN PRODUCCIÓN</div></header>
-    <div class="tabs">
-        <button class="tab-btn active" id="btn-calidad" onclick="cambiarTab('calidad')">Calidad</button>
-        <button class="tab-btn" id="btn-final" onclick="cambiarTab('final')">Final</button>
-        <button class="tab-btn" id="btn-eventos" onclick="cambiarTab('eventos')">Eventos</button>
-    </div>
-</div>
-
-<div class="contenido">
-    <div class="card">
-        <div class="grid-inputs">
-            <div class="campo"><label>Fecha</label><input type="date" id="fecha" onchange="guardarTodo()"></div>
-            <div class="campo"><label>Turno</label><select id="turno" onchange="guardarTodo()"><option>Mañana</option><option>Tarde</option><option>Noche</option></select></div>
-            <div class="campo"><label>OF</label><input type="text" id="of" placeholder="Nº Orden" oninput="guardarTodo()"></div>
-            <div class="campo"><label>Gráfica</label><input type="text" id="grafica" placeholder="Nombre" oninput="guardarTodo()"></div>
-            <div class="campo full-width"><label>Sustrato</label><input type="text" id="sustrato" placeholder="Material..." oninput="guardarTodo()"></div>
-        </div>
-    </div>
-
-    <div id="vista-produccion">
-        <div style="display:flex; gap:10px; margin-bottom:15px;">
-            <button class="btn-main btn-ok" onclick="sumarUno('ok')"><span>PIEZAS OK</span><span id="val-ok" style="font-size:32px; font-weight:bold;">0</span></button>
-            <button class="btn-edit" onclick="editarManual('ok')">✎</button>
-        </div>
-        <div style="display:flex; gap:10px; margin-bottom:15px;">
-            <button class="btn-main btn-nook" onclick="abrirDefectos()"><span>PIEZAS NO OK</span><span id="val-nook" style="font-size:32px; font-weight:bold;">0</span></button>
-            <button class="btn-edit" onclick="editarManual('nook')">✎</button>
-        </div>
-        <div class="grid-inputs">
-            <div class="card" style="text-align:center; margin:0;"><small>TOTAL</small><br><b id="val-total" style="font-size:20px;">0</b></div>
-            <div class="card" style="text-align:center; margin:0;"><small>EFICIENCIA</small><br><b id="val-pct" style="font-size:20px; color:var(--success);">0%</b></div>
-        </div>
-    </div>
-
-    <div id="vista-eventos" class="hidden">
+<div class="container">
+    <div id="p-inicio" class="content">
         <div class="card">
-            <h3 style="margin-top:0">Nueva Parada</h3>
-            <div class="campo">
-                <label>Estación</label>
-                <select id="ev-estacion">
-                    <option>HORNOS</option>
-                    <option>ROBOTTIONS</option>
-                    <option>CABINA 1</option>
-                    <option>KERAJET</option>
-                    <option>CABINA 2</option>
-                    <option>ERRECE</option>
-                </select>
+            <label>DATOS DEL TURNO</label>
+            <input type="date" id="fecha" onchange="g()">
+            <div style="display:flex; gap:10px;">
+                <select id="equipo" onchange="g()"><option>T1</option><option>T2</option><option>T3</option></select>
+                <select id="turno" onchange="g()"><option>Mañana</option><option>Tarde</option><option>Noche</option></select>
             </div>
-            <div class="grid-inputs">
-                <div class="campo"><label>Inicio</label><input type="time" id="ev-inicio"></div>
-                <div class="campo"><label>Fin</label><input type="time" id="ev-fin"></div>
-            </div>
-            <div class="campo"><label>Motivo</label><textarea id="ev-desc" rows="2" placeholder="Describa la parada..."></textarea></div>
-            <button class="btn-finalizar" style="background:var(--info); padding:12px;" onclick="document.getElementById('cam-input-event').click()">📸 FOTO / GALERÍA</button>
-            <p id="ev-foto-status" style="display:none; color:var(--success); text-align:center; font-size:12px; margin:5px;">✓ Imagen cargada</p>
-            <button class="btn-finalizar" style="background:var(--primary);" onclick="guardarEvento()">💾 GUARDAR PARADA</button>
+            <label>PRODUCCIÓN</label>
+            <input type="text" id="of" placeholder="Nº Orden (OF)" oninput="g()">
+            <input type="text" id="sap" placeholder="Código SAP" oninput="g()">
+            <input type="text" id="modelo" placeholder="Modelo / UNDORA" oninput="g()">
         </div>
     </div>
 
-    <button class="btn-finalizar" onclick="compartirInforme()">📤 GENERAR INFORME PDF</button>
-    <button class="btn-reset" onclick="resetearTodo()">🗑️ LIMPIAR TURNO (BORRAR TODO)</button>
+    <div id="p-crudo" class="content hidden">
+        <div class="card">
+            <div class="grid-3">
+                <button class="btn-count btn-c" style="background:var(--success)" onclick="sumar('c','ok')"><b>OK</b><span id="c-ok">0</span></button>
+                <button class="btn-count btn-c" style="background:var(--warning); color:black;" onclick="sumar('c','r1')"><b>R1</b><span id="c-r1">0</span></button>
+                <button class="btn-count btn-c" style="background:var(--danger)" onclick="sumar('c','ko')"><b>KO</b><span id="c-ko">0</span></button>
+            </div>
+            <div id="gal-c" style="margin-top:10px; display:flex; flex-wrap:wrap;"></div>
+        </div>
+    </div>
+
+    <div id="p-final" class="content hidden">
+        <div class="card">
+            <div class="grid-3">
+                <button class="btn-count btn-c" style="background:var(--success)" onclick="sumar('f','ok')"><b>OK</b><span id="f-ok">0</span></button>
+                <button class="btn-count btn-c" style="background:var(--warning); color:black;" onclick="sumar('f','r1')"><b>R1</b><span id="f-r1">0</span></button>
+                <button class="btn-count btn-c" style="background:var(--danger)" onclick="sumar('f','ko')"><b>KO</b><span id="f-ko">0</span></button>
+            </div>
+            <div id="gal-f" style="margin-top:10px; display:flex; flex-wrap:wrap;"></div>
+        </div>
+    </div>
+
+    <div id="p-eventos" class="content hidden">
+        <div id="lista-est"></div>
+        <div class="card">
+            <label>REGISTRO LIBRETA (DIFERIDO)</label>
+            <div style="display:flex; gap:5px;"><input type="time" id="m-i"> <input type="time" id="m-f"></div>
+            <select id="m-est"><option>KERAJET</option><option>SMALTEC</option><option>PRENSAS</option><option>MECÁNICO</option><option>SECADERO</option></select>
+            <textarea id="m-o" placeholder="Motivo de la parada..."></textarea>
+            <button class="btn-action" onclick="saveLibreta()">GUARDAR PARADA</button>
+        </div>
+    </div>
+
+    <div id="p-resumen" class="content hidden">
+        <div class="card" id="res-view" style="font-size:12px; white-space:pre-wrap; background:#0f172a; border:1px solid var(--accent);"></div>
+        <button class="btn-action" style="background:#25d366; color:white;" onclick="enviarWA()">ENVIAR WHATSAPP</button>
+        <button class="btn-action" style="background:#ef4444; color:white;" onclick="pdf()">DESCARGAR PDF</button>
+        <button class="btn-action" style="background:#475569; color:white;" onclick="limpiar()">BORRAR TURNO</button>
+    </div>
 </div>
 
-<div id="modal-app" class="modal"><div class="modal-box" id="modal-content"></div></div>
+<input type="file" id="cam" accept="image/*" class="hidden" onchange="proc(event)">
 
-<input type="file" id="cam-input" accept="image/*" style="display:none" onchange="fotoProcesada(event)">
-<input type="file" id="cam-input-event" accept="image/*" style="display:none" onchange="fotoEventoProcesada(event)">
+<nav>
+    <button class="nav-btn active" onclick="tab('inicio',this,'IDENTIFICACIÓN')">INICIO</button>
+    <button class="nav-btn" onclick="tab('crudo',this,'CALIDAD CRUDO')">CRUDO</button>
+    <button class="nav-btn" onclick="tab('final',this,'FINAL EMBALAJE')">FINAL</button>
+    <button class="nav-btn" onclick="tab('eventos',this,'PARADAS')">PARADAS</button>
+    <button class="nav-btn" onclick="tab('resumen',this,'INFORME')">INFORME</button>
+</nav>
 
 <script>
-    const CONFIG = { 
-        calidad: ["Bultos", "Malla suelta", "Rota", "Sucia"], 
-        final: ["Gota Kerajet", "Tono", "Rascada", "Manchada", "Impresión cancelada a mitad", "Esquina rota", "Borde roto"] 
+    const ests = ["KERAJET", "SMALTEC", "PRENSAS", "SECADERO", "MECÁNICO"];
+    let db = { 
+        of:'', sap:'', modelo:'', equipo:'T1', turno:'Mañana',
+        c:{ok:0, r1:0, ko:0, fotos:[], logs:[]}, f:{ok:0, r1:0, ko:0, fotos:[], logs:[]},
+        p: {}, s: {}, l: [] 
     };
-    const STORAGE_KEY = 'PROD_V13_DUAL';
-    let db = { calidad: { ok: 0, nook: 0, registros: [] }, final: { ok: 0, nook: 0, registros: [] }, eventos: [], cabecera: { fecha: "", turno: "Mañana", of: "", grafica: "", sustrato: "" } };
-    let tabActual = 'calidad', pasoFoto = 0, defectoSeleccionado = "", tempFotoEvento = null;
+    let curZ = '';
 
-    function guardarTodo() { db.cabecera = { fecha: document.getElementById('fecha').value, turno: document.getElementById('turno').value, of: document.getElementById('of').value, grafica: document.getElementById('grafica').value, sustrato: document.getElementById('sustrato').value }; localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); }
-    function cargarTodo() { const guardado = localStorage.getItem(STORAGE_KEY); if (guardado) { db = JSON.parse(guardado); document.getElementById('fecha').value = db.cabecera.fecha || ""; document.getElementById('turno').value = db.cabecera.turno || "Mañana"; document.getElementById('of').value = db.cabecera.of || ""; document.getElementById('grafica').value = db.cabecera.grafica || ""; document.getElementById('sustrato').value = db.cabecera.sustrato || ""; } else { document.getElementById('fecha').valueAsDate = new Date(); } actualizarUI(); }
-    function resetearTodo() { if(confirm("⚠️ ¿Borrar datos?")) { localStorage.removeItem(STORAGE_KEY); location.reload(); } }
-    function cambiarTab(t) { tabActual = t; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-' + t).classList.add('active'); document.getElementById('vista-produccion').classList.toggle('hidden', t === 'eventos'); document.getElementById('vista-eventos').classList.toggle('hidden', t !== 'eventos'); actualizarUI(); }
-    function sumarUno(tipo) { db[tabActual][tipo]++; actualizarUI(); guardarTodo(); }
-    function editarManual(tipo) { let v = prompt("Cantidad:", db[tabActual][tipo]); if(v !== null) { db[tabActual][tipo] = parseInt(v) || 0; actualizarUI(); guardarTodo(); } }
-
-    function abrirDefectos() {
-        const mc = document.getElementById('modal-content');
-        mc.innerHTML = `<h3>Fallo en ${tabActual.toUpperCase()}</h3><div id="btns-d"></div><button onclick="cerrarModal()" style="margin-top:15px; width:100%; padding:10px; border-radius:10px;">Cerrar</button>`;
-        CONFIG[tabActual].forEach(d => { mc.querySelector('#btns-d').innerHTML += `<button class="defecto-btn" onclick="iniciarFotos('${d}')">${d}</button>`; });
-        document.getElementById('modal-app').style.display = 'flex';
-    }
-    function iniciarFotos(d) { defectoSeleccionado = d; pasoFoto = 1; mostrarPasoFoto(); }
-    function mostrarPasoFoto() { document.getElementById('modal-content').innerHTML = `<h3>${pasoFoto === 1 ? '📸 FOTO DEFECTO' : '📸 FOTO LOTE'}</h3><p>${defectoSeleccionado}</p><button class="defecto-btn" style="background:var(--primary); color:white; text-align:center;" onclick="document.getElementById('cam-input').click()">HACER FOTO O ELEGIR GALERÍA</button>`; }
-    function fotoProcesada(e) { if(!e.target.files[0]) return; const r = new FileReader(); r.onload = (f) => { if(pasoFoto === 1) { db[tabActual].nook++; db[tabActual].registros.push({ defecto: defectoSeleccionado, hora: new Date().toLocaleTimeString(), foto1: f.target.result, foto2: null }); pasoFoto = 2; mostrarPasoFoto(); } else { db[tabActual].registros[db[tabActual].registros.length - 1].foto2 = f.target.result; cerrarModal(); actualizarUI(); guardarTodo(); } }; r.readAsDataURL(e.target.files[0]); }
-    function fotoEventoProcesada(e) { if(!e.target.files[0]) return; const r = new FileReader(); r.onload = (f) => { tempFotoEvento = f.target.result; document.getElementById('ev-foto-status').style.display = 'block'; }; r.readAsDataURL(e.target.files[0]); }
-
-    function guardarEvento() {
-        const est = document.getElementById('ev-estacion').value, ini = document.getElementById('ev-inicio').value, fin = document.getElementById('ev-fin').value, des = document.getElementById('ev-desc').value;
-        if (!ini || !fin || !des) return alert("Faltan datos.");
-        const [h1, m1] = ini.split(':').map(Number), [h2, m2] = fin.split(':').map(Number);
-        let d1 = new Date(), d2 = new Date(); d1.setHours(h1, m1, 0); d2.setHours(h2, m2, 0);
-        if (d2 < d1) d2.setDate(d2.getDate() + 1);
-        const mins = Math.floor((d2 - d1) / 60000);
-        db.eventos.push({ estacion: est, inicio: ini, fin: fin, desc: des, foto: tempFotoEvento, minutos: mins });
-        tempFotoEvento = null; document.getElementById('ev-foto-status').style.display = 'none';
-        document.getElementById('ev-inicio').value = ""; document.getElementById('ev-fin').value = ""; document.getElementById('ev-desc').value = "";
-        guardarTodo(); actualizarUI(); alert("Parada guardada.");
+    function init() {
+        const local = localStorage.getItem('PROD_V55');
+        if(local) db = JSON.parse(local);
+        ests.forEach(e => { if(!db.p[e]) db.p[e]=0; });
+        renderEst();
+        r();
     }
 
-    function cerrarModal() { document.getElementById('modal-app').style.display = 'none'; }
-    function actualizarUI() { const d = db[tabActual]; document.getElementById('val-ok').innerText = d.ok; document.getElementById('val-nook').innerText = d.nook; const total = d.ok + d.nook; document.getElementById('val-total').innerText = total; document.getElementById('val-pct').innerText = total > 0 ? ((d.ok / total) * 100).toFixed(1) + "%" : "0%"; }
+    function tab(id, btn, tit) {
+        document.querySelectorAll('.content').forEach(c => c.classList.add('hidden'));
+        document.getElementById('p-'+id).classList.remove('hidden');
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('h-title').innerText = tit;
+        if(id === 'resumen') build();
+    }
 
-    async function compartirInforme() {
-        const { jsPDF } = window.jspdf; const doc = new jsPDF();
-        document.getElementById('loading').style.display = 'flex';
-        const { of, turno, fecha, grafica, sustrato } = db.cabecera;
-
-        doc.setFontSize(18); doc.setTextColor(44, 62, 80); doc.text("INFORME DE PRODUCCIÓN", 14, 20);
-        doc.setFontSize(10); doc.text(`OF: ${of} | Gráfica: ${grafica} | Material: ${sustrato}`, 14, 28);
-        doc.text(`Turno: ${turno} | Fecha: ${fecha}`, 14, 34);
-        doc.line(14, 38, 196, 38);
-
-        doc.setFontSize(14); doc.text("1. RESUMEN DE PIEZAS", 14, 48);
-        doc.setFontSize(11);
-        doc.setFillColor(245, 245, 245); doc.rect(14, 52, 182, 12, 'F');
-        doc.text(`SECCIÓN CALIDAD:    OK: ${db.calidad.ok}   |   FALLOS: ${db.calidad.nook}`, 20, 60);
-        doc.setFillColor(245, 245, 245); doc.rect(14, 66, 182, 12, 'F');
-        doc.text(`SECCIÓN FINAL:      OK: ${db.final.ok}   |   FALLOS: ${db.final.nook}`, 20, 74);
-
-        let totalMins = db.eventos.reduce((a, b) => a + b.minutos, 0);
-        doc.setFontSize(14); doc.text("2. TIEMPOS DE PARADA", 14, 92);
-        doc.setFontSize(11); doc.setTextColor(231, 76, 60);
-        doc.text(`TIEMPO TOTAL PARADO: ${totalMins} minutos`, 14, 100);
-        
-        doc.setTextColor(0); doc.setFontSize(10);
-        let res = {}; db.eventos.forEach(e => { res[e.estacion] = (res[e.estacion] || 0) + e.minutos; });
-        let yRes = 108;
-        for (const st in res) { doc.text(`• ${st}: ${res[st]} min.`, 20, yRes); yRes += 6; }
-
-        let currentY = yRes + 10;
-        const checkP = (h) => { if(currentY + h > 280) { doc.addPage(); currentY = 20; } };
-
-        const imprimirSeccion = (titulo, registros) => {
-            if(registros.length === 0) return;
-            checkP(20); doc.setFontSize(14); doc.text(titulo, 14, currentY); currentY += 10;
-            registros.forEach(r => {
-                checkP(60); doc.setFontSize(9); doc.setFont(undefined, 'bold');
-                doc.text(`${r.defecto} (${r.hora})`, 14, currentY);
-                doc.setFont(undefined, 'normal');
-                if(r.foto1) doc.addImage(r.foto1, 'JPEG', 14, currentY+2, 85, 48);
-                if(r.foto2) doc.addImage(r.foto2, 'JPEG', 105, currentY+2, 85, 48);
-                currentY += 55;
-            });
-        };
-
-        imprimirSeccion("DETALLE FALLOS CALIDAD", db.calidad.registros);
-        imprimirSeccion("DETALLE FALLOS FINAL", db.final.registros);
-
-        if(db.eventos.length > 0) {
-            checkP(20); doc.setFontSize(14); doc.text("DETALLE DE PARADAS", 14, currentY); currentY += 10;
-            db.eventos.forEach(ev => {
-                let descLineas = doc.splitTextToSize(`${ev.estacion} (${ev.minutos} min): ${ev.desc}`, 170);
-                let altoTexto = descLineas.length * 5;
-                checkP(ev.foto ? 70 : altoTexto + 5);
-                doc.setFontSize(9); doc.text(descLineas, 14, currentY);
-                currentY += altoTexto;
-                if(ev.foto) { doc.addImage(ev.foto, 'JPEG', 14, currentY, 80, 50); currentY += 55; } else { currentY += 5; }
-            });
+    function sumar(z, t) {
+        db[z][t]++; // SUMA AL INSTANTE
+        curZ = z;
+        if(t !== 'ok') {
+            const m = prompt("Motivo del defecto:", "Gotas");
+            if(m) {
+                db[z].logs.push({t: t.toUpperCase(), m: m, h: new Date().toLocaleTimeString()});
+                if(confirm("¿Quieres adjuntar foto?")) {
+                    document.getElementById('cam').click();
+                }
+            }
         }
+        r(); g();
+    }
 
-        const pdfBlob = doc.output('blob');
-        const file = new File([pdfBlob], `Informe_${of}.pdf`, { type: 'application/pdf' });
-        document.getElementById('loading').style.display = 'none';
-        if (navigator.share) await navigator.share({ files: [file] }).catch(() => doc.save(`Informe_${of}.pdf`));
-        else doc.save(`Informe_${of}.pdf`);
+    function proc(e) {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => { 
+            db[curZ].fotos.push(ev.target.result); 
+            r(); g(); 
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function renderEst() {
+        document.getElementById('lista-est').innerHTML = ests.map(e => `
+            <div class="estacion-row">
+                <b>${e}</b>
+                <span class="timer" id="tm-${e}">${fmt(db.p[e])}</span>
+                <button onclick="tog('${e}')" id="bt-${e}" style="background:var(--success); border:none; padding:10px; border-radius:8px; font-weight:bold; width:80px; color:white;">PLAY</button>
+            </div>
+        `).join('');
+    }
+
+    function tog(e) {
+        const b = document.getElementById('bt-'+e);
+        if(!db.s[e]) {
+            db.s[e] = Date.now();
+            b.innerText = "STOP"; b.style.background = "var(--danger)";
+        } else {
+            let segs = Math.floor((Date.now() - db.s[e])/1000);
+            db.p[e] += segs;
+            const obs = prompt("Motivo de parada "+e+":");
+            db.l.push({h: new Date().toLocaleTimeString(), e: e, d: Math.floor(segs/60), o: obs || "Ajuste"});
+            db.s[e] = null;
+            b.innerText = "PLAY"; b.style.background = "var(--success)";
+        }
+        r(); g();
+    }
+
+    function saveLibreta() {
+        const i=document.getElementById('m-i').value, f=document.getElementById('m-f').value, o=document.getElementById('m-o').value, st=document.getElementById('m-est').value;
+        if(!i || !f) return alert("Indica hora inicio y fin");
+        db.l.push({h: i+" a "+f, e: st, d: "Libreta", o: o});
+        r(); g(); alert("Guardado");
+    }
+
+    function fmt(s) { return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; }
+
+    function r() {
+        document.getElementById('of').value = db.of;
+        document.getElementById('sap').value = db.sap;
+        document.getElementById('modelo').value = db.modelo;
+        ['ok','r1','ko'].forEach(t => {
+            document.getElementById('c-'+t).innerText = db.c[t];
+            document.getElementById('f-'+t).innerText = db.f[t];
+        });
+        document.getElementById('gal-c').innerHTML = db.c.fotos.map(f => `<img src="${f}" class="preview-img">`).join('');
+        document.getElementById('gal-f').innerHTML = db.f.fotos.map(f => `<img src="${f}" class="preview-img">`).join('');
+        ests.forEach(e => { if(document.getElementById('tm-'+e)) document.getElementById('tm-'+e).innerText = fmt(db.p[e]); });
+    }
+
+    function g() {
+        db.of = document.getElementById('of').value;
+        db.sap = document.getElementById('sap').value;
+        db.modelo = document.getElementById('modelo').value;
+        db.equipo = document.getElementById('equipo').value;
+        db.turno = document.getElementById('turno').value;
+        localStorage.setItem('PROD_V55', JSON.stringify(db));
+    }
+
+    function build() {
+        let totalS = 0; ests.forEach(e => totalS += db.p[e]);
+        let txt = `*INFORME PRODUCCIÓN*\nEQUIPO: ${db.equipo} | TURNO: ${db.turno}\nOF: ${db.of} | MODELO: ${db.modelo}\n\n`;
+        txt += `*CALIDAD CRUDO*\nOK: ${db.c.ok} | R1: ${db.c.r1} | KO: ${db.c.ko}\n`;
+        txt += `*CALIDAD FINAL*\nOK: ${db.f.ok} | R1: ${db.f.r1} | KO: ${db.f.ko}\n\n`;
+        txt += `*TIEMPO TOTAL PARADAS:* ${Math.floor(totalS/60)} min\n\n`;
+        txt += `*DETALLE EVENTOS:*\n`;
+        db.l.forEach(x => txt += `- [${x.h}] ${x.e}: ${x.o}\n`);
+        document.getElementById('res-view').innerText = txt;
+    }
+
+    function enviarWA() {
+        const t = encodeURIComponent(document.getElementById('res-view').innerText);
+        window.open(`https://wa.me/?text=${t}`);
+    }
+
+    function pdf() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        let y = 15;
+        doc.setFontSize(16); doc.text("INFORME DE PRODUCCIÓN - OF " + db.of, 10, y); y += 12;
+        doc.setFontSize(10); doc.text(`Equipo: ${db.equipo} | Turno: ${db.turno} | Modelo: ${db.modelo}`, 10, y); y += 15;
+        
+        doc.text("--- CALIDAD CRUDO ---", 10, y); y += 8;
+        doc.text(`OK: ${db.c.ok} | R1: ${db.c.r1} | KO: ${db.c.ko}`, 10, y); y += 7;
+        db.c.logs.forEach(l => { doc.text(`> ${l.h} - ${l.t}: ${l.m}`, 15, y); y += 5; });
+        db.c.fotos.forEach(f => { if(y>240){doc.addPage(); y=20;} doc.addImage(f, 'JPEG', 10, y, 45, 45); y += 50; });
+
+        if(y>230){doc.addPage(); y=20;}
+        doc.text("--- CALIDAD FINAL ---", 10, y); y += 8;
+        doc.text(`OK: ${db.f.ok} | R1: ${db.f.r1} | KO: ${db.f.ko}`, 10, y); y += 7;
+        db.f.logs.forEach(l => { doc.text(`> ${l.h} - ${l.t}: ${l.m}`, 15, y); y += 5; });
+        db.f.fotos.forEach(f => { if(y>240){doc.addPage(); y=20;} doc.addImage(f, 'JPEG', 10, y, 45, 45); y += 50; });
+        
+        doc.save(`Prod_${db.of}.pdf`);
+    }
+
+    function limpiar() {
+        if(confirm("¿Seguro que quieres borrar todos los datos del turno?")) {
+            localStorage.removeItem('PROD_V55');
+            location.reload();
+        }
     }
 </script>
 </body>
