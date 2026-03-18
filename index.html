@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PROD V37 - CÓDIGO SAP</title>
+    <title>PROD V39 - GALERÍA Y COMPARTIR</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
@@ -11,8 +11,7 @@
         * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); overflow-x: hidden; }
 
-        /* HEADER & SIDEBAR */
-        header { background: var(--primary); color: white; padding: 15px; display: flex; align-items: center; position: sticky; top:0; z-index:1000; }
+        header { background: var(--primary); color: white; padding: 15px; display: flex; align-items: center; position: sticky; top:0; z-index: 1000; }
         .menu-icon { font-size: 24px; margin-right: 15px; cursor: pointer; }
         
         .sidebar { position: fixed; left: -260px; top: 0; width: 260px; height: 100%; background: var(--sidebar); color: white; transition: 0.3s; z-index: 2000; padding-top: 20px; }
@@ -24,33 +23,37 @@
         .contenido { padding: 15px; }
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 15px; }
         label { font-size: 10px; font-weight: 800; color: #7f8c8d; text-transform: uppercase; margin-bottom: 5px; display: block; }
-        input, select { padding: 12px; border: 1px solid #dce1e5; border-radius: 8px; width: 100%; font-size: 14px; margin-bottom: 10px; }
+        input, select, textarea { padding: 12px; border: 1px solid #dce1e5; border-radius: 8px; width: 100%; font-size: 14px; margin-bottom: 10px; }
         
-        .fila-accion { display: flex; gap: 8px; margin-bottom: 12px; align-items: stretch; }
-        .btn-count { flex: 1; border: none; border-radius: 16px; padding: 15px; color: white; font-weight: bold; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 0 rgba(0,0,0,0.15); }
+        .fila-accion { display: flex; gap: 8px; margin-bottom: 12px; }
+        .btn-count { flex: 1; border: none; border-radius: 16px; padding: 15px; color: white; font-weight: bold; display: flex; flex-direction: column; align-items: center; }
         .btn-edit { width: 55px; background: white; border: 2px solid #eee; border-radius: 16px; color: var(--info); font-size: 20px; display: flex; align-items: center; justify-content: center; }
         
-        .btn-ok { background: var(--success); }
-        .btn-r1 { background: var(--r1); }
-        .btn-ko { background: var(--ko); }
-
+        .btn-ok { background: var(--success); } .btn-r1 { background: var(--r1); } .btn-ko { background: var(--ko); }
         .btn-action { background: #007bff; color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; font-weight: bold; }
+        
+        .resumen-tabla { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+        .resumen-tabla th { text-align: left; background: #f8f9fa; padding: 8px; }
+        .resumen-tabla td { border-bottom: 1px solid #eee; padding: 8px; }
+        .tag-eq { padding: 2px 5px; border-radius: 4px; background: #34495e; color: white; font-size: 10px; }
+
         #loading { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); z-index:5000; flex-direction: column; align-items:center; justify-content:center; }
         .hidden { display: none; }
         .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:2500; align-items:center; justify-content:center; }
-        .modal-box { background:white; width:92%; padding:20px; border-radius:15px; max-height: 80vh; overflow-y: auto; }
+        .modal-box { background:white; width:92%; padding:20px; border-radius:15px; max-height: 85vh; overflow-y: auto; }
     </style>
 </head>
 <body onload="cargarTodo()">
 
-<div id="loading"><h3 id="load-text">🔍 ANALIZANDO LOTE...</h3></div>
+<div id="loading"><h3>🔍 PROCESANDO...</h3></div>
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
 <div class="sidebar" id="sidebar">
-    <div style="padding: 20px; font-size: 20px; border-bottom: 2px solid var(--r1); margin-bottom: 10px;"><b>PROD V37</b></div>
+    <div style="padding: 20px; font-size: 20px; border-bottom: 2px solid var(--r1); margin-bottom: 10px;"><b>PROD V39</b></div>
     <div class="sidebar-item" onclick="cambiarSeccion('id')">🆔 IDENTIFICACIÓN</div>
     <div class="sidebar-item" onclick="cambiarSeccion('calidad')">🏺 CALIDAD (CRUDO)</div>
     <div class="sidebar-item" onclick="cambiarSeccion('final')">📦 FINAL (EMBALAJE)</div>
+    <div class="sidebar-item" onclick="cambiarSeccion('eventos')">🛑 PARADAS / EVENTOS</div>
     <div class="sidebar-item" onclick="cambiarSeccion('resumen')" style="color:var(--r1)">📊 RESUMEN TURNO</div>
 </div>
 
@@ -63,25 +66,15 @@
     
     <div id="sec-id" class="seccion">
         <div class="card">
-            <label>Fecha del Informe</label>
-            <input type="date" id="fecha" onchange="guardarTodo()">
-            
-            <label>Orden de Fabricación (OF)</label>
-            <input type="text" id="of" placeholder="Nº de Orden" oninput="guardarTodo()">
-            
-            <label>Código SAP</label>
-            <input type="text" id="sap" placeholder="Introduce Código SAP" oninput="guardarTodo()">
-            
+            <label>Fecha</label><input type="date" id="fecha" onchange="guardarTodo()">
+            <label>OF / Lote</label><input type="text" id="of" oninput="guardarTodo()">
+            <label>Código SAP</label><input type="text" id="sap" oninput="guardarTodo()">
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                 <div><label>Turno</label><select id="turno" onchange="guardarTodo()"><option>Mañana</option><option>Tarde</option><option>Noche</option></select></div>
-                <div><label>Mi Equipo</label><select id="equipo" onchange="guardarTodo()"><option>T1</option><option>T2</option><option>T3</option></select></div>
+                <div><label>Equipo</label><select id="equipo" onchange="guardarTodo()"><option>T1</option><option>T2</option><option>T3</option></select></div>
             </div>
-            
-            <label>Sustrato</label>
-            <input type="text" id="sustrato" placeholder="Ej: Pasta Blanca" oninput="guardarTodo()">
-            
-            <label>Gráfica</label>
-            <input type="text" id="grafica" placeholder="Ej: Marmol V2" oninput="guardarTodo()">
+            <label>Sustrato</label><input type="text" id="sustrato" oninput="guardarTodo()">
+            <label>Gráfica</label><input type="text" id="grafica" oninput="guardarTodo()">
         </div>
     </div>
 
@@ -115,89 +108,79 @@
         </div>
     </div>
 
+    <div id="sec-eventos" class="seccion hidden">
+        <div class="card">
+            <label>Estación</label>
+            <select id="ev-estacion"><option>Carga/LGV</option><option>Kerajet</option><option>Hornos</option><option>Embaladora</option><option>Otros</option></select>
+            <label>Motivo</label>
+            <div style="display:flex; gap:5px;">
+                <textarea id="ev-desc" rows="2"></textarea>
+                <button onclick="iniciarVoz()" style="background:#95a5a6; border:none; border-radius:8px; width:50px; color:white;">🎤</button>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div><label>Inicio</label><input type="time" id="ev-ini"></div>
+                <div><label>Fin</label><input type="time" id="ev-fin"></div>
+            </div>
+            <button class="btn-action" onclick="guardarEvento()">💾 REGISTRAR PARADA</button>
+        </div>
+    </div>
+
     <div id="sec-resumen" class="seccion hidden">
         <div id="resumen-lista"></div>
-        <button class="btn-action" onclick="alert('Generando PDF...')">📤 EXPORTAR INFORME</button>
+        <button class="btn-action" onclick="generarInformeDetallado()">📤 ENVIAR INFORME POR WHATSAPP</button>
     </div>
 
 </div>
 
 <div id="modal-app" class="modal"><div class="modal-box" id="modal-content"></div></div>
-<input type="file" id="in-cam" accept="image/*" capture="environment" style="display:none" onchange="procesarFoto(event)">
+<input type="file" id="in-cam" accept="image/*" style="display:none" onchange="procesarFoto(event)">
 
 <script>
-    // Configuración de defectos
-    const CONFIG = {
-        calidad: { r1: ["Bultos", "Manchada", "1 malla suelta"], ko: ["Rota", "Malla suelta", "Playa"] },
-        final: { r1: ["Fallo Kerajet", "Gota", "Rascada"], ko: ["Rota", "Mallas sueltas", "Fallo Flawmaster"] }
-    };
-
-    let db = { calidad: { ok: 0, r1: 0, ko: 0, registros: [] }, final: { ok: 0, r1: 0, ko: 0, registros: [] }, cabecera: { fecha: new Date().toISOString().split('T')[0], of: "", sap: "", equipo: "T1", turno: "Mañana", sustrato: "", grafica: "" } };
+    let db = { calidad: { ok: 0, r1: 0, ko: 0, registros: [] }, final: { ok: 0, r1: 0, ko: 0, registros: [] }, eventos: [], cabecera: { fecha: new Date().toISOString().split('T')[0], of: "", sap: "", equipo: "T1", turno: "Mañana", sustrato: "", grafica: "" } };
     let tabActual = 'calidad', pasoFoto = 1, defectoActivo = "", valoracionActiva = "";
 
-    function toggleMenu() {
-        document.getElementById('sidebar').classList.toggle('active');
-        document.getElementById('overlay').classList.toggle('active');
-    }
-
+    function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
     function cambiarSeccion(sec) {
         document.querySelectorAll('.seccion').forEach(s => s.classList.add('hidden'));
         document.getElementById('sec-' + sec).classList.remove('hidden');
-        const nombres = { 'id': 'IDENTIFICACIÓN', 'calidad': 'CALIDAD (CRUDO)', 'final': 'FINAL (EMBALAJE)', 'resumen': 'RESUMEN TURNO' };
-        document.getElementById('titulo-seccion').innerText = nombres[sec];
         if(sec === 'calidad' || sec === 'final') tabActual = sec;
         toggleMenu(); actualizarUI();
     }
 
     function guardarTodo() {
-        db.cabecera = { 
-            fecha: document.getElementById('fecha').value, 
-            of: document.getElementById('of').value, 
-            sap: document.getElementById('sap').value,
-            equipo: document.getElementById('equipo').value, 
-            turno: document.getElementById('turno').value, 
-            sustrato: document.getElementById('sustrato').value, 
-            grafica: document.getElementById('grafica').value 
-        };
-        localStorage.setItem('PROD_V37', JSON.stringify(db));
+        db.cabecera = { fecha: document.getElementById('fecha').value, of: document.getElementById('of').value, sap: document.getElementById('sap').value, equipo: document.getElementById('equipo').value, turno: document.getElementById('turno').value, sustrato: document.getElementById('sustrato').value, grafica: document.getElementById('grafica').value };
+        localStorage.setItem('PROD_V39', JSON.stringify(db));
     }
 
     function cargarTodo() {
-        const g = localStorage.getItem('PROD_V37');
-        if(g) db = JSON.parse(g);
+        const g = localStorage.getItem('PROD_V39'); if(g) db = JSON.parse(g);
         document.getElementById('fecha').value = db.cabecera.fecha;
         document.getElementById('of').value = db.cabecera.of;
-        document.getElementById('sap').value = db.cabecera.sap || "";
+        document.getElementById('sap').value = db.cabecera.sap;
         document.getElementById('equipo').value = db.cabecera.equipo;
         document.getElementById('turno').value = db.cabecera.turno;
-        document.getElementById('sustrato').value = db.cabecera.sustrato || "";
-        document.getElementById('grafica').value = db.cabecera.grafica || "";
+        document.getElementById('sustrato').value = db.cabecera.sustrato;
+        document.getElementById('grafica').value = db.cabecera.grafica;
         actualizarUI();
     }
 
     function sumarUno(tipo) { db[tabActual][tipo]++; actualizarUI(); guardarTodo(); }
-    
-    function editarCifra(tipo) {
-        let n = prompt(`Nuevo valor para ${tipo.toUpperCase()}:`, db[tabActual][tipo]);
-        if(n !== null) { db[tabActual][tipo] = parseInt(n) || 0; actualizarUI(); guardarTodo(); }
-    }
+    function editarCifra(tipo) { let n = prompt(`Nuevo valor:`, db[tabActual][tipo]); if(n) { db[tabActual][tipo] = parseInt(n); actualizarUI(); guardarTodo(); } }
 
     function abrirDefectos(tipoVal) {
         valoracionActiva = tipoVal;
         let h = `<h3>Motivo ${tipoVal.toUpperCase()}</h3>`;
-        CONFIG[tabActual][tipoVal].forEach(d => {
-            h += `<button class="btn-action" style="background:#f8f9fa; color:black; border:1px solid #ddd; margin-bottom:10px; text-align:left;" onclick="seleccionarDefecto('${d}')">▪ ${d}</button>`;
-        });
+        const list = tabActual === 'calidad' ? ["Bultos", "Manchada", "Malla"] : ["Kerajet", "Gota", "Rascada"];
+        list.forEach(d => { h += `<button class="btn-action" style="background:#f8f9fa; color:black; border:1px solid #ddd; margin-bottom:10px; text-align:left;" onclick="seleccionarDefecto('${d}')">▪ ${d}</button>`; });
         h += `<button class="btn-action" onclick="cerrarModal()" style="background:#ccc;">VOLVER</button>`;
-        document.getElementById('modal-content').innerHTML = h;
-        document.getElementById('modal-app').style.display = 'flex';
+        document.getElementById('modal-content').innerHTML = h; document.getElementById('modal-app').style.display = 'flex';
     }
 
     function seleccionarDefecto(d) { defectoActivo = d; pasoFoto = 1; abrirFoto(); }
     function cerrarModal() { document.getElementById('modal-app').style.display = 'none'; }
     function abrirFoto() { 
-        let m = pasoFoto === 1 ? "1. Foto DEFECTO" : "2. Foto LOTE (T1/T2/T3)";
-        document.getElementById('modal-content').innerHTML = `<h3>${m}</h3><button class="btn-action" style="height:100px; background:var(--success)" onclick="document.getElementById('in-cam').click()">ABRIR CÁMARA</button>`;
+        let m = pasoFoto === 1 ? "Foto DEFECTO" : "Foto LOTE (OCR)";
+        document.getElementById('modal-content').innerHTML = `<h3>${m}</h3><p style="font-size:12px; color:gray">Elige Cámara o Galería</p><button class="btn-action" style="height:100px; background:var(--success)" onclick="document.getElementById('in-cam').click()">SELECCIONAR IMAGEN</button>`;
     }
 
     async function procesarFoto(e) {
@@ -206,9 +189,8 @@
         reader.onload = async (f) => {
             const img = new Image();
             img.onload = async () => {
-                const canvas = document.createElement('canvas');
-                canvas.width = 600; canvas.height = 800;
-                canvas.getContext('2d').drawImage(img, 0, 0, 600, 800);
+                const canvas = document.createElement('canvas'); canvas.width = 400; canvas.height = 500;
+                canvas.getContext('2d').drawImage(img, 0, 0, 400, 500);
                 const dataUrl = canvas.toDataURL('image/jpeg', 0.5);
                 if(pasoFoto === 1) {
                     db[tabActual].registros.push({ val: valoracionActiva, defecto: defectoActivo, equipo: "S/D", foto1: dataUrl });
@@ -218,7 +200,6 @@
                     let eq = "S/D";
                     if(text.includes("T1")) eq="T1"; else if(text.includes("T2")) eq="T2"; else if(text.includes("T3")) eq="T3";
                     db[tabActual].registros[db[tabActual].registros.length-1].equipo = eq;
-                    db[tabActual][valoracionActiva]++;
                     document.getElementById('loading').style.display = 'none';
                     if(eq === "S/D") pedirManual(); else { cerrarModal(); actualizarUI(); guardarTodo(); }
                 }
@@ -229,9 +210,16 @@
     }
 
     function pedirManual() {
-        document.getElementById('modal-content').innerHTML = `<h3>Lote no detectado</h3><button class="btn-action" onclick="setM('T1')">T1</button><button class="btn-action" onclick="setM('T2')" style="margin:10px 0">T2</button><button class="btn-action" onclick="setM('T3')">T3</button>`;
+        document.getElementById('modal-content').innerHTML = `<h3>Equipo?</h3><button class="btn-action" onclick="setM('T1')">T1</button><button class="btn-action" onclick="setM('T2')" style="margin:10px 0">T2</button><button class="btn-action" onclick="setM('T3')">T3</button>`;
     }
     function setM(q) { db[tabActual].registros[db[tabActual].registros.length-1].equipo = q; cerrarModal(); actualizarUI(); guardarTodo(); }
+
+    function guardarEvento() {
+        const ini = document.getElementById('ev-ini').value; const fin = document.getElementById('ev-fin').value;
+        let min = 0; if(ini && fin) min = Math.floor((new Date(`2026-01-01T${fin}`) - new Date(`2026-01-01T${ini}`)) / 60000);
+        db.eventos.push({ est: document.getElementById('ev-estacion').value, desc: document.getElementById('ev-desc').value, min });
+        document.getElementById('ev-desc').value = ""; alert("Parada guardada"); guardarTodo(); actualizarUI();
+    }
 
     function actualizarUI() {
         document.getElementById('val-ok-cal').innerText = db.calidad.ok;
@@ -241,18 +229,45 @@
         document.getElementById('val-r1-fin').innerText = db.final.r1;
         document.getElementById('val-ko-fin').innerText = db.final.ko;
         
-        let h = `<div class="card" style="background:var(--sidebar); color:white">
-                    <b>OF: ${db.cabecera.of}</b> | <b>SAP: ${db.cabecera.sap}</b><br>
-                    <small>${db.cabecera.sustrato} - ${db.cabecera.grafica}</small>
-                 </div>`;
+        let h = `<div class="card" style="background:var(--sidebar); color:white"><b>OF: ${db.cabecera.of} | SAP: ${db.cabecera.sap}</b></div>`;
         ['calidad', 'final'].forEach(z => {
-            let eqCounts = { T1:0, T2:0, T3:0 };
-            db[z].registros.forEach(r => { if(r.equipo!=="S/D") eqCounts[r.equipo]++; });
-            h += `<div class="card"><b>ZONA ${z.toUpperCase()}</b><div style="display:flex; justify-content:space-around; margin-top:10px;">
-                <span>T1: <b>${eqCounts.T1}</b></span><span>T2: <b>${eqCounts.T2}</b></span><span>T3: <b>${eqCounts.T3}</b></span>
-            </div></div>`;
+            h += `<div class="card"><b>ZONA ${z.toUpperCase()}</b><table class="resumen-tabla"><thead><tr><th>Motivo</th><th>Eq.</th><th>Cant</th></tr></thead><tbody>`;
+            let agrupado = {};
+            db[z].registros.forEach(r => { let k = `${r.defecto}-${r.equipo}`; agrupado[k] = (agrupado[k] || 0) + 1; });
+            for(let key in agrupado) {
+                let [d, e] = key.split('-');
+                h += `<tr><td>${d}</td><td><span class="tag-eq">${e}</span></td><td><b>${agrupado[key]}</b></td></tr>`;
+            }
+            h += `</tbody></table></div>`;
         });
         document.getElementById('resumen-lista').innerHTML = h;
+    }
+
+    async function generarInformeDetallado() {
+        const { jsPDF } = window.jspdf; const doc = new jsPDF();
+        doc.setFontSize(16); doc.text(`INFORME DE PRODUCCION - OF: ${db.cabecera.of}`, 14, 20);
+        doc.setFontSize(10); doc.text(`SAP: ${db.cabecera.sap} | Sustrato: ${db.cabecera.sustrato}`, 14, 30);
+        
+        let y = 45;
+        doc.text("Resumen de Defectos:", 14, y); y += 10;
+        db.calidad.registros.forEach(r => {
+            if(y > 270) { doc.addPage(); y = 20; }
+            doc.text(`- ${r.defecto} (Equipo: ${r.equipo})`, 14, y); y += 7;
+        });
+
+        const pdfBlob = doc.output('blob');
+        const file = new File([pdfBlob], `Informe_${db.cabecera.of}.pdf`, { type: 'application/pdf' });
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            navigator.share({
+                files: [file],
+                title: 'Informe de Producción',
+                text: 'Adjunto informe de turno.'
+            }).catch(console.error);
+        } else {
+            doc.save(`Informe_${db.cabecera.of}.pdf`);
+            alert("Tu navegador no permite compartir directo. El archivo se ha descargado.");
+        }
     }
 </script>
 </body>
