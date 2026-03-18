@@ -3,36 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PROD V54 - MASTER STABLE</title>
+    <title>PROD V55 - ESTABLE</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --success: #22c55e; --warning: #eab308; --danger: #ef4444; --text: #f8fafc; }
         * { box-sizing: border-box; font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 80px; }
-        
+        body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 90px; }
         header { background: var(--card); padding: 15px; border-bottom: 2px solid var(--accent); text-align: center; position: sticky; top: 0; z-index: 100; }
-        header h1 { margin: 0; font-size: 16px; color: var(--accent); text-transform: uppercase; }
-
-        nav { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; border-top: 1px solid #334155; height: 65px; z-index: 100; }
-        .nav-btn { flex: 1; border: none; background: none; padding: 10px; font-size: 10px; font-weight: bold; color: var(--text); opacity: 0.5; }
+        header h1 { margin: 0; font-size: 14px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+        nav { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; border-top: 1px solid #334155; height: 70px; z-index: 100; }
+        .nav-btn { flex: 1; border: none; background: none; padding: 10px; font-size: 10px; font-weight: bold; color: var(--text); opacity: 0.4; }
         .nav-btn.active { opacity: 1; color: var(--accent); border-top: 3px solid var(--accent); }
-
         .container { padding: 12px; }
         .card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 12px; border: 1px solid #334155; }
         label { font-size: 11px; color: #94a3b8; font-weight: bold; display: block; margin-bottom: 5px; }
-        
         input, select, textarea { background: #0f172a; border: 1px solid #334155; padding: 12px; border-radius: 8px; width: 100%; margin-bottom: 10px; color: white; font-size: 16px; }
-        
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .btn-c { border: none; border-radius: 10px; padding: 15px 5px; font-weight: bold; text-align: center; color: white; min-height: 70px; }
-        .btn-c b { font-size: 22px; display: block; }
-
-        .estacion-row { background: #0f172a; padding: 12px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--accent); }
-        .timer { font-family: monospace; font-size: 20px; color: var(--danger); font-weight: bold; }
-        
-        .btn-action { background: var(--accent); color: #000; border: none; padding: 15px; border-radius: 10px; width: 100%; font-weight: bold; margin-top: 5px; }
+        .btn-c { border: none; border-radius: 10px; padding: 15px 5px; font-weight: bold; text-align: center; color: white; min-height: 80px; }
+        .btn-c b { font-size: 24px; display: block; margin-bottom: 4px; }
+        .estacion-row { background: #0f172a; padding: 12px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--accent); border-right: 1px solid #334155; }
+        .timer { font-family: monospace; font-size: 22px; color: var(--danger); font-weight: bold; }
+        .btn-action { background: var(--accent); color: #000; border: none; padding: 15px; border-radius: 10px; width: 100%; font-weight: bold; margin-top: 10px; font-size: 14px; }
         .hidden { display: none; }
-        .preview-img { width: 50px; height: 50px; object-fit: cover; border-radius: 5px; margin: 2px; border: 1px solid var(--accent); }
+        .preview-img { width: 55px; height: 55px; object-fit: cover; border-radius: 6px; margin: 3px; border: 1px solid var(--accent); }
     </style>
 </head>
 <body onload="init()">
@@ -42,13 +35,13 @@
 <div class="container">
     <div id="p-inicio" class="content">
         <div class="card">
-            <label>FECHA / EQUIPO / TURNO</label>
+            <label>DATOS DEL TURNO</label>
             <input type="date" id="fecha" onchange="g()">
             <div style="display:flex; gap:10px;">
                 <select id="equipo" onchange="g()"><option>T1</option><option>T2</option><option>T3</option></select>
                 <select id="turno" onchange="g()"><option>Mañana</option><option>Tarde</option><option>Noche</option></select>
             </div>
-            <label>DATOS DE FABRICACIÓN</label>
+            <label>PRODUCCIÓN</label>
             <input type="text" id="of" placeholder="Nº Orden (OF)" oninput="g()">
             <input type="text" id="sap" placeholder="Código SAP" oninput="g()">
             <input type="text" id="modelo" placeholder="Modelo / UNDORA" oninput="g()">
@@ -58,9 +51,9 @@
     <div id="p-crudo" class="content hidden">
         <div class="card">
             <div class="grid-3">
-                <button class="btn-c" style="background:var(--success)" onclick="sumar('c','ok')"><b>OK</b><span id="c-ok">0</span></button>
-                <button class="btn-c" style="background:var(--warning); color:black;" onclick="sumar('c','r1')"><b>R1</b><span id="c-r1">0</span></button>
-                <button class="btn-c" style="background:var(--danger)" onclick="sumar('c','ko')"><b>KO</b><span id="c-ko">0</span></button>
+                <button class="btn-count btn-c" style="background:var(--success)" onclick="sumar('c','ok')"><b>OK</b><span id="c-ok">0</span></button>
+                <button class="btn-count btn-c" style="background:var(--warning); color:black;" onclick="sumar('c','r1')"><b>R1</b><span id="c-r1">0</span></button>
+                <button class="btn-count btn-c" style="background:var(--danger)" onclick="sumar('c','ko')"><b>KO</b><span id="c-ko">0</span></button>
             </div>
             <div id="gal-c" style="margin-top:10px; display:flex; flex-wrap:wrap;"></div>
         </div>
@@ -69,9 +62,9 @@
     <div id="p-final" class="content hidden">
         <div class="card">
             <div class="grid-3">
-                <button class="btn-c" style="background:var(--success)" onclick="sumar('f','ok')"><b>OK</b><span id="f-ok">0</span></button>
-                <button class="btn-c" style="background:var(--warning); color:black;" onclick="sumar('f','r1')"><b>R1</b><span id="f-r1">0</span></button>
-                <button class="btn-c" style="background:var(--danger)" onclick="sumar('f','ko')"><b>KO</b><span id="f-ko">0</span></button>
+                <button class="btn-count btn-c" style="background:var(--success)" onclick="sumar('f','ok')"><b>OK</b><span id="f-ok">0</span></button>
+                <button class="btn-count btn-c" style="background:var(--warning); color:black;" onclick="sumar('f','r1')"><b>R1</b><span id="f-r1">0</span></button>
+                <button class="btn-count btn-c" style="background:var(--danger)" onclick="sumar('f','ko')"><b>KO</b><span id="f-ko">0</span></button>
             </div>
             <div id="gal-f" style="margin-top:10px; display:flex; flex-wrap:wrap;"></div>
         </div>
@@ -80,19 +73,19 @@
     <div id="p-eventos" class="content hidden">
         <div id="lista-est"></div>
         <div class="card">
-            <label>AÑADIR PARADA (LIBRETA)</label>
+            <label>REGISTRO LIBRETA (DIFERIDO)</label>
             <div style="display:flex; gap:5px;"><input type="time" id="m-i"> <input type="time" id="m-f"></div>
-            <select id="m-est"><option>KERAJET</option><option>SMALTEC</option><option>PRENSAS</option><option>MECÁNICO</option></select>
-            <textarea id="m-o" placeholder="Escribe el motivo aquí..."></textarea>
-            <button class="btn-action" onclick="saveLibreta()">GUARDAR EN DIFERIDO</button>
+            <select id="m-est"><option>KERAJET</option><option>SMALTEC</option><option>PRENSAS</option><option>MECÁNICO</option><option>SECADERO</option></select>
+            <textarea id="m-o" placeholder="Motivo de la parada..."></textarea>
+            <button class="btn-action" onclick="saveLibreta()">GUARDAR PARADA</button>
         </div>
     </div>
 
     <div id="p-resumen" class="content hidden">
-        <div class="card" id="res-view" style="font-size:12px; white-space:pre-wrap;"></div>
+        <div class="card" id="res-view" style="font-size:12px; white-space:pre-wrap; background:#0f172a; border:1px solid var(--accent);"></div>
         <button class="btn-action" style="background:#25d366; color:white;" onclick="enviarWA()">ENVIAR WHATSAPP</button>
-        <button class="btn-action" style="background:#ef4444; color:white;" onclick="pdf()">DESCARGAR PDF COMPLETO</button>
-        <button class="btn-action" style="background:#475569; color:white;" onclick="limpiar()">NUEVO TURNO</button>
+        <button class="btn-action" style="background:#ef4444; color:white;" onclick="pdf()">DESCARGAR PDF</button>
+        <button class="btn-action" style="background:#475569; color:white;" onclick="limpiar()">BORRAR TURNO</button>
     </div>
 </div>
 
@@ -101,7 +94,7 @@
 <nav>
     <button class="nav-btn active" onclick="tab('inicio',this,'IDENTIFICACIÓN')">INICIO</button>
     <button class="nav-btn" onclick="tab('crudo',this,'CALIDAD CRUDO')">CRUDO</button>
-    <button class="nav-btn" onclick="tab('final',this,'CALIDAD FINAL')">FINAL</button>
+    <button class="nav-btn" onclick="tab('final',this,'FINAL EMBALAJE')">FINAL</button>
     <button class="nav-btn" onclick="tab('eventos',this,'PARADAS')">PARADAS</button>
     <button class="nav-btn" onclick="tab('resumen',this,'INFORME')">INFORME</button>
 </nav>
@@ -116,7 +109,7 @@
     let curZ = '';
 
     function init() {
-        const local = localStorage.getItem('PROD_V54');
+        const local = localStorage.getItem('PROD_V55');
         if(local) db = JSON.parse(local);
         ests.forEach(e => { if(!db.p[e]) db.p[e]=0; });
         renderEst();
@@ -133,12 +126,16 @@
     }
 
     function sumar(z, t) {
-        db[z][t]++; // SUMA DIRECTA
+        db[z][t]++; // SUMA AL INSTANTE
         curZ = z;
         if(t !== 'ok') {
             const m = prompt("Motivo del defecto:", "Gotas");
-            if(m) db[z].logs.push({t: t.toUpperCase(), m: m, h: new Date().toLocaleTimeString()});
-            if(confirm("¿Quieres adjuntar foto?")) document.getElementById('cam').click();
+            if(m) {
+                db[z].logs.push({t: t.toUpperCase(), m: m, h: new Date().toLocaleTimeString()});
+                if(confirm("¿Quieres adjuntar foto?")) {
+                    document.getElementById('cam').click();
+                }
+            }
         }
         r(); g();
     }
@@ -147,7 +144,10 @@
         const file = e.target.files[0];
         if(!file) return;
         const reader = new FileReader();
-        reader.onload = (ev) => { db[curZ].fotos.push(ev.target.result); r(); g(); };
+        reader.onload = (ev) => { 
+            db[curZ].fotos.push(ev.target.result); 
+            r(); g(); 
+        };
         reader.readAsDataURL(file);
     }
 
@@ -156,7 +156,7 @@
             <div class="estacion-row">
                 <b>${e}</b>
                 <span class="timer" id="tm-${e}">${fmt(db.p[e])}</span>
-                <button onclick="tog('${e}')" id="bt-${e}" style="background:var(--success); border:none; padding:10px; border-radius:8px; font-weight:bold; width:75px;">PLAY</button>
+                <button onclick="tog('${e}')" id="bt-${e}" style="background:var(--success); border:none; padding:10px; border-radius:8px; font-weight:bold; width:80px; color:white;">PLAY</button>
             </div>
         `).join('');
     }
@@ -179,9 +179,9 @@
 
     function saveLibreta() {
         const i=document.getElementById('m-i').value, f=document.getElementById('m-f').value, o=document.getElementById('m-o').value, st=document.getElementById('m-est').value;
-        if(!i || !f) return alert("Pon las horas");
+        if(!i || !f) return alert("Indica hora inicio y fin");
         db.l.push({h: i+" a "+f, e: st, d: "Libreta", o: o});
-        r(); g(); alert("Parada guardada.");
+        r(); g(); alert("Guardado");
     }
 
     function fmt(s) { return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; }
@@ -205,14 +205,16 @@
         db.modelo = document.getElementById('modelo').value;
         db.equipo = document.getElementById('equipo').value;
         db.turno = document.getElementById('turno').value;
-        localStorage.setItem('PROD_V54', JSON.stringify(db));
+        localStorage.setItem('PROD_V55', JSON.stringify(db));
     }
 
     function build() {
-        let totalP = 0; ests.forEach(e => totalP += db.p[e]);
-        let txt = `RESUMEN TURNO ${db.equipo} (${db.turno})\nOF: ${db.of} | Modelo: ${db.modelo}\n\n`;
-        txt += `CRUDO: OK:${db.c.ok} R1:${db.c.r1} KO:${db.c.ko}\nFINAL: OK:${db.f.ok} R1:${db.f.r1} KO:${db.f.ko}\n\n`;
-        txt += `PARADAS TOTALES: ${Math.floor(totalP/60)} min\n`;
+        let totalS = 0; ests.forEach(e => totalS += db.p[e]);
+        let txt = `*INFORME PRODUCCIÓN*\nEQUIPO: ${db.equipo} | TURNO: ${db.turno}\nOF: ${db.of} | MODELO: ${db.modelo}\n\n`;
+        txt += `*CALIDAD CRUDO*\nOK: ${db.c.ok} | R1: ${db.c.r1} | KO: ${db.c.ko}\n`;
+        txt += `*CALIDAD FINAL*\nOK: ${db.f.ok} | R1: ${db.f.r1} | KO: ${db.f.ko}\n\n`;
+        txt += `*TIEMPO TOTAL PARADAS:* ${Math.floor(totalS/60)} min\n\n`;
+        txt += `*DETALLE EVENTOS:*\n`;
         db.l.forEach(x => txt += `- [${x.h}] ${x.e}: ${x.o}\n`);
         document.getElementById('res-view').innerText = txt;
     }
@@ -226,24 +228,26 @@
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         let y = 15;
-        doc.setFontSize(16); doc.text("INFORME PRODUCCIÓN - OF " + db.of, 10, y); y += 10;
+        doc.setFontSize(16); doc.text("INFORME DE PRODUCCIÓN - OF " + db.of, 10, y); y += 12;
         doc.setFontSize(10); doc.text(`Equipo: ${db.equipo} | Turno: ${db.turno} | Modelo: ${db.modelo}`, 10, y); y += 15;
         
-        doc.text("CALIDAD CRUDO: OK:" + db.c.ok + " R1:" + db.c.r1 + " KO:" + db.c.ko, 10, y); y += 8;
-        db.c.logs.forEach(l => { doc.text(`- ${l.t}: ${l.m}`, 15, y); y += 5; });
-        db.c.fotos.forEach(f => { if(y>250){doc.addPage(); y=20;} doc.addImage(f, 'JPEG', 10, y, 40, 40); y += 45; });
+        doc.text("--- CALIDAD CRUDO ---", 10, y); y += 8;
+        doc.text(`OK: ${db.c.ok} | R1: ${db.c.r1} | KO: ${db.c.ko}`, 10, y); y += 7;
+        db.c.logs.forEach(l => { doc.text(`> ${l.h} - ${l.t}: ${l.m}`, 15, y); y += 5; });
+        db.c.fotos.forEach(f => { if(y>240){doc.addPage(); y=20;} doc.addImage(f, 'JPEG', 10, y, 45, 45); y += 50; });
 
-        if(y>240){doc.addPage(); y=20;}
-        doc.text("CALIDAD FINAL: OK:" + db.f.ok + " R1:" + db.f.r1 + " KO:" + db.f.ko, 10, y); y += 8;
-        db.f.logs.forEach(l => { doc.text(`- ${l.t}: ${l.m}`, 15, y); y += 5; });
-        db.f.fotos.forEach(f => { if(y>250){doc.addPage(); y=20;} doc.addImage(f, 'JPEG', 10, y, 40, 40); y += 45; });
+        if(y>230){doc.addPage(); y=20;}
+        doc.text("--- CALIDAD FINAL ---", 10, y); y += 8;
+        doc.text(`OK: ${db.f.ok} | R1: ${db.f.r1} | KO: ${db.f.ko}`, 10, y); y += 7;
+        db.f.logs.forEach(l => { doc.text(`> ${l.h} - ${l.t}: ${l.m}`, 15, y); y += 5; });
+        db.f.fotos.forEach(f => { if(y>240){doc.addPage(); y=20;} doc.addImage(f, 'JPEG', 10, y, 45, 45); y += 50; });
         
-        doc.save(`Informe_${db.of}.pdf`);
+        doc.save(`Prod_${db.of}.pdf`);
     }
 
     function limpiar() {
-        if(confirm("¿Borrar datos para nuevo turno?")) {
-            localStorage.removeItem('PROD_V54');
+        if(confirm("¿Seguro que quieres borrar todos los datos del turno?")) {
+            localStorage.removeItem('PROD_V55');
             location.reload();
         }
     }
