@@ -3,41 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PROD V35 - MENÚ LATERAL</title>
+    <title>PROD V36 - SEMÁFORO Y EDICIÓN</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
-        :root { --primary: #2c3e50; --success: #27ae60; --r1: #f39c12; --ko: #e74c3c; --bg: #f4f7f6; --sidebar: #1a252f; }
+        :root { --primary: #2c3e50; --success: #27ae60; --r1: #f39c12; --ko: #e74c3c; --bg: #f4f7f6; --sidebar: #1a252f; --info: #3498db; }
         * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); overflow-x: hidden; }
 
         /* HEADER & SIDEBAR */
-        header { background: var(--primary); color: white; padding: 15px; display: flex; align-items: center; position: sticky; top:0; z-index:1000; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        header { background: var(--primary); color: white; padding: 15px; display: flex; align-items: center; position: sticky; top:0; z-index:1000; }
         .menu-icon { font-size: 24px; margin-right: 15px; cursor: pointer; }
         
-        .sidebar { position: fixed; left: -260px; top: 0; width: 260px; height: 100%; background: var(--sidebar); color: white; transition: 0.3s; z-index: 2000; padding-top: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.3); }
+        .sidebar { position: fixed; left: -260px; top: 0; width: 260px; height: 100%; background: var(--sidebar); color: white; transition: 0.3s; z-index: 2000; padding-top: 20px; }
         .sidebar.active { left: 0; }
         .sidebar-item { padding: 15px 20px; border-bottom: 1px solid #2c3e50; display: flex; align-items: center; gap: 10px; font-weight: bold; cursor: pointer; }
-        .sidebar-item:active { background: #2c3e50; }
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1500; }
         .overlay.active { display: block; }
 
-        /* CONTENIDO */
-        .contenido { padding: 15px; transition: 0.3s; }
-        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 15px; border: 1px solid #eee; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .contenido { padding: 15px; }
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 15px; }
         label { font-size: 10px; font-weight: 800; color: #7f8c8d; text-transform: uppercase; margin-bottom: 5px; display: block; }
-        input, select, textarea { padding: 12px; border: 1px solid #dce1e5; border-radius: 8px; width: 100%; font-size: 14px; margin-bottom: 10px; }
+        input, select { padding: 12px; border: 1px solid #dce1e5; border-radius: 8px; width: 100%; font-size: 14px; margin-bottom: 10px; }
         
-        /* BOTONES ACCIÓN */
-        .btn-count { width: 100%; border: none; border-radius: 16px; padding: 20px; color: white; margin-bottom: 12px; font-weight: bold; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 0 rgba(0,0,0,0.2); }
+        /* FILAS DE CONTADORES CON LÁPIZ */
+        .fila-accion { display: flex; gap: 8px; margin-bottom: 12px; align-items: stretch; }
+        .btn-count { flex: 1; border: none; border-radius: 16px; padding: 15px; color: white; font-weight: bold; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 0 rgba(0,0,0,0.15); }
+        .btn-edit { width: 55px; background: white; border: 2px solid #eee; border-radius: 16px; color: var(--info); font-size: 20px; display: flex; align-items: center; justify-content: center; }
+        
         .btn-ok { background: var(--success); }
         .btn-r1 { background: var(--r1); }
         .btn-ko { background: var(--ko); }
-        .btn-action { background: #007bff; color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; font-weight: bold; margin-top: 10px; }
 
-        #loading { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); z-index:5000; flex-direction: column; align-items:center; justify-content:center; text-align:center; padding:20px; }
+        .btn-action { background: #007bff; color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; font-weight: bold; }
+        #loading { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); z-index:5000; flex-direction: column; align-items:center; justify-content:center; }
         .hidden { display: none; }
+        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:2500; align-items:center; justify-content:center; }
+        .modal-box { background:white; width:92%; padding:20px; border-radius:15px; }
     </style>
 </head>
 <body onload="cargarTodo()">
@@ -46,11 +48,11 @@
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
 <div class="sidebar" id="sidebar">
-    <div style="padding: 20px; font-size: 20px; border-bottom: 2px solid var(--r1); margin-bottom: 10px;"><b>PROD V35</b></div>
-    <div class="sidebar-item" onclick="cambiarSeccion('id')">🆔 IDENTIFICACIÓN (ID)</div>
+    <div style="padding: 20px; font-size: 20px; border-bottom: 2px solid var(--r1); margin-bottom: 10px;"><b>PROD V36</b></div>
+    <div class="sidebar-item" onclick="cambiarSeccion('id')">🆔 IDENTIFICACIÓN</div>
     <div class="sidebar-item" onclick="cambiarSeccion('calidad')">🏺 CALIDAD (CRUDO)</div>
     <div class="sidebar-item" onclick="cambiarSeccion('final')">📦 FINAL (EMBALAJE)</div>
-    <div class="sidebar-item" onclick="cambiarSeccion('eventos')">🛑 PARADAS / EVENTOS</div>
+    <div class="sidebar-item" onclick="cambiarSeccion('eventos')">🛑 PARADAS</div>
     <div class="sidebar-item" onclick="cambiarSeccion('resumen')" style="color:var(--r1)">📊 RESUMEN TURNO</div>
 </div>
 
@@ -63,73 +65,50 @@
     
     <div id="sec-id" class="seccion">
         <div class="card">
-            <label>Fecha del Informe</label>
-            <input type="date" id="fecha" onchange="guardarTodo()">
-            <label>Orden de Fabricación (OF)</label>
-            <input type="text" id="of" placeholder="Nº de Orden" oninput="guardarTodo()">
-            <div class="grid">
+            <label>Fecha</label><input type="date" id="fecha" onchange="guardarTodo()">
+            <label>OF (Orden)</label><input type="text" id="of" placeholder="Nº de Orden" oninput="guardarTodo()">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                 <div><label>Turno</label><select id="turno" onchange="guardarTodo()"><option>Mañana</option><option>Tarde</option><option>Noche</option></select></div>
-                <div><label>Mi Equipo</label><select id="equipo" onchange="guardarTodo()"><option>T1</option><option>T2</option><option>T3</option></select></div>
+                <div><label>Equipo</label><select id="equipo" onchange="guardarTodo()"><option>T1</option><option>T2</option><option>T3</option></select></div>
             </div>
-            <label>Sustrato</label>
-            <input type="text" id="sustrato" placeholder="Ej: Pasta Roja 33x33" oninput="guardarTodo()">
-            <label>Gráfica</label>
-            <input type="text" id="grafica" placeholder="Ej: Serie Marmol Grey" oninput="guardarTodo()">
+            <label>Sustrato</label><input type="text" id="sustrato" placeholder="Ej: Pasta Blanca" oninput="guardarTodo()">
+            <label>Gráfica</label><input type="text" id="grafica" placeholder="Ej: Marmol V2" oninput="guardarTodo()">
         </div>
-        <p style="text-align: center; color: #7f8c8d; font-size: 12px;">Desliza el menú lateral para empezar la producción.</p>
     </div>
 
     <div id="sec-calidad" class="seccion hidden">
-        <button class="btn-count btn-ok" onclick="sumarUno('ok')">
-            <span style="font-size:12px">PIEZAS OK</span>
-            <span id="val-ok-cal" style="font-size:32px">0</span>
-        </button>
-        <button class="btn-count btn-r1" onclick="abrirDefectos('r1')">
-            <span style="font-size:12px">REPROCESO R1</span>
-            <span id="val-r1-cal" style="font-size:32px">0</span>
-        </button>
-        <button class="btn-count btn-ko" onclick="abrirDefectos('ko')">
-            <span style="font-size:12px">TOTAL KO</span>
-            <span id="val-ko-cal" style="font-size:32px">0</span>
-        </button>
+        <div class="fila-accion">
+            <button class="btn-count btn-ok" onclick="sumarUno('ok')">OK <br><span id="val-ok-cal" style="font-size:28px">0</span></button>
+            <button class="btn-edit" onclick="editarCifra('ok')">✎</button>
+        </div>
+        <div class="fila-accion">
+            <button class="btn-count btn-r1" onclick="abrirDefectos('r1')">R1 <br><span id="val-r1-cal" style="font-size:28px">0</span></button>
+            <button class="btn-edit" onclick="editarCifra('r1')">✎</button>
+        </div>
+        <div class="fila-accion">
+            <button class="btn-count btn-ko" onclick="abrirDefectos('ko')">KO <br><span id="val-ko-cal" style="font-size:28px">0</span></button>
+            <button class="btn-edit" onclick="editarCifra('ko')">✎</button>
+        </div>
     </div>
 
     <div id="sec-final" class="seccion hidden">
-        <button class="btn-count btn-ok" style="background: #2980b9" onclick="sumarUno('ok')">
-            <span style="font-size:12px">OK EMBALAJE</span>
-            <span id="val-ok-fin" style="font-size:32px">0</span>
-        </button>
-        <button class="btn-count btn-r1" onclick="abrirDefectos('r1')">
-            <span style="font-size:12px">REPROCESO R1</span>
-            <span id="val-r1-fin" style="font-size:32px">0</span>
-        </button>
-        <button class="btn-count btn-ko" onclick="abrirDefectos('ko')">
-            <span style="font-size:12px">TOTAL KO</span>
-            <span id="val-ko-fin" style="font-size:32px">0</span>
-        </button>
-    </div>
-
-    <div id="sec-eventos" class="seccion hidden">
-        <div class="card">
-            <label>Estación</label>
-            <select id="ev-estacion"><option>LGV</option><option>BARBIERI</option><option>ROBOTTIONS</option><option>CEPILLADORA</option><option>CABINA 1</option><option>HORNOS</option><option>ERRECE</option><option>KERAJET</option><option>CABINA 2</option><option>FLAWMASTER</option><option>EMBALADORA</option></select>
-            <label>Motivo (Relatar)</label>
-            <div style="display:flex; gap:5px;">
-                <textarea id="ev-desc" rows="3" placeholder="Usa el micrófono..."></textarea>
-                <button onclick="iniciarVoz()" style="background:#95a5a6; border:none; border-radius:8px; padding:10px; color:white;">🎤</button>
-            </div>
-            <div class="grid" style="margin-top:10px;">
-                <div><label>H. Inicio</label><input type="time" id="ev-ini"></div>
-                <div><label>H. Fin</label><input type="time" id="ev-fin"></div>
-            </div>
-            <button class="btn-action" onclick="guardarEvento()">💾 REGISTRAR PARADA</button>
+        <div class="fila-accion">
+            <button class="btn-count btn-ok" onclick="sumarUno('ok')">OK EMBALAJE <br><span id="val-ok-fin" style="font-size:28px">0</span></button>
+            <button class="btn-edit" onclick="editarCifra('ok')">✎</button>
+        </div>
+        <div class="fila-accion">
+            <button class="btn-count btn-r1" onclick="abrirDefectos('r1')">R1 <br><span id="val-r1-fin" style="font-size:28px">0</span></button>
+            <button class="btn-edit" onclick="editarCifra('r1')">✎</button>
+        </div>
+        <div class="fila-accion">
+            <button class="btn-count btn-ko" onclick="abrirDefectos('ko')">KO <br><span id="val-ko-fin" style="font-size:28px">0</span></button>
+            <button class="btn-edit" onclick="editarCifra('ko')">✎</button>
         </div>
     </div>
 
     <div id="sec-resumen" class="seccion hidden">
         <div id="resumen-lista"></div>
-        <button class="btn-action" onclick="generarPDF()">📤 COMPARTIR PDF</button>
-        <button onclick="resetearTodo()" style="width:100%; border:none; background:none; color:red; margin-top:20px; font-size:11px;">⚠️ REINICIAR TURNO</button>
+        <button class="btn-action" onclick="alert('Generando PDF...')">📤 EXPORTAR INFORME</button>
     </div>
 
 </div>
@@ -140,10 +119,10 @@
 <script>
     const CONFIG = {
         calidad: { r1: ["Bultos", "Manchada", "1 malla suelta"], ko: ["Rota", "Malla suelta", "Playa"] },
-        final: { r1: ["Fallo Kerajet", "Gota", "Rascada", "Matificación"], ko: ["Rota", "Mallas sueltas", "Fallo Flawmaster"] }
+        final: { r1: ["Fallo Kerajet", "Gota", "Rascada"], ko: ["Rota", "Mallas sueltas", "Fallo Flawmaster"] }
     };
 
-    let db = { calidad: { ok: 0, r1: 0, ko: 0, registros: [] }, final: { ok: 0, r1: 0, ko: 0, registros: [] }, eventos: [], cabecera: { fecha: new Date().toISOString().split('T')[0], of: "", equipo: "T1", turno: "Mañana", sustrato: "", grafica: "" } };
+    let db = { calidad: { ok: 0, r1: 0, ko: 0, registros: [] }, final: { ok: 0, r1: 0, ko: 0, registros: [] }, cabecera: { fecha: new Date().toISOString().split('T')[0], of: "", equipo: "T1", turno: "Mañana", sustrato: "", grafica: "" } };
     let tabActual = 'calidad', pasoFoto = 1, defectoActivo = "", valoracionActiva = "";
 
     function toggleMenu() {
@@ -154,38 +133,19 @@
     function cambiarSeccion(sec) {
         document.querySelectorAll('.seccion').forEach(s => s.classList.add('hidden'));
         document.getElementById('sec-' + sec).classList.remove('hidden');
-        
         const nombres = { 'id': 'IDENTIFICACIÓN', 'calidad': 'CALIDAD (CRUDO)', 'final': 'FINAL (EMBALAJE)', 'eventos': 'PARADAS', 'resumen': 'RESUMEN TURNO' };
         document.getElementById('titulo-seccion').innerText = nombres[sec];
-        
         if(sec === 'calidad' || sec === 'final') tabActual = sec;
-        toggleMenu();
-        actualizarUI();
+        toggleMenu(); actualizarUI();
     }
 
-    // VOZ
-    function iniciarVoz() {
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'es-ES';
-        recognition.onresult = (e) => { document.getElementById('ev-desc').value = e.results[0][0].transcript; };
-        recognition.start();
-    }
-
-    // CRUD
     function guardarTodo() {
-        db.cabecera = { 
-            fecha: document.getElementById('fecha').value, 
-            of: document.getElementById('of').value, 
-            equipo: document.getElementById('equipo').value, 
-            turno: document.getElementById('turno').value,
-            sustrato: document.getElementById('sustrato').value,
-            grafica: document.getElementById('grafica').value
-        };
-        localStorage.setItem('PROD_V35', JSON.stringify(db));
+        db.cabecera = { fecha: document.getElementById('fecha').value, of: document.getElementById('of').value, equipo: document.getElementById('equipo').value, turno: document.getElementById('turno').value, sustrato: document.getElementById('sustrato').value, grafica: document.getElementById('grafica').value };
+        localStorage.setItem('PROD_V36', JSON.stringify(db));
     }
 
     function cargarTodo() {
-        const g = localStorage.getItem('PROD_V35');
+        const g = localStorage.getItem('PROD_V36');
         if(g) db = JSON.parse(g);
         document.getElementById('fecha').value = db.cabecera.fecha;
         document.getElementById('of').value = db.cabecera.of;
@@ -197,12 +157,17 @@
     }
 
     function sumarUno(tipo) { db[tabActual][tipo]++; actualizarUI(); guardarTodo(); }
+    
+    function editarCifra(tipo) {
+        let n = prompt(`Nuevo valor para ${tipo.toUpperCase()}:`, db[tabActual][tipo]);
+        if(n !== null) { db[tabActual][tipo] = parseInt(n) || 0; actualizarUI(); guardarTodo(); }
+    }
 
     function abrirDefectos(tipoVal) {
         valoracionActiva = tipoVal;
         let h = `<h3>Motivo ${tipoVal.toUpperCase()}</h3>`;
         CONFIG[tabActual][tipoVal].forEach(d => {
-            h += `<button class="btn-action" style="background:#f8f9fa; color:black; border:1px solid #ddd; text-align:left;" onclick="seleccionarDefecto('${d}')">▪ ${d}</button>`;
+            h += `<button class="btn-action" style="background:#f8f9fa; color:black; border:1px solid #ddd; margin-bottom:10px; text-align:left;" onclick="seleccionarDefecto('${d}')">▪ ${d}</button>`;
         });
         h += `<button class="btn-action" onclick="cerrarModal()" style="background:#ccc;">VOLVER</button>`;
         document.getElementById('modal-content').innerHTML = h;
@@ -212,8 +177,8 @@
     function seleccionarDefecto(d) { defectoActivo = d; pasoFoto = 1; abrirFoto(); }
     function cerrarModal() { document.getElementById('modal-app').style.display = 'none'; }
     function abrirFoto() { 
-        let m = pasoFoto === 1 ? "Foto DEFECTO" : "Foto LOTE (T1/T2/T3)";
-        document.getElementById('modal-content').innerHTML = `<h3>${m}</h3><button class="btn-action" style="height:100px; background:var(--success)" onclick="document.getElementById('in-cam').click()">CÁMARA</button>`;
+        let m = pasoFoto === 1 ? "1. Foto DEFECTO" : "2. Foto LOTE (T1/T2/T3)";
+        document.getElementById('modal-content').innerHTML = `<h3>${m}</h3><button class="btn-action" style="height:100px; background:var(--success)" onclick="document.getElementById('in-cam').click()">ABRIR CÁMARA</button>`;
     }
 
     async function procesarFoto(e) {
@@ -226,7 +191,6 @@
                 canvas.width = 600; canvas.height = 800;
                 canvas.getContext('2d').drawImage(img, 0, 0, 600, 800);
                 const dataUrl = canvas.toDataURL('image/jpeg', 0.5);
-
                 if(pasoFoto === 1) {
                     db[tabActual].registros.push({ val: valoracionActiva, defecto: defectoActivo, equipo: "S/D", foto1: dataUrl });
                     pasoFoto = 2; document.getElementById('loading').style.display = 'none'; abrirFoto();
@@ -246,10 +210,7 @@
     }
 
     function pedirManual() {
-        document.getElementById('modal-content').innerHTML = `<h3>Lote no detectado</h3><p>Marcar manualmente:</p>
-        <button class="btn-action" style="background:#34495e" onclick="setM('T1')">T1</button>
-        <button class="btn-action" style="background:#34495e" onclick="setM('T2')">T2</button>
-        <button class="btn-action" style="background:#34495e" onclick="setM('T3')">T3</button>`;
+        document.getElementById('modal-content').innerHTML = `<h3>Lote no detectado</h3><button class="btn-action" onclick="setM('T1')">T1</button><button class="btn-action" onclick="setM('T2')" style="margin:10px 0">T2</button><button class="btn-action" onclick="setM('T3')">T3</button>`;
     }
     function setM(q) { db[tabActual].registros[db[tabActual].registros.length-1].equipo = q; cerrarModal(); actualizarUI(); guardarTodo(); }
 
@@ -261,24 +222,16 @@
         document.getElementById('val-r1-fin').innerText = db.final.r1;
         document.getElementById('val-ko-fin').innerText = db.final.ko;
         
-        let h = `<div class="card" style="background:var(--sidebar); color:white"><b>RESUMEN OF: ${db.cabecera.of}</b><br><small>${db.cabecera.sustrato} | ${db.cabecera.grafica}</small></div>`;
+        let h = `<div class="card" style="background:var(--sidebar); color:white"><b>RESUMEN OF: ${db.cabecera.of}</b></div>`;
         ['calidad', 'final'].forEach(z => {
             let eqCounts = { T1:0, T2:0, T3:0 };
             db[z].registros.forEach(r => { if(r.equipo!=="S/D") eqCounts[r.equipo]++; });
-            h += `<div class="card"><b>ZONA ${z.toUpperCase()}</b><div class="grid" style="margin-top:10px; text-align:center;">
-                <div style="color:var(--ko)">T1: ${eqCounts.T1}</div><div style="color:var(--ko)">T2: ${eqCounts.T2}</div><div style="color:var(--ko)">T3: ${eqCounts.T3}</div>
+            h += `<div class="card"><b>ZONA ${z.toUpperCase()}</b><div style="display:flex; justify-content:space-around; margin-top:10px;">
+                <span>T1: <b>${eqCounts.T1}</b></span><span>T2: <b>${eqCounts.T2}</b></span><span>T3: <b>${eqCounts.T3}</b></span>
             </div></div>`;
         });
         document.getElementById('resumen-lista').innerHTML = h;
     }
-
-    function guardarEvento() {
-        db.eventos.push({ est: document.getElementById('ev-estacion').value, desc: document.getElementById('ev-desc').value });
-        document.getElementById('ev-desc').value = ""; alert("Parada registrada"); guardarTodo();
-    }
-
-    function resetearTodo() { if(confirm("¿Borrar todo el turno?")) { localStorage.removeItem('PROD_V35'); location.reload(); } }
-    function generarPDF() { alert("Generando PDF..."); }
 </script>
 </body>
 </html>
