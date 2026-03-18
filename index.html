@@ -3,197 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GEMINI PROD V46 - EDICIÓN RÁPIDA</title>
+    <title>GEMINI ULTIMATE V47</title>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        :root { --bg: #0a0e14; --card: #161b22; --accent: #00d2ff; --success: #238636; --danger: #f85149; --text: #c9d1d9; }
-        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; color: var(--text); }
+        :root { --bg: #030712; --card: #111827; --accent: #38bdf8; --success: #22c55e; --danger: #ef4444; --text: #f3f4f6; }
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; color: var(--text); }
         body { margin: 0; background: var(--bg); padding-bottom: 80px; }
-        
-        /* Dashboard Header */
         header { background: var(--card); padding: 15px; border-bottom: 2px solid var(--accent); display: flex; justify-content: space-between; align-items: center; position: sticky; top:0; z-index:100; }
-        .efficiency { font-weight: bold; color: var(--success); font-size: 14px; }
-
-        .container { padding: 15px; }
-        .card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid #30363d; }
-        
-        /* Botones de Conteo con Edición Rápida */
-        .btn-count { border: none; border-radius: 12px; padding: 25px 10px; font-weight: 900; font-size: 20px; text-align: center; cursor: pointer; transition: transform 0.1s; position: relative; }
-        .btn-count:active { transform: scale(0.95); }
-        .btn-count span { display: block; font-size: 10px; opacity: 0.8; margin-top: 5px; }
-        .val { font-size: 32px; display: block; }
-
+        .tab { padding: 15px; }
+        .card { background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 15px; border: 1px solid #1f2937; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-
-        /* Estilos de inputs */
-        input, select { background: #0d1117; border: 1px solid #30363d; padding: 12px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-size: 16px; }
-        
-        /* Menú Inferior */
-        nav { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; height: 65px; border-top: 1px solid #30363d; }
-        .nav-item { flex: 1; border: none; background: none; font-size: 11px; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.6; }
-        .nav-item.active { opacity: 1; color: var(--accent); border-top: 2px solid var(--accent); }
-
-        #loading { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; flex-direction: column; align-items:center; justify-content:center; }
+        .btn-c { background: rgba(56, 189, 248, 0.05); border: 1px solid #374151; border-radius: 12px; padding: 15px 5px; text-align: center; position: relative; }
+        .btn-c b { font-size: 28px; display: block; color: var(--accent); }
+        .edit-icon { position: absolute; top: 5px; right: 5px; font-size: 12px; opacity: 0.5; }
+        .btn-smart { background: var(--accent); color: #000; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; margin-top: 10px; }
+        nav { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; height: 65px; border-top: 1px solid #374151; }
+        .nav-btn { flex: 1; border: none; background: none; color: #94a3b8; font-size: 11px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+        .active { color: var(--accent) !important; font-weight: bold; }
+        #loading { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:1000; flex-direction:column; align-items:center; justify-content:center; }
+        .hidden { display: none; }
     </style>
 </head>
 <body onload="init()">
 
-<div id="loading"><h3>⚙️ PROCESANDO IA</h3><p>Analizando Defecto y Lote...</p></div>
+<div id="loading"><p>🧠 ANALIZANDO CON IA...</p></div>
 
 <header>
-    <div><small>OF:</small> <b id="h-of">---</b></div>
-    <div class="efficiency" id="h-efi">EFI: 100%</div>
+    <div id="h-info"><b>OF: ---</b><br><small id="h-equipo">T1 - TURNO</small></div>
+    <div id="efi" style="color:var(--success); font-weight:900;">100% EFI</div>
 </header>
 
-<div class="container">
-    <div id="tab-inicio" class="content">
+<div id="main">
+    <div id="s-setup" class="tab">
         <div class="card">
-            <label>IDENTIFICACIÓN DE TURNO</label>
-            <div style="display:flex; gap:10px; margin-top:5px;">
-                <select id="equipo" onchange="guardar()"><option>T1</option><option>T2</option><option>T3</option></select>
-                <select id="turno" onchange="guardar()"><option>Mañana</option><option>Tarde</option><option>Noche</option></select>
-            </div>
-            <button class="btn-count" style="width:100%; background:var(--accent); color:#000; margin-top:10px; padding:15px;" onclick="document.getElementById('f-ocr').click()">📷 ESCANEAR HOJA SAP</button>
-            <input type="file" id="f-ocr" hidden onchange="leerSAP(this)">
+            <label>Equipo Responsable</label>
+            <select id="equipo" onchange="g()" style="background:#1f2937; color:white; width:100%; padding:10px; border-radius:8px; margin-bottom:10px;">
+                <option>T1</option><option>T2</option><option>T3</option>
+            </select>
+            <button class="btn-smart" onclick="document.getElementById('f-sap').click()">📸 ESCANEAR HOJA SAP</button>
+            <input type="file" id="f-sap" hidden onchange="leerSAP(this)">
         </div>
         <div class="card">
-            <input type="text" id="of" placeholder="Nº Orden de Fabricación" oninput="guardar()">
-            <input type="text" id="desc" placeholder="Modelo (Ej: Travertino)" oninput="guardar()">
+            <input type="text" id="of" placeholder="Nº OF" oninput="g()" style="background:#0f172a; border:1px solid #334155; padding:12px; width:100%; border-radius:8px; margin-bottom:10px;">
+            <input type="text" id="desc" placeholder="Modelo / Formato" oninput="g()" style="background:#0f172a; border:1px solid #334155; padding:12px; width:100%; border-radius:8px;">
         </div>
     </div>
 
-    <div id="tab-calidad" class="content hidden">
+    <div id="s-calidad" class="tab hidden">
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <b>ZONA: <span id="z-label" style="color:var(--accent)">CRUDO</span></b>
+            <button onclick="toggleZona()" style="background:none; border:1px solid var(--accent); color:var(--accent); border-radius:5px; font-size:10px; padding:2px 8px;">CAMBIAR ZONA</button>
+        </div>
         <div class="grid-3">
-            <button class="btn-count" style="background:var(--success)" onclick="sumar('ok')" oncontextmenu="editar('ok'); return false;">
-                <span class="val" id="v-ok">0</span>OK<span>Toque +1 / Mantén Edit</span>
-            </button>
-            <button class="btn-count" style="background:#f1c40f; color:#000" onclick="sumar('r1')" oncontextmenu="editar('r1'); return false;">
-                <span class="val" id="v-r1">0</span>R1<span>Toque +1 / Mantén Edit</span>
-            </button>
-            <button class="btn-count" style="background:var(--danger)" onclick="sumar('ko')" oncontextmenu="editar('ko'); return false;">
-                <span class="val" id="v-ko">0</span>KO<span>Toque +1 / Mantén Edit</span>
-            </button>
+            <div class="btn-c" onclick="sum('ok')"><span class="edit-icon" onclick="ed('ok');event.stopPropagation()">✏️</span><b id="v-ok">0</b><small>OK</small></div>
+            <div class="btn-c" onclick="sum('r1')"><span class="edit-icon" onclick="ed('r1');event.stopPropagation()">✏️</span><b id="v-r1">0</b><small>R1</small></div>
+            <div class="btn-c" onclick="sum('ko')"><span class="edit-icon" onclick="ed('ko');event.stopPropagation()">✏️</span><b id="v-ko">0</b><small>KO</small></div>
         </div>
-        
-        <button class="btn-count" style="width:100%; margin-top:20px; background:#444" onclick="document.getElementById('f-defecto').click()">
-            📸 IA: HACER FOTO A DEFECTO / LOTE
-        </button>
-        <input type="file" id="f-defecto" hidden onchange="analizarDefecto(this)">
-        
-        <div id="log-defectos" style="margin-top:15px; font-size:12px;"></div>
+        <button class="btn-smart" style="background:#444; color:white;" onclick="document.getElementById('f-def').click()">📸 FOTO IA (DEFECTO + LOTE)</button>
+        <input type="file" id="f-def" hidden onchange="leerDefecto(this)">
+        <div id="def-log" style="margin-top:15px; font-size:11px; color:#94a3b8;"></div>
     </div>
 
-    <div id="tab-informes" class="content hidden">
-        <div class="card" id="resumen-final"></div>
-        <button class="btn-count" style="width:100%; background:#25d366; color:white" onclick="enviarWA()">📤 ENVIAR WHATSAPP A OFICINA</button>
-        <button class="btn-count" style="width:100%; background:#3498db; color:white; margin-top:10px" onclick="exportarPDF()">📄 GENERAR PDF FORMAL</button>
+    <div id="s-paradas" class="tab hidden">
+        <div class="card" style="text-align:center;">
+            <div id="timer" style="font-size:48px; font-weight:900; margin-bottom:10px; color:var(--danger)">00:00</div>
+            <button id="b-timer" class="btn-smart" onclick="toggleT()">INICIAR PARADA</button>
+        </div>
+        <button class="btn-smart" style="background:#1e293b; color:white;" onclick="voice()">🎤 MOTIVO POR VOZ (KERAJET...)</button>
+        <div id="p-log" style="margin-top:15px; font-size:12px;"></div>
     </div>
 </div>
 
 <nav>
-    <button class="nav-item active" onclick="nav('inicio', this)">🏠 INICIO</button>
-    <button class="nav-item" onclick="nav('calidad', this)">🏺 CALIDAD</button>
-    <button class="nav-item" onclick="nav('informes', this)">📊 INFORME</button>
+    <button class="nav-btn active" onclick="nav('setup',this)">🏠 INICIO</button>
+    <button class="nav-btn" onclick="nav('calidad',this)">🏺 CALIDAD</button>
+    <button class="nav-btn" onclick="nav('paradas',this)">📊 PARADAS</button>
 </nav>
 
 <script>
-    let app = { of:'', desc:'', equipo:'T1', turno:'Mañana', ok:0, r1:0, ko:0, defectos:[] };
+    let d = { of:'', desc:'', eq:'T1', z:'crudo', crudo:{ok:0,r1:0,ko:0}, embalaje:{ok:0,r1:0,ko:0}, paradas:[], start:null, interval:null };
 
     function init() {
-        const s = localStorage.getItem('PROD_V46');
-        if(s) app = JSON.parse(s);
+        const s = localStorage.getItem('GEMINI_V47');
+        if(s) d = JSON.parse(s);
         render();
     }
 
     function nav(id, el) {
-        document.querySelectorAll('.content').forEach(c => c.classList.add('hidden'));
-        document.getElementById('tab-'+id).classList.remove('hidden');
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.add('hidden'));
+        document.getElementById('s-'+id).classList.remove('hidden');
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         el.classList.add('active');
-        if(id === 'informes') generarResumen();
     }
 
-    function sumar(tipo) { app[tipo]++; render(); guardar(); }
+    function sum(t) { d[d.z][t]++; r(); g(); }
+    function ed(t) { let n = prompt("Total "+t.toUpperCase(), d[d.z][t]); if(n!==null) { d[d.z][t] = parseInt(n)||0; r(); g(); } }
+    function toggleZona() { d.z = d.z==='crudo'?'embalaje':'crudo'; r(); }
+
+    async function leerSAP(i) {
+        if(!i.files[0]) return;
+        document.getElementById('loading').style.display='flex';
+        const { data: { text } } = await Tesseract.recognize(i.files[0], 'eng');
+        const ofs = text.match(/13\d{5}/); if(ofs) d.of = ofs[0];
+        document.getElementById('loading').style.display='none';
+        r(); g();
+    }
+
+    async function leerDefecto(i) {
+        if(!i.files[0]) return;
+        document.getElementById('loading').style.display='flex';
+        const { data: { text } } = await Tesseract.recognize(i.files[0], 'eng');
+        const lote = text.match(/T[1-3]/);
+        const resp = lote ? lote[0] : "Dudoso";
+        d.paradas.push({h: new Date().toLocaleTimeString(), m: "Defecto en pieza. Origen: " + resp});
+        d[d.z].ko++;
+        document.getElementById('loading').style.display='none';
+        r(); g();
+        alert("Detectado lote de: " + resp);
+    }
+
+    function toggleT() {
+        const b = document.getElementById('b-timer');
+        if(!d.start) {
+            d.start = Date.now();
+            b.innerText = "PARAR CRONÓMETRO"; b.style.background = "var(--danger)";
+            d.interval = setInterval(() => {
+                const diff = Math.floor((Date.now()-d.start)/1000);
+                document.getElementById('timer').innerText = String(Math.floor(diff/60)).padStart(2,'0')+":"+String(diff%60).padStart(2,'0');
+            }, 1000);
+        } else {
+            const min = Math.round((Date.now()-d.start)/60000);
+            d.paradas.push({h: new Date().toLocaleTimeString(), m: min + " min - Pendiente motivo"});
+            clearInterval(d.interval); d.start = null;
+            b.innerText = "INICIAR PARADA"; b.style.background = "var(--accent)";
+            document.getElementById('timer').innerText = "00:00";
+            r(); g();
+        }
+    }
+
+    function voice() {
+        const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        rec.lang = 'es-ES';
+        rec.onresult = (e) => {
+            let v = e.results[0][0].transcript.toLowerCase();
+            if(v.includes("quera") || v.includes("kerayer") || v.includes("kerajet")) v = "Fallo KERAJET";
+            if(d.paradas.length>0) d.paradas[d.paradas.length-1].m += " | " + v;
+            r(); g();
+        };
+        rec.start();
+    }
+
+    function g() { 
+        d.of = document.getElementById('of').value;
+        d.desc = document.getElementById('desc').value;
+        d.eq = document.getElementById('equipo').value;
+        localStorage.setItem('GEMINI_V47', JSON.stringify(d)); 
+    }
     
-    function editar(tipo) {
-        let n = prompt("Introduce el número total de piezas " + tipo.toUpperCase(), app[tipo]);
-        if(n !== null) { app[tipo] = parseInt(n) || 0; render(); guardar(); }
-    }
-
-    async function leerSAP(input) {
-        if(!input.files[0]) return;
-        document.getElementById('loading').style.display = 'flex';
-        const { data: { text } } = await Tesseract.recognize(input.files[0], 'eng');
-        const ofs = text.match(/13\d{5}/); if(ofs) app.of = ofs[0];
-        document.getElementById('loading').style.display = 'none';
-        render(); guardar();
-    }
-
-    async function analizarDefecto(input) {
-        if(!input.files[0]) return;
-        document.getElementById('loading').style.display = 'flex';
-        const { data: { text } } = await Tesseract.recognize(input.files[0], 'eng');
+    function r() {
+        document.getElementById('of').value = d.of;
+        document.getElementById('desc').value = d.desc;
+        document.getElementById('equipo').value = d.eq;
+        document.getElementById('h-of').innerText = "OF: " + (d.of || "---");
+        document.getElementById('h-equipo').innerText = d.eq + " - TURNO " + d.z.toUpperCase();
+        document.getElementById('v-ok').innerText = d[d.z].ok;
+        document.getElementById('v-r1').innerText = d[d.z].r1;
+        document.getElementById('v-ko').innerText = d[d.z].ko;
+        document.getElementById('z-label').innerText = d.z.toUpperCase();
         
-        // Buscamos si el sello de lote indica T1, T2 o T3
-        const loteMatch = text.match(/T[1-3]/);
-        const responsable = loteMatch ? loteMatch[0] : "Desconocido";
-        
-        app.defectos.push({ h: new Date().toLocaleTimeString(), resp: responsable, txt: "Defecto registrado vía foto" });
-        app.ko++;
-        document.getElementById('loading').style.display = 'none';
-        render(); guardar();
-        alert("Defecto registrado. Lote detectado como fabricado por: " + responsable);
-    }
-
-    function guardar() {
-        app.of = document.getElementById('of').value;
-        app.desc = document.getElementById('desc').value;
-        app.equipo = document.getElementById('equipo').value;
-        app.turno = document.getElementById('turno').value;
-        localStorage.setItem('PROD_V46', JSON.stringify(app));
-    }
-
-    function render() {
-        document.getElementById('of').value = app.of;
-        document.getElementById('desc').value = app.desc;
-        document.getElementById('h-of').innerText = app.of || '---';
-        document.getElementById('v-ok').innerText = app.ok;
-        document.getElementById('v-r1').innerText = app.r1;
-        document.getElementById('v-ko').innerText = app.ko;
-        
-        const tot = app.ok + app.r1 + app.ko;
-        const efi = tot > 0 ? ((app.ok / tot) * 100).toFixed(1) : 100;
-        document.getElementById('h-efi').innerText = "EFI: " + efi + "%";
-        document.getElementById('h-efi').style.color = efi > 90 ? 'var(--success)' : 'var(--danger)';
-
-        document.getElementById('log-defectos').innerHTML = app.defectos.slice(-3).map(d => `<div>[${d.h}] Lote: ${d.resp} - ${d.txt}</div>`).join('');
-    }
-
-    function generarResumen() {
-        const h = `<h3>RESUMEN TURNO ${app.equipo}</h3>
-                   <p>OF: ${app.of} - ${app.desc}</p>
-                   <hr>
-                   <p>PRIMERA: ${app.ok} pzs</p>
-                   <p>REPROCESO: ${app.r1} pzs</p>
-                   <p>RECHAZO: ${app.ko} pzs</p>
-                   <p><b>TOTAL: ${app.ok + app.r1 + app.ko} pzs</b></p>`;
-        document.getElementById('resumen-final').innerHTML = h;
-    }
-
-    function enviarWA() {
-        const msg = `*INFORME PRODUCCIÓN*%0AOF: ${app.of}%0AEquipo: ${app.equipo}%0AOK: ${app.ok}%0AR1: ${app.r1}%0AKO: ${app.ko}`;
-        window.open(`https://wa.me/?text=${msg}`);
-    }
-
-    function exportarPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        doc.text("INFORME DE PRODUCCIÓN", 20, 20);
-        doc.text("OF: " + app.of, 20, 30);
-        doc.text("Equipo: " + app.equipo, 20, 40);
-        doc.text("Primera: " + app.ok, 20, 50);
-        doc.save("Informe_" + app.of + ".pdf");
+        const tot = d[d.z].ok + d[d.z].r1 + d[d.z].ko;
+        const efi = tot > 0 ? ((d[d.z].ok / tot) * 100).toFixed(1) : 100;
+        document.getElementById('efi').innerText = efi + "% EFI";
+        document.getElementById('p-log').innerHTML = d.paradas.slice(-3).map(p => `<div>[${p.h}] ${p.m}</div>`).join('');
     }
 </script>
 </body>
