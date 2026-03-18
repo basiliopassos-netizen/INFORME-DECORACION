@@ -3,154 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PROD V22 - REPARADA</title>
+    <title>PROD V31 - LGV Y VOZ</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        :root { --primary: #2c3e50; --success: #27ae60; --danger: #e74c3c; --warning: #f39c12; --bg: #f0f2f5; --info: #3498db; }
+        :root { --primary: #2c3e50; --success: #27ae60; --r1: #f39c12; --ko: #e74c3c; --bg: #f4f7f6; --info: #3498db; }
         * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: var(--bg); padding-bottom: 80px; }
-        header { background: var(--primary); color: white; padding: 15px; position: sticky; top:0; z-index:100; display: flex; justify-content: space-between; }
-        .tabs { display: flex; background: #34495e; position: sticky; top:50px; z-index:100; }
-        .tab-btn { flex: 1; padding: 15px; border: none; background: transparent; color: #bdc3c7; font-weight: bold; font-size: 11px; }
-        .tab-btn.active { color: white; border-bottom: 4px solid var(--warning); background: rgba(255,255,255,0.1); }
+        body { margin: 0; background: var(--bg); padding-bottom: 90px; }
+        header { background: var(--primary); color: white; padding: 12px; position: sticky; top:0; z-index:100; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .tabs { display: flex; background: #34495e; position: sticky; top:46px; z-index:100; border-bottom: 2px solid var(--r1); }
+        .tab-btn { flex: 1; padding: 12px 5px; border: none; background: transparent; color: #bdc3c7; font-weight: bold; font-size: 9px; text-transform: uppercase; }
+        .tab-btn.active { color: white; background: rgba(255,255,255,0.1); }
         .contenido { padding: 10px; }
-        .card { background: white; padding: 12px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 10px; }
+        .card { background: white; padding: 12px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 10px; border: 1px solid #eee; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        label { font-size: 9px; font-weight: 800; color: #7f8c8d; text-transform: uppercase; margin-bottom: 2px; display: block; }
-        input, select, textarea { padding: 10px; border: 1px solid #dce1e5; border-radius: 8px; width: 100%; font-size: 14px; margin-bottom: 5px; }
-        .fila-contador { display: flex; gap: 8px; margin-bottom: 10px; align-items: stretch; }
-        .btn-count { flex: 1; border: none; border-radius: 15px; padding: 15px; color: white; min-height: 70px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        label { font-size: 9px; font-weight: 800; color: #7f8c8d; text-transform: uppercase; margin-bottom: 3px; display: block; }
+        input, select, textarea { padding: 10px; border: 1px solid #dce1e5; border-radius: 8px; width: 100%; font-size: 14px; margin-bottom: 5px; background: #fff; }
+        .fila-contador { display: flex; gap: 6px; margin-bottom: 10px; align-items: stretch; }
+        .btn-count { flex: 1; border: none; border-radius: 14px; padding: 10px; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 70px; font-weight: bold; }
         .btn-ok { background: var(--success); box-shadow: 0 4px 0 #1e8449; }
-        .btn-nook { background: var(--danger); box-shadow: 0 4px 0 #b03a2e; }
-        .btn-edit-manual { width: 50px; background: white; border: 2px solid #dce1e5; border-radius: 12px; font-size: 20px; color: var(--info); display: flex; align-items: center; justify-content: center; }
-        .btn-action { background: #007bff; color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; font-weight: bold; margin-top: 8px; }
+        .btn-r1 { background: var(--r1); box-shadow: 0 4px 0 #d35400; }
+        .btn-ko { background: var(--ko); box-shadow: 0 4px 0 #c0392b; }
+        .btn-edit { width: 50px; background: white; border: 2px solid #eee; border-radius: 14px; color: var(--info); font-size: 20px; display: flex; align-items: center; justify-content: center; }
+        .input-group { position: relative; display: flex; gap: 5px; }
+        .btn-mic { background: #95a5a6; color: white; border: none; border-radius: 8px; width: 45px; font-size: 20px; display: flex; align-items: center; justify-content: center; }
+        .btn-mic.active { background: var(--ko); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .btn-action { background: #007bff; color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; font-weight: bold; margin-top: 10px; }
         .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; align-items:center; justify-content:center; }
         .modal-box { background:white; width:92%; padding:15px; border-radius:15px; max-height: 85vh; overflow-y: auto; }
         #loading { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); z-index:5000; flex-direction: column; align-items:center; justify-content:center; }
         .hidden { display: none; }
+        .resumen-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; font-size: 14px; }
     </style>
 </head>
 <body onload="cargarTodo()">
 
-<div id="loading"><h2 id="load-txt">🚀 PROCESANDO...</h2></div>
+<div id="loading"><h2 id="load-text">⚙️ PROCESANDO...</h2></div>
 
-<header><b>PRODUCCIÓN V22</b> <span id="mem-status" style="font-size:10px; opacity:0.8;">Memoria OK</span></header>
+<header>
+    <b>PROD V31</b> 
+    <span id="rec-status" style="font-size:10px;">🎤 LISTO</span>
+</header>
 
 <div class="tabs">
     <button class="tab-btn active" id="btn-calidad" onclick="cambiarTab('calidad')">CALIDAD</button>
     <button class="tab-btn" id="btn-final" onclick="cambiarTab('final')">FINAL</button>
-    <button class="tab-btn" id="btn-eventos" onclick="cambiarTab('eventos')">EVENTOS</button>
+    <button class="tab-btn" id="btn-eventos" onclick="cambiarTab('eventos')">PARADAS</button>
+    <button class="tab-btn" id="btn-resumen" onclick="cambiarTab('resumen')" style="color:var(--r1)">RESUMEN</button>
 </div>
 
 <div class="contenido">
-    <div class="card">
-        <div class="grid">
-            <div><label>OF</label><input type="text" id="of" placeholder="Nº Orden" oninput="guardarTodo()"></div>
-            <div><label>Turno</label><select id="turno" onchange="guardarTodo()"><option>Mañana</option><option>Tarde</option><option>Noche</option></select></div>
+    <div id="vistas-principales">
+        <div class="card">
+            <div class="grid">
+                <div><label>Fecha</label><input type="date" id="fecha" onchange="guardarTodo()"></div>
+                <div><label>OF (Orden)</label><input type="text" id="of" placeholder="Nº Orden" oninput="guardarTodo()"></div>
+            </div>
+            <div class="grid" style="margin-top:5px;">
+                 <div><label>Equipo</label><select id="equipo" onchange="guardarTodo()"><option>T1</option><option>T2</option><option>T3</option></select></div>
+                 <div><label>Turno</label><select id="turno" onchange="guardarTodo()"><option>Mañana</option><option>Tarde</option><option>Noche</option></select></div>
+            </div>
         </div>
-        <div style="margin-top:5px;"><label>Gráfica</label><input type="text" id="grafica" placeholder="Nombre diseño" oninput="guardarTodo()"></div>
-        <div style="margin-top:5px;"><label>Material</label><input type="text" id="material" placeholder="Sustrato" oninput="guardarTodo()"></div>
+
+        <div class="fila-contador">
+            <button class="btn-count btn-ok" onclick="sumarUno('ok')">PIEZAS OK <br><span id="val-ok" style="font-size:24px">0</span></button>
+            <button class="btn-edit" onclick="editarCifra('ok')">✎</button>
+        </div>
+        <div class="fila-contador">
+            <button class="btn-count btn-r1" onclick="abrirDefectos('r1')">REPROCESO R1 <br><span id="val-r1" style="font-size:24px">0</span></button>
+            <button class="btn-edit" onclick="editarCifra('r1')">✎</button>
+        </div>
+        <div class="fila-contador">
+            <button class="btn-count btn-ko" onclick="abrirDefectos('ko')">TOTAL KO <br><span id="val-ko" style="font-size:24px">0</span></button>
+            <button class="btn-edit" onclick="editarCifra('ko')">✎</button>
+        </div>
     </div>
 
-    <div id="vista-produccion">
-        <div class="fila-contador">
-            <button class="btn-count btn-ok" onclick="sumarUno('ok')">PIEZAS OK <b id="val-ok" style="font-size:24px;">0</b></button>
-            <button class="btn-edit-manual" onclick="editarCifra('ok')">✎</button>
-        </div>
-        <div class="fila-contador">
-            <button class="btn-count btn-nook" onclick="abrirDefectos()">FALLOS <b id="val-nook" style="font-size:24px;">0</b></button>
-            <button class="btn-edit-manual" onclick="editarCifra('nook')">✎</button>
-        </div>
+    <div id="vista-resumen" class="hidden">
+        <div class="card" id="resumen-lista"></div>
+        <button class="btn-action" style="background:var(--primary)" onclick="generarPDF()">📤 COMPARTIR INFORME FINAL</button>
     </div>
 
     <div id="vista-eventos" class="hidden">
         <div class="card">
             <label>Estación</label>
             <select id="ev-estacion">
-                <option>HORNOS</option><option>ROBOTTIONS</option><option>CABINA 1</option>
-                <option>KERAJET</option><option>CABINA 2</option><option>ERRECE</option>
+                <option>LGV</option>
+                <option>BARBIERI</option>
+                <option>ROBOTTIONS</option>
+                <option>CEPILLADORA</option>
+                <option>CABINA 1</option>
+                <option>HORNOS</option>
+                <option>ERRECE</option>
+                <option>KERAJET</option>
+                <option>CABINA 2</option>
+                <option>FLAWMASTER</option>
+                <option>EMBALADORA</option>
             </select>
-            <label>Motivo</label><textarea id="ev-desc" rows="2"></textarea>
-            <div class="grid" style="margin-top:5px;">
-                <div><label>Inicio</label><input type="time" id="ev-ini"></div>
-                <div><label>Fin</label><input type="time" id="ev-fin"></div>
+            
+            <label>Motivo (Relatar)</label>
+            <div class="input-group">
+                <textarea id="ev-desc" rows="3" placeholder="Pulsa el micro para hablar..."></textarea>
+                <button id="btn-micro" class="btn-mic" onclick="toggleDictado()">🎤</button>
             </div>
-            <button class="btn-action" style="background:var(--info);" onclick="abrirFoto('evento')">📸 FOTO PARADA</button>
-            <p id="st-foto-ev" style="display:none; color:green; text-align:center; font-weight:bold; margin:5px;">✓ Foto cargada</p>
-            <button class="btn-action" onclick="guardarEvento()">💾 GUARDAR PARADA</button>
+
+            <div class="grid" style="margin-top:10px;">
+                <div><label>H. Inicio</label><input type="time" id="ev-ini"></div>
+                <div><label>H. Fin</label><input type="time" id="ev-fin"></div>
+            </div>
+            <button class="btn-action" style="background:#5d6d7e;" onclick="abrirFoto('evento')">📸 FOTO PARADA</button>
+            <button class="btn-action" style="background:var(--primary);" onclick="guardarEvento()">💾 REGISTRAR PARADA</button>
         </div>
     </div>
-
-    <button class="btn-action" style="height:70px; font-size:16px; margin-top:20px; background:#2c3e50;" onclick="generarPDF()">📤 COMPARTIR INFORME</button>
-    <button onclick="resetearTodo()" style="width:100%; border:none; background:none; color:#bbb; margin-top:40px; font-size:10px;">BORRAR TODO Y REINICIAR</button>
 </div>
 
 <div id="modal-app" class="modal"><div class="modal-box" id="modal-content"></div></div>
 <input type="file" id="in-cam" accept="image/*" capture="environment" style="display:none" onchange="procesarFoto(event)">
-<input type="file" id="in-gal" accept="image/*" style="display:none" onchange="procesarFoto(event)">
 
 <script>
-    const CONFIG = { calidad: ["Bultos", "Malla suelta", "Rota", "Sucia"], final: ["Gota Kerajet", "Tono", "Rascada", "Manchada", "Corte Impresión", "Esquina rota", "Borde roto"] };
-    let db = { calidad: { ok: 0, nook: 0, registros: [] }, final: { ok: 0, nook: 0, registros: [] }, eventos: [], cabecera: { of: "", turno: "Mañana", grafica: "", material: "" } };
-    let tabActual = 'calidad', modoFoto = "", pasoFoto = 1, defectoActivo = "", fotoTempEv = null;
+    const CONFIG = {
+        calidad: {
+            r1: ["Bultos", "Manchada", "1 malla suelta"],
+            ko: ["Rota", "Malla suelta", "Playa"]
+        },
+        final: {
+            r1: ["Fallo impresión Kerajet", "Gota Kerajet", "Impresión a mitad por falta consentimiento", "Rascada", "Fallo Matificación", "Falta pintura mono-color"],
+            ko: ["Rota", "Mallas sueltas", "Rascada", "Rota en embalaje", "Rota en expulsión Flawmaster"]
+        }
+    };
+    
+    let db = { calidad: { ok: 0, r1: 0, ko: 0, registros: [] }, final: { ok: 0, r1: 0, ko: 0, registros: [] }, eventos: [], cabecera: { fecha: new Date().toISOString().split('T')[0], of: "", turno: "Mañana", equipo: "T1" } };
+    let tabActual = 'calidad', modoFoto = "", pasoFoto = 1, defectoActivo = "", valoracionActiva = "", fotoTempEv = null;
+
+    const recognition = window.SpeechRecognition || window.webkitSpeechRecognition ? new (window.SpeechRecognition || window.webkitSpeechRecognition)() : null;
+    if(recognition) {
+        recognition.lang = 'es-ES';
+        recognition.continuous = false;
+        recognition.onresult = (event) => {
+            const texto = event.results[0][0].transcript;
+            document.getElementById('ev-desc').value += (document.getElementById('ev-desc').value ? ' ' : '') + texto;
+            toggleDictado(false);
+        };
+        recognition.onend = () => toggleDictado(false);
+    }
+
+    function toggleDictado(forzar) {
+        const btn = document.getElementById('btn-micro');
+        if (!recognition) return alert("Tu navegador no soporta dictado por voz");
+        if (forzar === false || btn.classList.contains('active')) {
+            recognition.stop();
+            btn.classList.remove('active');
+        } else {
+            recognition.start();
+            btn.classList.add('active');
+        }
+    }
 
     function guardarTodo() { 
-        db.cabecera = { of: document.getElementById('of').value, turno: document.getElementById('turno').value, grafica: document.getElementById('grafica').value, material: document.getElementById('material').value }; 
-        localStorage.setItem('PROD_V22', JSON.stringify(db));
+        db.cabecera.fecha = document.getElementById('fecha').value;
+        db.cabecera.of = document.getElementById('of').value;
+        db.cabecera.turno = document.getElementById('turno').value;
+        db.cabecera.equipo = document.getElementById('equipo').value;
+        localStorage.setItem('PROD_V31', JSON.stringify(db));
+        actualizarResumenUI();
     }
 
     function cargarTodo() { 
-        const g = localStorage.getItem('PROD_V22'); 
-        if(g){ 
-            db = JSON.parse(g); 
-            document.getElementById('of').value = db.cabecera.of || ""; 
-            document.getElementById('turno').value = db.cabecera.turno || "Mañana"; 
-            document.getElementById('grafica').value = db.cabecera.grafica || ""; 
-            document.getElementById('material').value = db.cabecera.material || "";
-        } 
-        actualizarUI(); 
-    }
-
-    function calcularMinutos(inicio, fin) {
-        if(!inicio || !fin) return 0;
-        const [h1, m1] = inicio.split(':').map(Number);
-        const [h2, m2] = fin.split(':').map(Number);
-        let d1 = new Date(0,0,0, h1, m1);
-        let d2 = new Date(0,0,0, h2, m2);
-        if(d2 < d1) d2.setDate(d2.getDate() + 1);
-        return Math.floor((d2 - d1) / 60000);
+        const g = localStorage.getItem('PROD_V31'); 
+        if(g) db = JSON.parse(g); 
+        document.getElementById('fecha').value = db.cabecera.fecha;
+        document.getElementById('of').value = db.cabecera.of || "";
+        document.getElementById('equipo').value = db.cabecera.equipo || "T1";
+        document.getElementById('turno').value = db.cabecera.turno || "Mañana";
+        actualizarUI();
     }
 
     function cambiarTab(t) { 
         tabActual = t; 
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
         document.getElementById('btn-'+t).classList.add('active'); 
-        document.getElementById('vista-produccion').classList.toggle('hidden', t === 'eventos'); 
+        document.getElementById('vistas-principales').classList.toggle('hidden', t === 'eventos' || t === 'resumen'); 
         document.getElementById('vista-eventos').classList.toggle('hidden', t !== 'eventos'); 
+        document.getElementById('vista-resumen').classList.toggle('hidden', t !== 'resumen'); 
         actualizarUI(); 
     }
 
     function sumarUno(tipo) { db[tabActual][tipo]++; actualizarUI(); guardarTodo(); }
+    function editarCifra(tipo) { let n = prompt(`Total ${tipo.toUpperCase()}:`, db[tabActual][tipo]); if(n !== null) { db[tabActual][tipo] = parseInt(n) || 0; actualizarUI(); guardarTodo(); } }
 
-    function editarCifra(tipo) {
-        let n = prompt("Introduce cantidad:", db[tabActual][tipo]);
-        if(n !== null) { db[tabActual][tipo] = parseInt(n) || 0; actualizarUI(); guardarTodo(); }
-    }
-
-    function abrirDefectos() {
-        let h = `<h3>Fallo en ${tabActual.toUpperCase()}</h3>`;
-        CONFIG[tabActual].forEach(d => { h += `<button class="btn-action" style="background:#f8f9fa; color:black; text-align:left; border:1px solid #ddd;" onclick="seleccionarDefecto('${d}')">${d}</button>`; });
-        h += `<button onclick="cerrarModal()" style="margin-top:10px; width:100%;">Cerrar</button>`;
+    function abrirDefectos(tipoVal) {
+        valoracionActiva = tipoVal;
+        let lista = CONFIG[tabActual][tipoVal];
+        let h = `<h3 style="margin:0 0 10px 0">Defecto ${tipoVal.toUpperCase()}</h3>`;
+        lista.forEach(d => { h += `<button class="btn-action" style="background:#f8f9fa; color:black; border:1px solid #ddd; text-align:left;" onclick="seleccionarDefecto('${d}')">▪ ${d}</button>`; });
+        h += `<button class="btn-action" onclick="cerrarModal()" style="background:#ccc; margin-top:10px;">VOLVER</button>`;
         document.getElementById('modal-content').innerHTML = h;
         document.getElementById('modal-app').style.display = 'flex';
     }
 
     function seleccionarDefecto(d) { defectoActivo = d; pasoFoto = 1; abrirFoto('registro'); }
+    function cerrarModal() { document.getElementById('modal-app').style.display = 'none'; }
 
-    function abrirFoto(modo) {
-        modoFoto = modo;
-        document.getElementById('modal-content').innerHTML = `<h3>${modo === 'evento' ? 'Foto Parada' : 'Foto Fallo '+pasoFoto+'/2'}</h3><button class="btn-action" style="background:#27ae60;" onclick="document.getElementById('in-cam').click()">📸 CÁMARA</button><button class="btn-action" style="background:#3498db;" onclick="document.getElementById('in-gal').click()">🖼️ GALERÍA</button>`;
-        document.getElementById('modal-app').style.display = 'flex';
+    function abrirFoto(modo) { 
+        modoFoto = modo; 
+        document.getElementById('modal-content').innerHTML = `<h3>📸 ${modo === 'evento' ? 'Foto Parada' : 'Foto '+defectoActivo}</h3><button class="btn-action" style="background:var(--success); height:80px;" onclick="document.getElementById('in-cam').click()">CAPTURAR FOTO</button>`; 
+        document.getElementById('modal-app').style.display = 'flex'; 
     }
 
     function procesarFoto(e) {
@@ -161,17 +218,16 @@
             const img = new Image();
             img.onload = () => {
                 const canvas = document.createElement('canvas');
-                const MAX = 600;
-                let w = img.width, h = img.height;
+                const MAX = 700; let w = img.width, h = img.height;
                 if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } } else { if (h > MAX) { w *= MAX / h; h = MAX; } }
                 canvas.width = w; canvas.height = h;
                 canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                const dataUrl = canvas.toDataURL('image/jpeg', 0.5);
-                if(modoFoto === 'evento') { fotoTempEv = dataUrl; document.getElementById('st-foto-ev').style.display = 'block'; cerrarModal(); } 
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.4);
+                if(modoFoto === 'evento') { fotoTempEv = dataUrl; cerrarModal(); } 
                 else {
                     if(pasoFoto === 1) {
-                        db[tabActual].nook++;
-                        db[tabActual].registros.push({ defecto: defectoActivo, hora: new Date().toLocaleTimeString(), foto1: dataUrl, foto2: null });
+                        db[tabActual][valoracionActiva]++;
+                        db[tabActual].registros.push({ val: valoracionActiva, defecto: defectoActivo, hora: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), foto1: dataUrl, foto2: null });
                         pasoFoto = 2; abrirFoto('registro');
                     } else {
                         db[tabActual].registros[db[tabActual].registros.length - 1].foto2 = dataUrl;
@@ -185,85 +241,63 @@
         reader.readAsDataURL(e.target.files[0]);
     }
 
+    function actualizarResumenUI() {
+        let h = `<h3 style="margin-top:0">RESUMEN TURNO</h3>`;
+        ['ok', 'r1', 'ko'].forEach(tipo => {
+            let total = db.calidad[tipo] + db.final[tipo];
+            h += `<div class="resumen-row"><span>TOTAL ${tipo.toUpperCase()}</span><b>${total}</b></div>`;
+        });
+        h += `<div style="margin-top:15px; font-weight:bold; font-size:11px; color:var(--primary)">DETALLE FALLOS:</div>`;
+        [...db.calidad.registros, ...db.final.registros].forEach(r => {
+            h += `<div class="resumen-row" style="font-size:11px;"><span>${r.defecto} (${r.val.toUpperCase()})</span><span>${r.hora}</span></div>`;
+        });
+        document.getElementById('resumen-lista').innerHTML = h;
+    }
+
+    function actualizarUI() { 
+        document.getElementById('val-ok').innerText = db[tabActual].ok; 
+        document.getElementById('val-r1').innerText = db[tabActual].r1; 
+        document.getElementById('val-ko').innerText = db[tabActual].ko; 
+        actualizarResumenUI();
+    }
+
     function guardarEvento() {
         const est = document.getElementById('ev-estacion').value, des = document.getElementById('ev-desc').value, ini = document.getElementById('ev-ini').value, fin = document.getElementById('ev-fin').value;
         if(!ini || !fin || !des) return alert("Faltan datos");
         const mins = calcularMinutos(ini, fin);
         db.eventos.push({ estacion: est, desc: des, inicio: ini, fin: fin, minutos: mins, foto: fotoTempEv });
-        fotoTempEv = null; document.getElementById('st-foto-ev').style.display = 'none'; document.getElementById('ev-desc').value = ""; guardarTodo(); alert("Guardada");
+        fotoTempEv = null; document.getElementById('ev-desc').value = ""; 
+        guardarTodo(); alert("Parada guardada");
     }
 
-    function cerrarModal() { document.getElementById('modal-app').style.display = 'none'; }
-    function actualizarUI() { document.getElementById('val-ok').innerText = db[tabActual].ok; document.getElementById('val-nook').innerText = db[tabActual].nook; }
-    function resetearTodo() { if(confirm("¿Borrar todo?")) { localStorage.removeItem('PROD_V22'); location.reload(); } }
+    function calcularMinutos(i, f) {
+        const [h1, m1] = i.split(':').map(Number); const [h2, m2] = f.split(':').map(Number);
+        let d1 = new Date(0,0,0, h1, m1); let d2 = new Date(0,0,0, h2, m2);
+        if(d2 < d1) d2.setDate(d2.getDate() + 1);
+        return Math.floor((d2 - d1) / 60000);
+    }
+
+    function resetearTodo() { if(confirm("¿Borrar todo?")) { localStorage.removeItem('PROD_V31'); location.reload(); } }
 
     async function generarPDF() {
         document.getElementById('loading').style.display = 'flex';
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
+        doc.setFillColor(44, 62, 80); doc.rect(0, 0, 210, 40, 'F');
+        doc.setTextColor(255,255,255); doc.setFontSize(16); doc.text("INFORME PRODUCCIÓN V31", 14, 15);
+        doc.setFontSize(9); doc.text(`OF: ${db.cabecera.of} | EQUIPO: ${db.cabecera.equipo} | FECHA: ${db.cabecera.fecha}`, 14, 25);
         
-        let totalMins = 0;
-        let sumarioEstaciones = {};
-        db.eventos.forEach(e => {
-            totalMins += (e.minutos || 0);
-            sumarioEstaciones[e.estacion] = (sumarioEstaciones[e.estacion] || 0) + (e.minutos || 0);
-        });
-
-        doc.setFontSize(18); doc.text("INFORME DE PRODUCCIÓN", 14, 20);
-        doc.setFontSize(10); doc.text(`OF: ${db.cabecera.of} | Turno: ${db.cabecera.turno} | Gráfica: ${db.cabecera.grafica}`, 14, 28);
-        doc.line(14, 34, 196, 34);
-
-        let y = 45;
-        const addTxt = (t, s=11, bold=false) => { 
-            if(y>275){doc.addPage(); y=20;} 
-            doc.setFontSize(s); 
-            doc.setFont("helvetica", bold ? "bold" : "normal");
-            doc.text(t, 14, y); y+=7; 
-        };
-
-        // 1. RESUMEN
-        addTxt("1. RESUMEN DE DATOS", 14, true);
-        addTxt(`- CALIDAD: OK [ ${db.calidad.ok} ] | FALLOS [ ${db.calidad.nook} ]`);
-        addTxt(`- FINAL: OK [ ${db.final.ok} ] | FALLOS [ ${db.final.nook} ]`);
-        addTxt(`- TIEMPO TOTAL PARADAS: ${totalMins} min`);
+        let y = 50;
+        doc.setTextColor(0,0,0); doc.setFontSize(12); doc.text("RESUMEN DE PIEZAS", 14, y); y += 10;
+        doc.setFontSize(10);
+        doc.text(`OK TOTAL: ${db.calidad.ok + db.final.ok}`, 20, y); y += 6;
+        doc.text(`R1 TOTAL: ${db.calidad.r1 + db.final.r1}`, 20, y); y += 6;
+        doc.text(`KO TOTAL: ${db.calidad.ko + db.final.ko}`, 20, y);
         
-        y += 3;
-        addTxt("SUMATORIO POR ESTACIÓN:", 11, true);
-        for (let st in sumarioEstaciones) { addTxt(`   • ${st}: ${sumarioEstaciones[st]} min`); }
-
-        // 2. DETALLE CALIDAD
-        y += 5; addTxt("2. DETALLE CALIDAD", 14, true);
-        db.calidad.registros.forEach(r => {
-            if(y > 230) { doc.addPage(); y = 20; }
-            addTxt(`${r.defecto} (${r.hora})`, 10);
-            if(r.foto1) doc.addImage(r.foto1, 'JPEG', 14, y, 40, 30);
-            if(r.foto2) doc.addImage(r.foto2, 'JPEG', 60, y, 40, 30);
-            y += 35;
-        });
-
-        // 3. DETALLE FINAL
-        y += 5; addTxt("3. DETALLE FINAL", 14, true);
-        db.final.registros.forEach(r => {
-            if(y > 230) { doc.addPage(); y = 20; }
-            addTxt(`${r.defecto} (${r.hora})`, 10);
-            if(r.foto1) doc.addImage(r.foto1, 'JPEG', 14, y, 40, 30);
-            if(r.foto2) doc.addImage(r.foto2, 'JPEG', 60, y, 40, 30);
-            y += 35;
-        });
-
-        // 4. PARADAS
-        y += 5; addTxt("4. DESCRIPCIÓN DE PARADAS", 14, true);
-        db.eventos.forEach(ev => {
-            if(y > 240) { doc.addPage(); y = 20; }
-            addTxt(`${ev.estacion} (${ev.inicio}-${ev.fin}) = ${ev.minutos} min`, 10, true);
-            let lines = doc.splitTextToSize(`Motivo: ${ev.desc}`, 170);
-            doc.text(lines, 14, y); y += (lines.length * 6);
-            if(ev.foto) { doc.addImage(ev.foto, 'JPEG', 14, y, 45, 35); y += 40; }
-            y += 4;
-        });
-
+        const pdfBlob = doc.output('blob');
+        const fileName = `Informe_${db.cabecera.of || 'PROD'}.pdf`;
         document.getElementById('loading').style.display = 'none';
-        doc.save(`Informe_${db.cabecera.of}.pdf`);
+        if (navigator.share) { const file = new File([pdfBlob], fileName, { type: 'application/pdf' }); try { await navigator.share({ files: [file] }); } catch (err) { doc.save(fileName); } } else { doc.save(fileName); }
     }
 </script>
 </body>
