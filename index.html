@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Decoline V42 - Nexus Master</title>
+    <title>Decoline V43 - Nexus Master Final</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
@@ -31,14 +31,13 @@
         input, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ccc; border-radius: 12px; font-size: 16px; box-sizing: border-box; }
         
         .grid-sem { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .sem-btn { padding: 15px 5px; border-radius: 15px; border: 2px solid; background: white; font-weight: bold; text-align: center; }
+        .sem-btn { padding: 15px 5px; border-radius: 15px; border: 2px solid; background: white; font-weight: bold; text-align: center; cursor: pointer; }
         
         #modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:2000; justify-content:center; align-items:center; }
         .m-content { background:white; width:90%; border-radius:25px; padding:20px; max-height: 80vh; overflow-y: auto; }
         .m-btn { background: #f5f5f5; border: 1px solid #ddd; padding: 15px; width: 100%; margin-bottom: 10px; border-radius: 12px; font-weight: bold; text-align: left; }
         
         .hist-item { padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; display: flex; justify-content: space-between; }
-        .btn-del { color: var(--red); font-weight: bold; border: none; background: none; font-size: 18px; }
         .btn-save { background: var(--green); color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; margin-top: 10px; }
     </style>
 </head>
@@ -58,7 +57,6 @@
         <div class="kpi-box">
             <span style="font-size:10px; text-transform:uppercase; opacity:0.8;">Proyección Cierre Turno</span>
             <div style="font-size:36px; font-weight:bold;" id="dash-forecast">0</div>
-            <div style="font-size:11px; margin-top:5px;" id="dash-status">Esperando datos del maestro...</div>
         </div>
         <div class="kpi-grid">
             <div class="kpi-mini">
@@ -66,13 +64,13 @@
                 <div style="font-size:18px; font-weight:bold; color:var(--green);" id="dash-ok">0</div>
             </div>
             <div class="kpi-mini">
-                <span style="font-size:9px; color:#888;">MERMA TOTAL</span>
+                <span style="font-size:9px; color:#888;">MERMA TOT.</span>
                 <div style="font-size:18px; font-weight:bold; color:var(--red);" id="dash-merma">0%</div>
             </div>
         </div>
         <div class="card">
-            <h3>LOTE / ADN</h3>
-            <input type="text" id="f-lote" placeholder="Ej: 1CC25" oninput="syncLote(this.value)">
+            <h3>LOTE ADN MANUAL</h3>
+            <input type="text" id="f-lote" placeholder="Escribir lote (ej: 1CC25)" oninput="syncLote(this.value)">
             <div id="adn-display" style="font-size:11px; margin-top:10px; color:var(--blue); display:flex; justify-content:space-around; font-weight:bold;">
                 <span>LÍNEA: -</span><span>MES: -</span><span>DÍA: -</span>
             </div>
@@ -84,12 +82,11 @@
             <h3>ZONA CONTROL CALIDAD SUSTRATO</h3>
             <div class="grid-sem">
                 <div class="sem-btn" style="border-color:var(--green); color:var(--green)">OK<span id="v-cal-ok" style="display:block; font-size:20px;">0</span></div>
-                <div class="sem-btn" style="border-color:var(--orange); color:var(--orange)" onclick="openModal('R1', 'SUSTRATO')">R1</div>
-                <div class="sem-btn" style="border-color:var(--red); color:var(--red)" onclick="openModal('NO OK', 'SUSTRATO')">NO OK</div>
+                <div class="sem-btn" style="border-color:var(--orange); color:var(--orange)" onclick="openModal('R1', 'SUSTRATO')">R1<span id="v-cal-r1" style="display:block;">0</span></div>
+                <div class="sem-btn" style="border-color:var(--red); color:var(--red)" onclick="openModal('NO OK', 'SUSTRATO')">NO OK<span id="v-cal-no" style="display:block;">0</span></div>
             </div>
-            <label>ACUMULADO PIEZAS OK</label>
-            <input type="number" id="in-cal-ok" placeholder="Escribe cantidad..." oninput="db.cal.ok=this.value; sync();">
-            <div style="margin-top:10px; text-align:right; font-weight:bold; color:var(--red);" id="m-cal-txt">Merma: 0%</div>
+            <label>PIEZAS OK SUSTRATO</label>
+            <input type="number" id="in-cal-ok" placeholder="Acumulado..." oninput="db.cal.ok=parseInt(this.value)||0; sync();">
         </div>
     </div>
 
@@ -98,67 +95,50 @@
             <h3>ZONA EMBALAJE FINAL</h3>
             <div class="grid-sem">
                 <div class="sem-btn" style="border-color:var(--green); color:var(--green)">OK<span id="v-emb-ok" style="display:block; font-size:20px;">0</span></div>
-                <div class="sem-btn" style="border-color:var(--orange); color:var(--orange)" onclick="openModal('R1', 'EMBALAJE')">R1</div>
-                <div class="sem-btn" style="border-color:var(--red); color:var(--red)" onclick="openModal('NO OK', 'EMBALAJE')">NO OK</div>
+                <div class="sem-btn" style="border-color:var(--orange); color:var(--orange)" onclick="openModal('R1', 'EMBALAJE')">R1<span id="v-emb-r1" style="display:block;">0</span></div>
+                <div class="sem-btn" style="border-color:var(--red); color:var(--red)" onclick="openModal('NO OK', 'EMBALAJE')">NO OK<span id="v-emb-no" style="display:block;">0</span></div>
             </div>
-            <label>ACUMULADO PIEZAS OK</label>
-            <input type="number" id="in-emb-ok" placeholder="Escribe cantidad..." oninput="db.emb.ok=this.value; sync();">
-            <div style="margin-top:10px; text-align:right; font-weight:bold; color:var(--red);" id="m-emb-txt">Merma: 0%</div>
+            <label>PIEZAS OK EMBALAJE</label>
+            <input type="number" id="in-emb-ok" placeholder="Acumulado..." oninput="db.emb.ok=parseInt(this.value)||0; sync();">
         </div>
     </div>
 
     <div id="tab3" class="sect">
         <div class="card">
-            <h3>PARADAS / EVENTOS</h3>
+            <h3>ESTACIÓN / EVENTO</h3>
             <label>ESTACIÓN</label>
             <select id="p-est">
                 <option>LGV</option><option>ROBOTIONS</option><option>CEPILLADORA</option><option>CABINA 1</option><option>HORNOS</option><option>ERRECE</option><option>KERAJET</option><option>UV</option><option>TRASLOW</option><option>CABINA 2</option><option>EMBALAJE</option>
             </select>
-            <div style="display:flex; gap:10px; margin-top:10px;">
-                <input type="time" id="p-h1"><input type="time" id="p-h2">
-            </div>
-            <textarea id="p-obs" placeholder="Motivo..." style="width:100%; margin-top:10px; border-radius:12px; padding:10px;"></textarea>
+            <div style="display:flex; gap:10px; margin-top:10px;"><input type="time" id="p-h1"><input type="time" id="p-h2"></div>
+            <textarea id="p-obs" placeholder="Motivo de la parada..." style="width:100%; margin-top:10px; height:60px;"></textarea>
             <button class="btn-save" onclick="addParada()">GUARDAR EVENTO</button>
         </div>
     </div>
 
     <div id="tab4" class="sect">
-        <div class="card">
-            <h3>HISTORIAL DE EVENTOS</h3>
-            <div id="hist-content"></div>
-        </div>
-        <button class="btn-save" style="background:var(--blue)" onclick="generarPDF()">GENERAR PDF</button>
+        <div class="card"><h3>HISTORIAL DE EVENTOS</h3><div id="hist-content"></div></div>
     </div>
 
     <div id="tab5" class="sect">
         <div class="card">
-            <h3>CONFIGURACIÓN MAESTRO</h3>
-            <label>HORA INICIO PRODUCCIÓN</label>
-            <input type="time" id="cfg-h-ini" value="06:00" onchange="sync()">
-            <label>HORA CIERRE PRODUCCIÓN</label>
-            <input type="time" id="cfg-h-fin" value="14:00" onchange="sync()">
-            <label>CADENCIA TEÓRICA (Pzs/h)</label>
-            <input type="number" id="cfg-cad" value="650" onchange="sync()">
-            <button class="btn-save" style="background:var(--red); margin-top:20px;" onclick="if(confirm('¿BORRAR TODO?')){localStorage.clear(); location.reload();}">REINICIAR TURNO</button>
+            <h3>MAESTRO DE PRODUCCIÓN</h3>
+            <label>INICIO TURNO</label><input type="time" id="cfg-h-ini" value="06:00" onchange="sync()">
+            <label>CIERRE TURNO</label><input type="time" id="cfg-h-fin" value="14:00" onchange="sync()">
+            <label>PIEZAS OBJETIVO / HORA</label><input type="number" id="cfg-cad" value="650" onchange="sync()">
         </div>
     </div>
 </div>
 
 <div id="modal">
-    <div class="m-content">
-        <h3 id="m-title">Seleccionar Defecto</h3>
-        <div id="m-ops"></div>
-        <button class="btn-save" style="background:#888" onclick="document.getElementById('modal').style.display='none'">CERRAR</button>
-    </div>
+    <div class="m-content"><h3 id="m-title">Defecto</h3><div id="m-ops"></div><button class="btn-save" style="background:#888" onclick="closeM()">CERRAR</button></div>
 </div>
 
 <script>
-    var db = JSON.parse(localStorage.getItem('tanque_v42')) || {
+    var db = JSON.parse(localStorage.getItem('tanque_v43')) || {
         lote: '', cal: {ok:0, r1:0, no:0, hist:[]}, emb: {ok:0, r1:0, no:0, hist:[]},
         parad: [], cfg: {h_ini:'06:00', h_fin:'14:00', cad:650}
     };
-
-    const DEFS = ["ROTA", "BULTOS", "DIMENSIONES", "GOTA", "SUCIA", "MALLA", "FALLO IMP.", "OTRO"];
 
     function setTab(n, btn) {
         document.querySelectorAll('.sect').forEach(s => s.classList.remove('active'));
@@ -180,76 +160,63 @@
         db.cfg.h_ini = document.getElementById('cfg-h-ini').value;
         db.cfg.h_fin = document.getElementById('cfg-h-fin').value;
         db.cfg.cad = document.getElementById('cfg-cad').value;
-        localStorage.setItem('tanque_v42', JSON.stringify(db));
+        localStorage.setItem('tanque_v43', JSON.stringify(db));
         updateDashboard();
     }
 
     function updateDashboard() {
-        let calOk = parseInt(db.cal.ok) || 0;
-        let embOk = parseInt(db.emb.ok) || 0;
-        let totalNo = db.cal.no + db.emb.no;
-        let mermaTot = (calOk + embOk + totalNo) > 0 ? ((totalNo / (calOk + embOk + totalNo)) * 100).toFixed(1) : 0;
+        let okTot = (parseInt(db.cal.ok)||0) + (parseInt(db.emb.ok)||0);
+        let noTot = db.cal.no + db.emb.no;
+        let merma = (okTot + noTot) > 0 ? ((noTot / (okTot + noTot)) * 100).toFixed(1) : 0;
         
-        document.getElementById('v-cal-ok').innerText = calOk;
-        document.getElementById('v-emb-ok').innerText = embOk;
-        document.getElementById('dash-ok').innerText = calOk + embOk;
-        document.getElementById('dash-merma').innerText = mermaTot + "%";
+        document.getElementById('v-cal-ok').innerText = db.cal.ok;
+        document.getElementById('v-cal-r1').innerText = db.cal.r1;
+        document.getElementById('v-cal-no').innerText = db.cal.no;
+        document.getElementById('v-emb-ok').innerText = db.emb.ok;
+        document.getElementById('v-emb-r1').innerText = db.emb.r1;
+        document.getElementById('v-emb-no').innerText = db.emb.no;
+        document.getElementById('dash-ok').innerText = okTot;
+        document.getElementById('dash-merma').innerText = merma + "%";
 
-        // Forecast
         let ahora = new Date();
         let f = db.cfg.h_fin.split(':');
         let fin = new Date(); fin.setHours(f[0], f[1], 0);
         if(fin < ahora) fin.setDate(fin.getDate()+1);
         let minRest = (fin - ahora) / 60000;
-        let forecast = Math.round((calOk + embOk) + ((minRest/60) * db.cfg.cad * (1 - (mermaTot/100))));
-        document.getElementById('dash-forecast').innerText = forecast > 0 ? forecast : (calOk+embOk);
+        let forecast = Math.round(okTot + ((minRest/60) * db.cfg.cad * (1-(merma/100))));
+        document.getElementById('dash-forecast').innerText = forecast > okTot ? forecast : okTot;
     }
 
     function openModal(tipo, zona) {
         document.getElementById('modal').style.display = 'flex';
         let ops = document.getElementById('m-ops'); ops.innerHTML = '';
-        DEFS.forEach(d => {
+        ["ROTA", "BULTOS", "DIMENSIONES", "GOTA", "SUCIA", "MALLA", "IMPRESIÓN", "OTRO"].forEach(d => {
             let b = document.createElement('button'); b.className = 'm-btn'; b.innerText = d;
             b.onclick = () => {
-                let target = (zona === 'SUSTRATO') ? db.cal : db.emb;
-                if(tipo === 'R1') target.r1++; else target.no++;
-                target.hist.push({def: d, tipo: tipo, hora: new Date().toLocaleTimeString().substring(0,5), lote: db.lote});
-                sync(); document.getElementById('modal').style.display = 'none';
+                let t = (zona === 'SUSTRATO') ? db.cal : db.emb;
+                if(tipo === 'R1') t.r1++; else t.no++;
+                t.hist.push({def: d, tipo: tipo, hora: new Date().toLocaleTimeString().substring(0,5), lote: db.lote});
+                sync(); closeM();
             };
             ops.appendChild(b);
         });
     }
 
     function addParada() {
-        let h1 = document.getElementById('p-h1').value;
-        let h2 = document.getElementById('p-h2').value;
-        if(!h1 || !h2) return alert("Horas!");
+        let h1 = document.getElementById('p-h1').value, h2 = document.getElementById('p-h2').value;
+        if(!h1 || !h2) return alert("¡Pon horas!");
         let m = (parseInt(h2.split(':')[0])*60 + parseInt(h2.split(':')[1])) - (parseInt(h1.split(':')[0])*60 + parseInt(h1.split(':')[1]));
         db.parad.push({est: document.getElementById('p-est').value, h1, h2, min: m, obs: document.getElementById('p-obs').value});
-        document.getElementById('p-obs').value = '';
-        sync(); alert("Evento guardado");
+        document.getElementById('p-obs').value = ''; sync(); alert("Guardado");
     }
 
     function renderHistorial() {
         let div = document.getElementById('hist-content'); div.innerHTML = '';
-        db.cal.hist.concat(db.emb.hist).forEach((h, i) => {
-            div.innerHTML += `<div class="hist-item"><span><b>${h.hora}</b> ${h.def} (${h.tipo}) - Lote: ${h.lote}</span></div>`;
-        });
-        db.parad.forEach((p, i) => {
-            div.innerHTML += `<div class="hist-item" style="color:var(--red)"><span><b>${p.h1}-${p.h2}</b> ${p.est} (${p.min}m): ${p.obs}</span><button class="btn-del" onclick="delP(${i})">×</button></div>`;
-        });
+        db.cal.hist.concat(db.emb.hist).forEach(h => { div.innerHTML += `<div class="hist-item"><span><b>${h.hora}</b> ${h.def} (${h.tipo}) - Lote: ${h.lote}</span></div>`; });
+        db.parad.forEach(p => { div.innerHTML += `<div class="hist-item" style="color:var(--red)"><span><b>${p.h1}-${p.h2}</b> ${p.est}: ${p.obs}</span></div>`; });
     }
 
-    function delP(i) { db.parad.splice(i,1); sync(); renderHistorial(); }
-
-    async function generarPDF() {
-        const { jsPDF } = window.jspdf; const doc = new jsPDF();
-        doc.setFillColor(26, 35, 126); doc.rect(0, 0, 210, 30, 'F');
-        doc.setTextColor(255, 255, 255); doc.text("INFORME DECOLINE V42", 20, 20);
-        doc.setTextColor(0); doc.text(`Lote: ${db.lote} | OK Tot: ${db.cal.ok + db.emb.ok}`, 20, 40);
-        doc.autoTable({ startY: 50, head: [['ZONA', 'OK', 'R1', 'NO OK']], body: [['SUSTRATO', db.cal.ok, db.cal.r1, db.cal.no],['EMBALAJE', db.emb.ok, db.emb.r1, db.emb.no]] });
-        doc.save("Reporte_V42.pdf");
-    }
+    function closeM() { document.getElementById('modal').style.display = 'none'; }
 
     window.onload = () => {
         document.getElementById('f-lote').value = db.lote;
