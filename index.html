@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Decoline V44 - Cadencia Segundos</title>
+    <title>Decoline V45 - Registro Completo</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
@@ -25,19 +25,14 @@
         .kpi-mini { background: white; padding: 10px; border-radius: 15px; text-align: center; border: 1px solid #ddd; }
         
         .card { background: white; padding: 15px; border-radius: 18px; margin-bottom: 15px; border: 1px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        h3 { margin: 0 0 15px 0; color: var(--blue); font-size: 13px; border-left: 4px solid var(--blue); padding-left: 10px; text-transform: uppercase; }
+        h3 { margin: 0 0 12px 0; color: var(--blue); font-size: 13px; border-left: 4px solid var(--blue); padding-left: 10px; text-transform: uppercase; }
         
-        label { font-weight: bold; font-size: 11px; color: #666; display: block; margin-top: 10px; text-transform: uppercase;}
-        input, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ccc; border-radius: 12px; font-size: 16px; box-sizing: border-box; }
+        label { font-weight: bold; font-size: 10px; color: #888; display: block; margin-top: 8px; text-transform: uppercase;}
+        input, select { width: 100%; padding: 10px; margin-top: 4px; border: 1px solid #ccc; border-radius: 10px; font-size: 15px; box-sizing: border-box; background: #fff; }
         
         .grid-sem { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .sem-btn { padding: 15px 5px; border-radius: 15px; border: 2px solid; background: white; font-weight: bold; text-align: center; cursor: pointer; }
+        .sem-btn { padding: 15px 5px; border-radius: 15px; border: 2px solid; background: white; font-weight: bold; text-align: center; }
         
-        #modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:2000; justify-content:center; align-items:center; }
-        .m-content { background:white; width:90%; border-radius:25px; padding:20px; max-height: 80vh; overflow-y: auto; }
-        .m-btn { background: #f5f5f5; border: 1px solid #ddd; padding: 15px; width: 100%; margin-bottom: 10px; border-radius: 12px; font-weight: bold; text-align: left; }
-        
-        .hist-item { padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; display: flex; justify-content: space-between; }
         .btn-save { background: var(--green); color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; margin-top: 10px; }
     </style>
 </head>
@@ -57,23 +52,26 @@
         <div class="kpi-box">
             <span style="font-size:10px; text-transform:uppercase; opacity:0.8;">Piezas proyectadas al cierre</span>
             <div style="font-size:38px; font-weight:bold;" id="dash-forecast">0</div>
-            <div id="dash-target-info" style="font-size:10px; margin-top:5px; opacity:0.7;">Basado en cadencia de 0s</div>
         </div>
-        <div class="kpi-grid">
-            <div class="kpi-mini">
-                <span style="font-size:9px; color:#888;">TOTAL OK (S+E)</span>
-                <div style="font-size:18px; font-weight:bold; color:var(--green);" id="dash-ok">0</div>
-            </div>
-            <div class="kpi-mini">
-                <span style="font-size:9px; color:#888;">MERMA ACTUAL</span>
-                <div style="font-size:18px; font-weight:bold; color:var(--red);" id="dash-merma">0%</div>
-            </div>
-        </div>
+        
         <div class="card">
-            <h3>Lote / OF Activa</h3>
-            <input type="text" id="f-lote" placeholder="Ej: 1CC25" oninput="syncLote(this.value)">
-            <div id="adn-display" style="font-size:11px; margin-top:10px; color:var(--blue); display:flex; justify-content:space-around; font-weight:bold;">
-                <span>LÍNEA: -</span><span>MES: -</span><span>DÍA: -</span>
+            <h3>Registro del Turno</h3>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div><label>Fecha</label><input type="date" id="f-fecha" onchange="sync()"></div>
+                <div><label>Nº Orden (OF)</label><input type="number" id="f-of" placeholder="Ej: 1234" oninput="sync()"></div>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div><label>Código SAP</label><input type="number" id="f-sap" placeholder="Ej: 9876" oninput="sync()"></div>
+                <div><label>Lote ADN</label><input type="text" id="f-lote" placeholder="1CC25" oninput="syncLote(this.value)"></div>
+            </div>
+            <label>Nombre de la Gráfica</label>
+            <input type="text" id="f-grafica" placeholder="Ej: Marmol Blanco Polished" oninput="sync()">
+            <label>Nombre del Sustrato</label>
+            <input type="text" id="f-sustrato" placeholder="Ej: Porcelánico 60x120" oninput="sync()">
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div><label>Turno</label><select id="f-turno" onchange="sync()"><option>MAÑANA</option><option>TARDE</option><option>NOCHE</option></select></div>
+                <div><label>Equipo</label><select id="f-equipo" onchange="sync()"><option>T1</option><option>T2</option><option>T3</option></select></div>
             </div>
         </div>
     </div>
@@ -86,8 +84,8 @@
                 <div class="sem-btn" style="border-color:var(--orange); color:var(--orange)" onclick="openModal('R1', 'SUSTRATO')">R1<span id="v-cal-r1" style="display:block;">0</span></div>
                 <div class="sem-btn" style="border-color:var(--red); color:var(--red)" onclick="openModal('NO OK', 'SUSTRATO')">NO OK<span id="v-cal-no" style="display:block;">0</span></div>
             </div>
-            <label>Actualizar piezas OK</label>
-            <input type="number" id="in-cal-ok" placeholder="Contador manual..." oninput="db.cal.ok=parseInt(this.value)||0; sync();">
+            <label>Piezas OK en Cajón (Sustrato)</label>
+            <input type="number" id="in-cal-ok" oninput="db.cal.ok=parseInt(this.value)||0; sync();">
         </div>
     </div>
 
@@ -99,8 +97,8 @@
                 <div class="sem-btn" style="border-color:var(--orange); color:var(--orange)" onclick="openModal('R1', 'EMBALAJE')">R1<span id="v-emb-r1" style="display:block;">0</span></div>
                 <div class="sem-btn" style="border-color:var(--red); color:var(--red)" onclick="openModal('NO OK', 'EMBALAJE')">NO OK<span id="v-emb-no" style="display:block;">0</span></div>
             </div>
-            <label>Actualizar piezas OK</label>
-            <input type="number" id="in-emb-ok" placeholder="Contador manual..." oninput="db.emb.ok=parseInt(this.value)||0; sync();">
+            <label>Piezas OK en Cajón (Embalaje)</label>
+            <input type="number" id="in-emb-ok" oninput="db.emb.ok=parseInt(this.value)||0; sync();">
         </div>
     </div>
 
@@ -108,41 +106,36 @@
         <div class="card">
             <h3>Registro de Paradas</h3>
             <label>Estación</label>
-            <select id="p-est">
-                <option>LGV</option><option>ROBOTIONS</option><option>CEPILLADORA</option><option>CABINA 1</option><option>HORNOS</option><option>ERRECE</option><option>KERAJET</option><option>UV</option><option>TRASLOW</option><option>CABINA 2</option><option>EMBALAJE</option>
-            </select>
+            <select id="p-est"><option>LGV</option><option>ROBOTIONS</option><option>CEPILLADORA</option><option>CABINA 1</option><option>HORNOS</option><option>ERRECE</option><option>KERAJET</option><option>UV</option><option>TRASLOW</option><option>CABINA 2</option><option>EMBALAJE</option></select>
             <div style="display:flex; gap:10px; margin-top:10px;"><input type="time" id="p-h1"><input type="time" id="p-h2"></div>
-            <textarea id="p-obs" placeholder="¿Qué ha pasado?" style="width:100%; margin-top:10px; height:50px; border-radius:10px; padding:10px; border:1px solid #ccc;"></textarea>
+            <textarea id="p-obs" placeholder="Motivo..." style="width:100%; margin-top:10px; height:50px; border-radius:10px; padding:10px; border:1px solid #ccc;"></textarea>
             <button class="btn-save" onclick="addParada()">Guardar Evento</button>
         </div>
     </div>
 
     <div id="tab4" class="sect">
-        <div class="card"><h3>Historial del Turno</h3><div id="hist-content"></div></div>
+        <div class="card"><h3>Historial</h3><div id="hist-content"></div></div>
+        <button class="btn-save" style="background:var(--blue)" onclick="generarPDF()">Generar PDF</button>
     </div>
 
     <div id="tab5" class="sect">
         <div class="card">
             <h3>Maestro de Tiempos</h3>
-            <label>Hora de salida / Cierre</label>
-            <input type="time" id="cfg-h-fin" value="14:00" onchange="sync()">
-            
-            <label>Cadencia de máquina (Segundos / Pieza)</label>
-            <input type="number" step="0.1" id="cfg-seg" value="6.5" onchange="sync()">
-            <div style="font-size:11px; color:var(--blue); margin-top:5px; font-weight:bold;" id="info-pz-h">Equivale a: 553 piezas/hora</div>
-
-            <button class="btn-save" style="background:var(--red); margin-top:30px;" onclick="if(confirm('¿BORRAR DATOS DEL TURNO?')){localStorage.clear(); location.reload();}">REINICIAR TODO</button>
+            <label>Hora de Cierre</label><input type="time" id="cfg-h-fin" value="14:00" onchange="sync()">
+            <label>Cadencia (Segundos / Pieza)</label><input type="number" step="0.1" id="cfg-seg" value="6.5" onchange="sync()">
+            <button class="btn-save" style="background:var(--red); margin-top:30px;" onclick="if(confirm('¿BORRAR TURNO?')){localStorage.clear(); location.reload();}">REINICIAR</button>
         </div>
     </div>
 </div>
 
 <div id="modal">
-    <div class="m-content"><h3 id="m-title">Defecto</h3><div id="m-ops"></div><button class="btn-save" style="background:#888" onclick="closeM()">CERRAR</button></div>
+    <div class="m-content"><h3>Defecto</h3><div id="m-ops"></div><button class="btn-save" style="background:#888" onclick="document.getElementById('modal').style.display='none'">CERRAR</button></div>
 </div>
 
 <script>
-    var db = JSON.parse(localStorage.getItem('tanque_v44')) || {
-        lote: '', cal: {ok:0, r1:0, no:0, hist:[]}, emb: {ok:0, r1:0, no:0, hist:[]},
+    var db = JSON.parse(localStorage.getItem('tanque_v45')) || {
+        reg: { fecha: new Date().toISOString().split('T')[0], of:'', sap:'', lote:'', grafica:'', sustrato:'', turno:'MAÑANA', equipo:'T1' },
+        cal: {ok:0, r1:0, no:0, hist:[]}, emb: {ok:0, r1:0, no:0, hist:[]},
         parad: [], cfg: {h_fin:'14:00', seg:6.5}
     };
 
@@ -154,18 +147,19 @@
         if(n === 4) renderHistorial();
     }
 
-    function syncLote(v) {
-        db.lote = v;
-        if(v.length >= 5) {
-            document.getElementById('adn-display').innerHTML = `<span>LÍNEA: ${v[0]}</span><span>MES: ${v[1]}</span><span>DÍA: ${v.substring(3,5)}</span>`;
-        }
-        sync();
-    }
+    function syncLote(v) { db.reg.lote = v; sync(); }
 
     function sync() {
+        db.reg.fecha = document.getElementById('f-fecha').value;
+        db.reg.of = document.getElementById('f-of').value;
+        db.reg.sap = document.getElementById('f-sap').value;
+        db.reg.grafica = document.getElementById('f-grafica').value;
+        db.reg.sustrato = document.getElementById('f-sustrato').value;
+        db.reg.turno = document.getElementById('f-turno').value;
+        db.reg.equipo = document.getElementById('f-equipo').value;
         db.cfg.h_fin = document.getElementById('cfg-h-fin').value;
         db.cfg.seg = parseFloat(document.getElementById('cfg-seg').value) || 0;
-        localStorage.setItem('tanque_v44', JSON.stringify(db));
+        localStorage.setItem('tanque_v45', JSON.stringify(db));
         updateDashboard();
     }
 
@@ -174,31 +168,20 @@
         let noTot = db.cal.no + db.emb.no;
         let mermaP = (okTot + noTot) > 0 ? (noTot / (okTot + noTot)) : 0;
         
-        // UI Updates
         document.getElementById('v-cal-ok').innerText = db.cal.ok;
         document.getElementById('v-cal-r1').innerText = db.cal.r1;
         document.getElementById('v-cal-no').innerText = db.cal.no;
         document.getElementById('v-emb-ok').innerText = db.emb.ok;
         document.getElementById('v-emb-r1').innerText = db.emb.r1;
         document.getElementById('v-emb-no').innerText = db.emb.no;
-        document.getElementById('dash-ok').innerText = okTot;
-        document.getElementById('dash-merma').innerText = (mermaP * 100).toFixed(1) + "%";
 
-        // Lógica Forecast por Segundos
         if(db.cfg.seg > 0) {
-            let pzHora = 3600 / db.cfg.seg;
-            document.getElementById('info-pz-h').innerText = `Equivale a: ${Math.round(pzHora)} piezas/hora`;
-            document.getElementById('dash-target-info').innerText = `Basado en cadencia de ${db.cfg.seg}s`;
-
             let ahora = new Date();
             let f = db.cfg.h_fin.split(':');
             let fin = new Date(); fin.setHours(f[0], f[1], 0);
             if(fin < ahora) fin.setDate(fin.getDate()+1);
-            
-            let segRestantes = (fin - ahora) / 1000;
-            let pzRestantes = segRestantes / db.cfg.seg;
-            let forecast = Math.round(okTot + (pzRestantes * (1 - mermaP)));
-            
+            let pzRest = ((fin - ahora) / 1000) / db.cfg.seg;
+            let forecast = Math.round(okTot + (pzRest * (1 - mermaP)));
             document.getElementById('dash-forecast').innerText = forecast > okTot ? forecast : okTot;
         }
     }
@@ -211,8 +194,8 @@
             b.onclick = () => {
                 let t = (zona === 'SUSTRATO') ? db.cal : db.emb;
                 if(tipo === 'R1') t.r1++; else t.no++;
-                t.hist.push({def: d, tipo: tipo, hora: new Date().toLocaleTimeString().substring(0,5), lote: db.lote});
-                sync(); closeM();
+                t.hist.push({def: d, tipo: tipo, hora: new Date().toLocaleTimeString().substring(0,5), lote: db.reg.lote});
+                sync(); document.getElementById('modal').style.display = 'none';
             };
             ops.appendChild(b);
         });
@@ -220,26 +203,43 @@
 
     function addParada() {
         let h1 = document.getElementById('p-h1').value, h2 = document.getElementById('p-h2').value;
-        if(!h1 || !h2) return alert("¡Indica horas!");
+        if(!h1 || !h2) return alert("¡Horas!");
         let m = (parseInt(h2.split(':')[0])*60 + parseInt(h2.split(':')[1])) - (parseInt(h1.split(':')[0])*60 + parseInt(h1.split(':')[1]));
         db.parad.push({est: document.getElementById('p-est').value, h1, h2, min: m, obs: document.getElementById('p-obs').value});
-        document.getElementById('p-obs').value = ''; sync(); alert("Evento guardado");
+        document.getElementById('p-obs').value = ''; sync(); alert("Guardado");
     }
 
     function renderHistorial() {
         let div = document.getElementById('hist-content'); div.innerHTML = '';
-        db.cal.hist.concat(db.emb.hist).forEach((h, i) => { div.innerHTML += `<div class="hist-item"><span><b>${h.hora}</b> ${h.def} (${h.tipo}) - Lote: ${h.lote}</span></div>`; });
-        db.parad.forEach(p => { div.innerHTML += `<div class="hist-item" style="color:var(--red)"><span><b>${p.h1}-${p.h2}</b> ${p.est}: ${p.obs}</span></div>`; });
+        db.cal.hist.concat(db.emb.hist).forEach(h => { div.innerHTML += `<div style="padding:8px; border-bottom:1px solid #eee; font-size:12px;"><b>${h.hora}</b> ${h.def} (${h.tipo}) - Lote: ${h.lote}</div>`; });
+        db.parad.forEach(p => { div.innerHTML += `<div style="padding:8px; border-bottom:1px solid #eee; font-size:12px; color:red;"><b>${p.h1}-${p.h2}</b> ${p.est}: ${p.obs}</div>`; });
     }
 
-    function closeM() { document.getElementById('modal').style.display = 'none'; }
+    async function generarPDF() {
+        const { jsPDF } = window.jspdf; const doc = new jsPDF();
+        doc.setFillColor(26, 35, 126); doc.rect(0, 0, 210, 30, 'F');
+        doc.setTextColor(255, 255, 255); doc.text("INFORME DECOLINE V45", 20, 20);
+        doc.setTextColor(0); doc.setFontSize(10);
+        doc.text(`FECHA: ${db.reg.fecha} | OF: ${db.reg.of} | SAP: ${db.reg.sap}`, 20, 40);
+        doc.text(`GRAFICA: ${db.reg.grafica} | SUSTRATO: ${db.reg.sustrato}`, 20, 48);
+        doc.text(`TURNO: ${db.reg.turno} | EQUIPO: ${db.reg.equipo}`, 20, 56);
+        doc.autoTable({ startY: 65, head: [['ZONA', 'OK', 'R1', 'NO OK']], body: [['SUSTRATO', db.cal.ok, db.cal.r1, db.cal.no],['EMBALAJE', db.emb.ok, db.emb.r1, db.emb.no]] });
+        doc.save(`Reporte_OF_${db.reg.of}.pdf`);
+    }
 
     window.onload = () => {
-        document.getElementById('f-lote').value = db.lote;
-        document.getElementById('in-cal-ok').value = db.cal.ok || '';
-        document.getElementById('in-emb-ok').value = db.emb.ok || '';
+        document.getElementById('f-fecha').value = db.reg.fecha;
+        document.getElementById('f-of').value = db.reg.of;
+        document.getElementById('f-sap').value = db.reg.sap;
+        document.getElementById('f-lote').value = db.reg.lote;
+        document.getElementById('f-grafica').value = db.reg.grafica;
+        document.getElementById('f-sustrato').value = db.reg.sustrato;
+        document.getElementById('f-turno').value = db.reg.turno;
+        document.getElementById('f-equipo').value = db.reg.equipo;
         document.getElementById('cfg-h-fin').value = db.cfg.h_fin;
         document.getElementById('cfg-seg').value = db.cfg.seg;
+        document.getElementById('in-cal-ok').value = db.cal.ok || '';
+        document.getElementById('in-emb-ok').value = db.emb.ok || '';
         sync();
     };
 </script>
