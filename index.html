@@ -3,251 +3,297 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Decoline V30</title>
+    <title>Decoline V41 - Nexus Pro</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { --blue: #1a237e; --green: #2e7d32; --red: #c62828; --orange: #ef6c00; --gray: #f4f4f4; }
-        body { font-family: sans-serif; margin: 0; background: var(--gray); padding-bottom: 80px; }
-        .nav { display: flex; background: white; position: sticky; top: 0; z-index: 1000; height: 65px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .nav-btn { flex: 1; border: none; background: #eee; font-weight: bold; font-size: 11px; color: #777; border-right: 1px solid #ccc; }
-        .nav-btn.active { color: white; background: var(--blue); }
-        .sect { display: none; padding: 15px; }
+        :root { --blue: #1a237e; --green: #2e7d32; --red: #c62828; --orange: #ef6c00; --gray: #f8f9fa; --sidebar-w: 75px; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--gray); display: flex; height: 100vh; overflow: hidden; color: #333; }
+        
+        /* Sidebar Estilo Pro */
+        .sidebar { width: var(--sidebar-w); background: var(--blue); display: flex; flex-direction: column; align-items: center; padding-top: 15px; gap: 15px; box-shadow: 2px 0 10px rgba(0,0,0,0.2); z-index: 1001; }
+        .side-btn { background: none; border: none; color: rgba(255,255,255,0.5); font-size: 24px; cursor: pointer; transition: 0.3s; padding: 12px; border-radius: 15px; width: 60px; text-align: center; }
+        .side-btn.active { color: white; background: rgba(255,255,255,0.15); box-shadow: inset 0 0 10px rgba(0,0,0,0.2); }
+        .side-label { font-size: 8px; display: block; margin-top: 5px; font-weight: bold; text-transform: uppercase; }
+
+        /* Main Content */
+        .main { flex: 1; overflow-y: auto; padding: 20px; box-sizing: border-box; position: relative; }
+        .sect { display: none; animation: slideUp 0.3s ease-out; }
         .sect.active { display: block; }
-        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #ddd; }
-        h3 { margin: 0 0 10px 0; color: var(--blue); font-size: 16px; border-left: 4px solid var(--blue); padding-left: 8px; }
-        label { font-weight: bold; display: block; margin-top: 10px; font-size: 13px; color: #555; }
-        input, select, textarea { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        .grid-semaforo { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .btn-sem { padding: 15px 5px; border-radius: 12px; border: 2px solid; background: white; font-weight: bold; text-align: center; }
-        .btn-ok { border-color: var(--green); color: var(--green); }
-        .btn-r1 { border-color: var(--orange); color: var(--orange); cursor:pointer; }
-        .btn-no { border-color: var(--red); color: var(--red); cursor:pointer; }
-        .val-n { font-size: 22px; display: block; margin-top: 5px; }
-        .btn-main { background: var(--green); color: white; border: none; padding: 18px; width: 100%; border-radius: 10px; font-weight: bold; margin-top: 15px; cursor:pointer; }
-        #modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; justify-content:center; align-items:center; }
-        .modal-content { background:white; width:90%; border-radius:20px; padding:20px; text-align:center; max-height: 80vh; overflow-y: auto; }
-        .btn-def { background: #f0f0f0; border: 1px solid #ccc; padding: 15px; width: 100%; margin-bottom: 8px; border-radius: 10px; font-weight: bold; }
-        .item-res { border-bottom: 1px solid #ddd; padding: 10px 0; position: relative; }
-        .btn-del-res { position: absolute; right: 0; top: 10px; color: var(--red); font-weight: bold; border: none; background: none; font-size: 18px; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Dashboard & Forecast */
+        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .kpi { background: white; padding: 15px; border-radius: 18px; border: 1px solid #ddd; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .kpi-main { grid-column: span 2; background: linear-gradient(135deg, #1a237e, #311b92); color: white; border: none; }
+        .kpi-val { font-size: 28px; font-weight: bold; display: block; margin: 5px 0; }
+        .kpi-lab { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; }
+
+        /* Form & Cards */
+        .card { background: white; padding: 18px; border-radius: 18px; margin-bottom: 15px; border: 1px solid #ddd; position: relative; }
+        h3 { margin: 0 0 15px 0; color: var(--blue); font-size: 14px; border-left: 5px solid var(--blue); padding-left: 10px; }
+        label { font-weight: bold; font-size: 12px; color: #555; display: block; margin-top: 10px; }
+        input, select, textarea { width: 100%; padding: 12px; margin-top: 6px; border: 1px solid #ccc; border-radius: 12px; font-size: 16px; box-sizing: border-box; }
+        
+        /* Botones Nexus */
+        .btn-green { background: var(--green); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 15px; margin-top: 15px; }
+        .grid-sem { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .sem-btn { padding: 15px 5px; border-radius: 15px; border: 2px solid; background: white; font-weight: bold; text-align: center; cursor: pointer; }
+        
+        /* Historial / CRUD */
+        .hist-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; font-size: 13px; }
+        .btn-del { color: var(--red); border: none; background: none; font-size: 18px; font-weight: bold; cursor: pointer; }
+
+        /* Modal */
+        #modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:2000; justify-content:center; align-items:center; }
+        .m-content { background:white; width:90%; border-radius:25px; padding:25px; max-height: 80vh; overflow-y: auto; }
+        .m-btn { background: #f5f5f5; border: 1px solid #ddd; padding: 15px; width: 100%; margin-bottom: 10px; border-radius: 12px; font-weight: bold; text-align: left; }
     </style>
 </head>
 <body>
 
-<div class="nav">
-    <button class="nav-btn active" onclick="setTab(0)">REGISTRO</button>
-    <button class="nav-btn" onclick="setTab(1)">PRODUCCIÓN</button>
-    <button class="nav-btn" onclick="setTab(2)">PARADAS</button>
-    <button class="nav-btn" onclick="setTab(3)">RESUMEN</button>
+<div class="sidebar">
+    <button class="side-btn active" onclick="setTab(0, this)">🏠<span class="side-label">Dash</span></button>
+    <button class="side-btn" onclick="setTab(1, this)">🔍<span class="side-label">Calid</span></button>
+    <button class="side-btn" onclick="setTab(2, this)">📦<span class="side-label">Embal</span></button>
+    <button class="side-btn" onclick="setTab(3, this)">⚠️<span class="side-label">Parad</span></button>
+    <button class="side-btn" onclick="setTab(4, this)">📝<span class="side-label">Hist</span></button>
+    <button class="side-btn" onclick="setTab(5, this)">⚙️<span class="side-label">Maest</span></button>
 </div>
 
-<div id="tab0" class="sect" style="display:block;">
-    <div class="card">
-        <h3>REGISTRO DE TURNO</h3>
-        <label>FECHA</label><input type="date" id="f-fecha" onchange="sync()">
-        <label>Nº ORDEN (OF)</label><input type="number" id="f-of" oninput="sync()">
-        <label>CÓDIGO SAP</label><input type="number" id="f-sap" oninput="sync()">
-        <label>GRÁFICA</label><input type="text" id="f-grafica" oninput="sync()">
-        <label>SUSTRATO</label><input type="text" id="f-sustrato" oninput="sync()">
-        <label>TURNO</label>
-        <select id="f-turno" onchange="sync()">
-            <option>MAÑANA</option><option>TARDE</option><option>NOCHE</option>
-        </select>
-        <label>EQUIPO DE TRABAJO</label>
-        <select id="f-equipo" onchange="sync()">
-            <option>T1</option><option>T2</option><option>T3</option>
-        </select>
-    </div>
-</div>
-
-<div id="tab1" class="sect">
-    <div class="card">
-        <h3>ZONA CALIDAD</h3>
-        <div class="grid-semaforo">
-            <div class="btn-sem btn-ok">OK<span class="val-n" id="v-cal-ok-txt">0</span></div>
-            <div class="btn-sem btn-r1" onclick="openDef('calidad','r1')">R1<span class="val-n" id="v-cal-r1">0</span></div>
-            <div class="btn-sem btn-no" onclick="openDef('calidad','noko')">NO OK<span class="val-n" id="v-cal-noko">0</span></div>
+<div class="main">
+    <div id="tab0" class="sect active">
+        <div class="dashboard">
+            <div class="kpi kpi-main">
+                <span class="kpi-lab">🔮 Proyección de Cierre</span>
+                <span class="kpi-val" id="k-forecast">0</span>
+                <span style="font-size:9px; opacity:0.8;">Pzs OK estimadas al final del turno</span>
+            </div>
+            <div class="kpi">
+                <span class="kpi-lab">OK Producidas</span>
+                <span class="kpi-val" id="k-ok" style="color:var(--green)">0</span>
+            </div>
+            <div class="kpi">
+                <span class="kpi-lab">Mermas %</span>
+                <span class="kpi-val" id="k-merma" style="color:var(--red)">0%</span>
+            </div>
         </div>
-        <input type="number" id="in-cal-ok" placeholder="Escribir piezas OK" style="border:2px solid var(--green); margin-top:15px; text-align:center;" oninput="db.prod.calidad.ok=this.value; sync();">
-    </div>
-    <div class="card">
-        <h3>ZONA EMBALAJE</h3>
-        <div class="grid-semaforo">
-            <div class="btn-sem btn-ok">OK<span class="val-n" id="v-emb-ok-txt">0</span></div>
-            <div class="btn-sem btn-r1" onclick="openDef('embalaje','r1')">R1<span class="val-n" id="v-emb-r1">0</span></div>
-            <div class="btn-sem btn-no" onclick="openDef('embalaje','noko')">NO OK<span class="val-n" id="v-emb-noko">0</span></div>
+        <div class="card">
+            <h3>Trazabilidad Lote ADN</h3>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="f-lote" maxlength="5" placeholder="1CC25" oninput="parseLote(this.value); sync();">
+                <button id="btn-pin" onclick="togglePin()" style="border:none; border-radius:12px; background:#ddd; padding:0 15px;">📌</button>
+            </div>
+            <div id="lote-det" style="font-size:10px; margin-top:10px; display:flex; justify-content: space-around; font-weight:bold; color:var(--blue)">
+                <span>LÍNEA: -</span><span>MES: -</span><span>DÍA: -</span>
+            </div>
         </div>
-        <input type="number" id="in-emb-ok" placeholder="Escribir piezas OK" style="border:2px solid var(--green); margin-top:15px; text-align:center;" oninput="db.prod.embalaje.ok=this.value; sync();">
     </div>
-</div>
 
-<div id="tab2" class="sect">
-    <div class="card">
-        <h3>REGISTRAR PARADA</h3>
-        <label>ESTACIÓN</label>
-        <select id="p-est">
-            <option>LGV</option><option>BARBIERI</option><option>ROBOTIONS</option><option>CEPILLADORA</option><option>CABINA 1</option><option>HORNOS</option><option>ERRECE</option><option>KERAJET</option><option>UV</option><option>EMBALAJE</option>
-        </select>
-        <div style="display:flex; gap:10px;"><input type="time" id="p-h1"><input type="time" id="p-h2"></div>
-        <textarea id="p-obs" placeholder="Motivo o comentario..."></textarea>
-        <button class="btn-main" onclick="addP()">GUARDAR PARADA</button>
+    <div id="tab1" class="sect">
+        <div class="card">
+            <h3>Control Calidad Sustrato</h3>
+            <div class="grid-sem">
+                <div class="sem-btn" style="border-color:var(--green); color:var(--green)">OK<span id="v-ok-c" style="display:block; font-size:18px;">0</span></div>
+                <div class="sem-btn" style="border-color:var(--orange); color:var(--orange)" onclick="openDef('R1', 'Calidad')">R1</div>
+                <div class="sem-btn" style="border-color:var(--red); color:var(--red)" onclick="openDef('NO OK', 'Calidad')">NO OK</div>
+            </div>
+            <label>Piezas OK en Cajón</label>
+            <input type="number" id="in-ok" placeholder="Acumulado piezas OK..." oninput="db.prod.ok=this.value; sync();">
+        </div>
     </div>
-</div>
 
-<div id="tab3" class="sect">
-    <div class="card" id="res-header"></div>
-    <div class="card" id="res-calidad"></div>
-    <div class="card" id="res-embalaje"></div>
-    <div class="card">
-        <h3 style="color:var(--red)">PARADAS Y EVENTOS</h3>
-        <div id="res-paradas"></div>
+    <div id="tab2" class="sect">
+        <div class="card">
+            <h3>Embalaje / Decoración</h3>
+            <div class="grid-sem">
+                <div class="sem-btn" style="border-color:var(--orange); color:var(--orange)" onclick="openDef('R1', 'Embalaje')">R1</div>
+                <div class="sem-btn" style="border-color:var(--red); color:var(--red)" onclick="openDef('NO OK', 'Embalaje')">NO OK</div>
+            </div>
+        </div>
     </div>
-    <button class="btn-main" style="background:var(--blue)" onclick="generarPDF()">📄 GENERAR INFORME DETALLADO</button>
-    <button class="btn-main" style="background:red; margin-top:20px" onclick="if(confirm('¿Reiniciar turno?')){localStorage.clear(); location.reload();}">⚠️ REINICIAR</button>
+
+    <div id="tab3" class="sect">
+        <div class="card">
+            <h3>Registro de Incidencias</h3>
+            <label>Estación</label>
+            <select id="p-est" onchange="updateMotivos(this.value)">
+                <option value="KERAJET">KERAJET</option>
+                <option value="CABINA 2">CABINA 2 / EXTRAMATE</option>
+                <option value="UV">UV / PULMÓN</option>
+                <option value="LGV">LGV</option>
+                <option value="OTRO">OTRO</option>
+            </select>
+            <label>Motivo</label>
+            <select id="p-mot"></select>
+            <div style="display:flex; gap:10px; margin-top:12px;">
+                <input type="time" id="p-h1"><input type="time" id="p-h2">
+            </div>
+            <button class="btn-green" onclick="addP()">Guardar Parada</button>
+        </div>
+    </div>
+
+    <div id="tab4" class="sect">
+        <div class="card">
+            <h3>Historial de Eventos</h3>
+            <div id="hist-lista"></div>
+        </div>
+        <button class="btn-green" style="background:var(--blue)" onclick="generarPDF()">Generar PDF Gerencia</button>
+    </div>
+
+    <div id="tab5" class="sect">
+        <div class="card">
+            <h3>Configuración Maestro</h3>
+            <label>Hora Finalización Turno</label>
+            <input type="time" id="cfg-cierre" value="14:00" onchange="sync()">
+            <label>Cadencia Media (Pzs/h)</label>
+            <input type="number" id="cfg-cad" value="650" onchange="sync()">
+            <button class="btn-green" style="background:var(--red); margin-top:30px;" onclick="if(confirm('¿Borrar turno?')){localStorage.clear(); location.reload();}">Borrar Datos Turno</button>
+        </div>
+    </div>
 </div>
 
 <div id="modal">
-    <div class="modal-content">
+    <div class="m-content">
         <h3 id="m-title">Defecto</h3>
         <div id="m-ops"></div>
-        <button class="btn-main" style="background:#888" onclick="document.getElementById('modal').style.display='none'">CANCELAR</button>
+        <button class="btn-green" style="background:#888" onclick="closeModal()">Cerrar</button>
     </div>
 </div>
 
 <script>
-    var db = JSON.parse(localStorage.getItem('tanque_v30')) || {
-        reg: { fecha: new Date().toISOString().split('T')[0], of:'', sap:'', grafica:'', sustrato:'', turno:'MAÑANA', equipo:'T1' },
-        prod: { calidad: {ok:0, r1:0, noko:0, detalles:[]}, embalaje: {ok:0, r1:0, noko:0, detalles:[]} },
+    var db = JSON.parse(localStorage.getItem('decoline_v41')) || {
+        reg: { lote:'', linea:'', mes:'', dia:'', pin:false, h_cierre:'14:00', cadencia:650 },
+        prod: { ok:0, r1:0, noko:0, detalles:[] },
         paradas: []
     };
 
-    var DEFS = {
-        calidad: ["ROTA", "MALLA SUELTA", "BULTOS TRASERA", "PLAYA", "SUCIA", "DIMENSIONES"],
-        embalaje: ["MAL PINTADA", "ROTA", "GOTA KERAJET", "RASCADA", "FALLO IMPRESIÓN", "DIFERENCIA DE TONO"]
+    const MOTIVOS = {
+        "KERAJET": ["Limpieza Aspiración", "Falta Tinta", "Ajuste Tono", "Gota"],
+        "CABINA 2": ["Boquillas Obstruidas", "Carga Producto", "Limpieza Banda"],
+        "UV": ["Rearme Temperatura", "Falla Sensor", "Pulmón Lleno"],
+        "LGV": ["Bloqueo de Ruta", "Batería Baja"],
+        "OTRO": ["Mecánico", "Eléctrico", "Cambio OF"]
     };
 
-    function setTab(n) {
-        var sections = document.getElementsByClassName('sect');
-        for (var i = 0; i < sections.length; i++) { sections[i].style.display = 'none'; }
-        var buttons = document.getElementsByClassName('nav-btn');
-        for (var i = 0; i < buttons.length; i++) { buttons[i].className = 'nav-btn'; }
-        document.getElementById('tab' + n).style.display = 'block';
-        buttons[n].className = 'nav-btn active';
-        if(n === 3) renderResumen();
+    const DEFS = ["ROTA", "BULTOS", "DIMENSIONES", "GOTA", "SUCIA", "MALLA", "FALLO IMP."];
+
+    function setTab(n, btn) {
+        document.querySelectorAll('.sect').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.side-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab' + n).classList.add('active');
+        btn.classList.add('active');
+        if(n === 4) renderHistorial();
+    }
+
+    function parseLote(v) {
+        if(v.length === 5) {
+            db.reg.linea = v[0];
+            db.reg.mes = v[1];
+            db.reg.dia = v.substring(3,5);
+            document.getElementById('lote-det').innerHTML = `<span>LÍNEA: ${db.reg.linea}</span><span>MES: ${db.reg.mes}</span><span>DÍA: ${db.reg.dia}</span>`;
+        }
     }
 
     function sync() {
-        db.reg.of = document.getElementById('f-of').value;
-        db.reg.sap = document.getElementById('f-sap').value;
-        db.reg.grafica = document.getElementById('f-grafica').value;
-        db.reg.sustrato = document.getElementById('f-sustrato').value;
-        db.reg.fecha = document.getElementById('f-fecha').value;
-        db.reg.turno = document.getElementById('f-turno').value;
-        db.reg.equipo = document.getElementById('f-equipo').value;
-        localStorage.setItem('tanque_v30', JSON.stringify(db));
-        document.getElementById('v-cal-ok-txt').innerText = db.prod.calidad.ok || 0;
-        document.getElementById('v-cal-r1').innerText = db.prod.calidad.r1;
-        document.getElementById('v-cal-noko').innerText = db.prod.calidad.noko;
-        document.getElementById('v-emb-ok-txt').innerText = db.prod.embalaje.ok || 0;
-        document.getElementById('v-emb-r1').innerText = db.prod.embalaje.r1;
-        document.getElementById('v-emb-noko').innerText = db.prod.embalaje.noko;
+        if(!db.reg.pin) db.reg.lote = document.getElementById('f-lote').value;
+        db.reg.h_cierre = document.getElementById('cfg-cierre').value;
+        db.reg.cadencia = document.getElementById('cfg-cad').value;
+        localStorage.setItem('decoline_v41', JSON.stringify(db));
+        updateKPIs();
     }
 
-    function openDef(zona, tipo) {
-        var m = document.getElementById('modal');
-        var ops = document.getElementById('m-ops');
-        document.getElementById('m-title').innerText = "DEFECTO " + zona.toUpperCase();
-        ops.innerHTML = '';
-        DEFS[zona].forEach(function(d) {
-            var b = document.createElement('button');
-            b.className = 'btn-def';
-            b.innerText = d;
-            b.onclick = function() {
-                db.prod[zona][tipo]++;
-                db.prod[zona].detalles.push({ def: d, tipo: (tipo === 'noko' ? 'NO OK' : 'R1'), zona: zona.toUpperCase() });
-                sync();
-                m.style.display = 'none';
+    function updateKPIs() {
+        let ok = parseInt(db.prod.ok) || 0;
+        let noko = db.prod.noko;
+        let total = ok + noko;
+        let merma = total > 0 ? ((noko / total) * 100).toFixed(1) : 0;
+        
+        // Forecast Predictivo
+        let ahora = new Date();
+        let c = db.reg.h_cierre.split(':');
+        let cierre = new Date(); cierre.setHours(c[0], c[1], 0);
+        if(cierre < ahora) cierre.setDate(cierre.getDate() + 1);
+        let minRest = (cierre - ahora) / 60000;
+        let forecast = Math.round(ok + ((minRest / 60) * db.reg.cadencia * (1 - (merma/100))));
+
+        document.getElementById('k-ok').innerText = ok;
+        document.getElementById('k-merma').innerText = merma + "%";
+        document.getElementById('k-forecast').innerText = forecast > ok ? forecast : ok;
+        document.getElementById('v-ok-c').innerText = ok;
+    }
+
+    function openDef(tipo, zona) {
+        document.getElementById('modal').style.display = 'flex';
+        let ops = document.getElementById('m-ops'); ops.innerHTML = '';
+        DEFS.forEach(d => {
+            let b = document.createElement('button'); b.className = 'm-btn'; b.innerText = d;
+            b.onclick = () => {
+                if(tipo === 'R1') db.prod.r1++; else db.prod.noko++;
+                db.prod.detalles.push({def: d, tipo: tipo, zona: zona, hora: new Date().toLocaleTimeString().substring(0,5), lote: db.reg.lote});
+                sync(); closeModal();
             };
             ops.appendChild(b);
         });
-        m.style.display = 'flex';
     }
 
     function addP() {
-        var est = document.getElementById('p-est').value;
-        var h1 = document.getElementById('p-h1').value;
-        var h2 = document.getElementById('p-h2').value;
-        var obs = document.getElementById('p-obs').value;
-        if(!h1 || !h2) return alert("Horas!");
-        var t1 = h1.split(':'); var t2 = h2.split(':');
-        var min = (parseInt(t2[0])*60 + parseInt(t2[1])) - (parseInt(t1[0])*60 + parseInt(t1[1]));
-        db.paradas.push({est:est, h1:h1, h2:h2, min:min, obs:obs.toUpperCase()});
-        document.getElementById('p-obs').value = '';
-        sync(); alert("Guardado");
+        let h1 = document.getElementById('p-h1').value;
+        let h2 = document.getElementById('p-h2').value;
+        if(!h1 || !h2) return alert("¡Pon las horas!");
+        let m = (parseInt(h2.split(':')[0])*60 + parseInt(h2.split(':')[1])) - (parseInt(h1.split(':')[0])*60 + parseInt(h1.split(':')[1]));
+        db.paradas.push({est: document.getElementById('p-est').value, mot: document.getElementById('p-mot').value, min: m, h1, h2});
+        sync(); alert("Parada Guardada");
     }
 
-    function renderResumen() {
-        document.getElementById('res-header').innerHTML = `<h3>OF: ${db.reg.of || '---'}</h3><p>SUSTRATO: ${db.reg.sustrato} | EQUIPO: ${db.reg.equipo}</p>`;
-        ['calidad', 'embalaje'].forEach(function(zona) {
-            var z = db.prod[zona];
-            document.getElementById('res-' + zona).innerHTML = `<h3>${zona.toUpperCase()}</h3><p>OK: ${z.ok} | R1: ${z.r1} | NO OK: ${z.noko}</p>` + 
-                z.detalles.map(function(d, i) {
-                    return `<div class="item-res">• ${d.def} (${d.tipo}) <button class="btn-del-res" onclick="delDef('${zona}', ${i})">X</button></div>`;
-                }).join('');
+    function renderHistorial() {
+        let l = document.getElementById('hist-lista'); l.innerHTML = '';
+        db.prod.detalles.forEach((d, i) => {
+            l.innerHTML += `<div class="hist-item"><span><b>${d.hora}</b> ${d.def} (${d.tipo})</span><button class="btn-del" onclick="delItem(${i}, 'det')">×</button></div>`;
         });
-        var pDiv = document.getElementById('res-paradas');
-        pDiv.innerHTML = '';
-        db.paradas.forEach(function(p, i) {
-            pDiv.innerHTML += `<div class="item-res"><b>${p.est}</b> (${p.min} min) <button class="btn-del-res" onclick="delP(${i})">X</button></div>`;
+        db.paradas.forEach((p, i) => {
+            l.innerHTML += `<div class="hist-item" style="color:var(--red)"><span><b>${p.h1}-${p.h2}</b> ${p.est}: ${p.mot}</span><button class="btn-del" onclick="delItem(${i}, 'par')">×</button></div>`;
         });
     }
 
-    function delDef(zona, i) {
-        var fallo = db.prod[zona].detalles[i];
-        if(fallo.tipo === "R1") db.prod[zona].r1--; else db.prod[zona].noko--;
-        db.prod[zona].detalles.splice(i, 1);
-        sync(); renderResumen();
+    function delItem(i, tipo) {
+        if(tipo === 'det') db.prod.detalles.splice(i, 1);
+        else db.paradas.splice(i, 1);
+        sync(); renderHistorial();
     }
 
-    function delP(i) { db.paradas.splice(i,1); sync(); renderResumen(); }
+    function togglePin() {
+        db.reg.pin = !db.reg.pin;
+        document.getElementById('btn-pin').style.background = db.reg.pin ? 'var(--orange)' : '#ddd';
+        sync();
+    }
+
+    function updateMotivos(e) {
+        let s = document.getElementById('p-mot'); s.innerHTML = '';
+        MOTIVOS[e].forEach(m => { let o=document.createElement('option'); o.value=m; o.innerText=m; s.appendChild(o); });
+    }
+
+    function closeModal() { document.getElementById('modal').style.display = 'none'; }
 
     async function generarPDF() {
-        const { jsPDF } = window.jspdf; 
-        const doc = new jsPDF();
-        doc.setFillColor(26, 35, 126); doc.rect(0, 0, 210, 40, 'F');
-        doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.text("INFORME DE PRODUCCIÓN DECOLINE", 20, 25);
-        doc.setTextColor(0, 0, 0); doc.setFontSize(11);
-        doc.text(`OF: ${db.reg.of} | SAP: ${db.reg.sap} | FECHA: ${db.reg.fecha}`, 20, 50);
-        doc.text(`SUSTRATO: ${db.reg.sustrato} | TURNO: ${db.reg.turno} | EQUIPO: ${db.reg.equipo}`, 20, 58);
-        doc.text(`GRÁFICA: ${db.reg.grafica}`, 20, 66);
-        doc.autoTable({
-            startY: 72,
-            head: [['ZONA', 'OK (Piezas)', 'R1 (Recuperables)', 'NO OK (Rechazo)']],
-            body: [['CALIDAD', db.prod.calidad.ok, db.prod.calidad.r1, db.prod.calidad.noko],['EMBALAJE', db.prod.embalaje.ok, db.prod.embalaje.r1, db.prod.embalaje.noko]],
-            headStyles: { fillColor: [26, 35, 126] }
-        });
-        var fallosBody = db.prod.calidad.detalles.concat(db.prod.embalaje.detalles).map(d => [d.zona, d.def, d.tipo]);
-        if(fallosBody.length > 0) {
-            doc.text("RESUMEN DE DEFECTOS REGISTRADOS", 20, doc.lastAutoTable.finalY + 15);
-            doc.autoTable({ startY: doc.lastAutoTable.finalY + 20, head: [['ZONA', 'DEFECTO', 'TIPO']], body: fallosBody, headStyles: { fillColor: [239, 108, 0] } });
-        }
-        if(db.paradas.length > 0) {
-            doc.text("PARADAS Y TIEMPOS MUERTOS", 20, doc.lastAutoTable.finalY + 15);
-            doc.autoTable({ startY: doc.lastAutoTable.finalY + 20, head: [['ESTACIÓN', 'TIEMPO', 'MINUTOS', 'MOTIVO']], body: db.paradas.map(p => [p.est, `${p.h1} a ${p.h2}`, p.min, p.obs]), headStyles: { fillColor: [198, 40, 40] } });
-        }
-        doc.save(`Informe_Decoline_OF_${db.reg.of}.pdf`);
+        const { jsPDF } = window.jspdf; const doc = new jsPDF();
+        doc.setFillColor(26, 35, 126); doc.rect(0, 0, 210, 35, 'F');
+        doc.setTextColor(255, 255, 255); doc.setFontSize(18); doc.text("INFORME ESTRATÉGICO DECOLINE", 20, 22);
+        doc.setTextColor(0); doc.setFontSize(10);
+        doc.text(`OK Final: ${db.prod.ok} | Merma: ${document.getElementById('k-merma').innerText} | OEE Est: ${((1-(db.paradas.reduce((a,b)=>a+b.min,0)/480))*100).toFixed(1)}%`, 20, 45);
+        
+        doc.autoTable({ startY: 55, head: [['ESTACIÓN', 'MOTIVO', 'DURACIÓN']], body: db.paradas.map(p => [p.est, p.mot, p.min+' min']), headStyles: {fillColor:[198, 40, 40]} });
+        doc.autoTable({ startY: doc.lastAutoTable.finalY+10, head: [['LOTE', 'DEFECTO', 'ZONA', 'TIPO']], body: db.prod.detalles.map(d => [d.lote, d.def, d.zona, d.tipo]), headStyles: {fillColor:[239, 108, 0]} });
+        
+        doc.save(`Decoline_Pro_V41.pdf`);
     }
 
-    window.onload = function() {
-        document.getElementById('f-of').value = db.reg.of;
-        document.getElementById('f-sap').value = db.reg.sap;
-        document.getElementById('f-grafica').value = db.reg.grafica;
-        document.getElementById('f-sustrato').value = db.reg.sustrato;
-        document.getElementById('f-fecha').value = db.reg.fecha;
-        document.getElementById('f-turno').value = db.reg.turno;
-        document.getElementById('f-equipo').value = db.reg.equipo;
-        document.getElementById('in-cal-ok').value = db.prod.calidad.ok || '';
-        document.getElementById('in-emb-ok').value = db.prod.embalaje.ok || '';
+    window.onload = () => {
+        document.getElementById('f-lote').value = db.reg.lote;
+        document.getElementById('cfg-cierre').value = db.reg.h_cierre;
+        document.getElementById('cfg-cad').value = db.reg.cadencia;
+        document.getElementById('in-ok').value = db.prod.ok || '';
+        updateMotivos('KERAJET');
         sync();
     };
 </script>
