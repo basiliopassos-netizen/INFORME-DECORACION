@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Decoline V51 - Nexus Core</title>
+    <title>Decoline V52 - Nexus Intelligence Gold</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
@@ -21,31 +21,30 @@
         .sect { display: none; }
         .sect.active { display: block; }
 
-        /* Dashboard PRO */
+        /* KPI Dashboard */
         .kpi-box { background: linear-gradient(135deg, var(--blue), #311b92); color: white; padding: 15px; border-radius: 20px; text-align: center; margin-bottom: 15px; }
         .f-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px; }
-        .f-card { background: rgba(255,255,255,0.1); padding: 8px; border-radius: 12px; font-size: 9px; border: 1px solid rgba(255,255,255,0.1); }
-        .f-val { display: block; font-size: 16px; font-weight: bold; margin-top: 4px; }
+        .f-card { background: rgba(255,255,255,0.1); padding: 8px; border-radius: 12px; font-size: 9px; }
+        .f-val { display: block; font-size: 15px; font-weight: bold; margin-top: 4px; }
 
         .card { background: white; padding: 15px; border-radius: 18px; margin-bottom: 15px; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        h3 { margin: 0 0 10px 0; color: var(--blue); font-size: 12px; border-left: 4px solid var(--blue); padding-left: 10px; text-transform: uppercase; }
-        label { font-weight: bold; font-size: 10px; color: #888; display: block; margin-top: 8px; text-transform: uppercase; }
-        input, select, textarea { width: 100%; padding: 10px; margin-top: 4px; border: 1px solid #ccc; border-radius: 10px; font-size: 15px; box-sizing: border-box; background: #fff; }
+        h3 { margin: 0 0 10px 0; color: var(--blue); font-size: 11px; border-left: 4px solid var(--blue); padding-left: 10px; text-transform: uppercase; }
+        label { font-weight: bold; font-size: 9px; color: #888; display: block; margin-top: 8px; text-transform: uppercase; }
+        input, select, textarea { width: 100%; padding: 10px; margin-top: 4px; border: 1px solid #ccc; border-radius: 10px; font-size: 14px; box-sizing: border-box; }
         
         .grid-sem { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
         .sem-btn { padding: 12px 5px; border-radius: 15px; border: 2px solid; background: white; font-weight: bold; text-align: center; cursor: pointer; }
-        .sem-val { display: block; font-size: 24px; color: #333; margin-top: 5px; }
+        .sem-val { display: block; font-size: 22px; color: #333; margin-top: 5px; }
 
         .btn-green { background: var(--green); color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; }
         
-        /* Modal & Maestro Items */
         #modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:2000; justify-content:center; align-items:center; }
         .m-content { background:white; width:92%; border-radius:25px; padding:20px; max-height: 85vh; overflow-y: auto; }
         .m-btn { background: #f5f5f5; border: 1px solid #ddd; padding: 15px; width: 100%; margin-bottom: 8px; border-radius: 12px; font-weight: bold; text-align: left; }
         
-        .hist-summary { background: #e8eaf6; padding: 10px; border-radius: 12px; margin-bottom: 10px; font-weight: bold; color: var(--blue); display: flex; justify-content: space-around; font-size: 13px; }
-        .hist-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 12px; align-items: center; }
-        .btn-del { color: var(--red); font-weight: bold; border: none; background: none; font-size: 18px; cursor: pointer; }
+        .hist-block { background: #e8eaf6; padding: 10px; border-radius: 12px; margin-bottom: 10px; }
+        .hist-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #eee; font-size: 11px; align-items: center; }
+        .btn-del { color: var(--red); font-weight: bold; border: none; background: none; font-size: 16px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -62,21 +61,25 @@
 <div class="main">
     <div id="tab0" class="sect active">
         <div class="kpi-box">
-            <span style="font-size:10px; text-transform:uppercase;">Predicción Cierre (Basado en Tiempo Restante)</span>
+            <span style="font-size:10px; text-transform:uppercase;">Predicción Cierre de Turno</span>
             <div class="f-grid">
-                <div class="f-card"><span>OPTIMISTA (A)</span><span class="f-val" id="f-a">0</span></div>
-                <div class="f-card" style="background:rgba(255,255,255,0.2)"><span>REALISTA (B)</span><span class="f-val" id="f-b">0</span></div>
-                <div class="f-card"><span>CRÍTICO (C)</span><span class="f-val" id="f-c">0</span></div>
+                <div class="f-card"><span>A (OPTIMISTA)</span><span class="f-val" id="f-a">0</span></div>
+                <div class="f-card" style="background:rgba(255,255,255,0.2)"><span>B (REALISTA)</span><span class="f-val" id="f-b">0</span></div>
+                <div class="f-card"><span>C (CRÍTICO)</span><span class="f-val" id="f-c">0</span></div>
             </div>
         </div>
         <div class="card">
-            <h3>Registro del Turno</h3>
+            <h3>Registro de Producción</h3>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                <div><label>Orden (OF)</label><input type="text" id="f-of" placeholder="266" oninput="sync()"></div>
-                <div><label>Lote ADN</label><input type="text" id="f-lote" placeholder="1CC26" oninput="sync()"></div>
+                <div><label>Fecha</label><input type="date" id="f-fecha" onchange="sync()"></div>
+                <div><label>Nº Orden (OF)</label><input type="text" id="f-of" placeholder="OF" oninput="sync()"></div>
             </div>
-            <label>Gráfica / Sustrato</label>
-            <input type="text" id="f-graf" placeholder="Nombre de la Gráfica y Sustrato" oninput="sync()">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <div><label>Código SAP</label><input type="text" id="f-sap" placeholder="SAP" oninput="sync()"></div>
+                <div><label>Lote ADN</label><input type="text" id="f-lote" placeholder="LOTE" oninput="sync()"></div>
+            </div>
+            <label>Gráfica</label><input type="text" id="f-graf" placeholder="Nombre Gráfica" oninput="sync()">
+            <label>Sustrato</label><input type="text" id="f-sust" placeholder="Nombre Sustrato" oninput="sync()">
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
                 <div><label>Turno</label><select id="f-turno" onchange="sync()"><option>MAÑANA</option><option>TARDE</option><option>NOCHE</option></select></div>
                 <div><label>Equipo</label><select id="f-equi" onchange="sync()"><option>T1</option><option>T2</option><option>T3</option></select></div>
@@ -92,8 +95,8 @@
                 <div class="sem-btn" style="border-color:var(--orange); color:var(--orange)" onclick="openModal('R1', 'SUSTRATO')">R1<span class="sem-val" id="v-cal-r1">0</span></div>
                 <div class="sem-btn" style="border-color:var(--red); color:var(--red)" onclick="openModal('NO OK', 'SUSTRATO')">NO OK<span class="sem-val" id="v-cal-no">0</span></div>
             </div>
-            <label>Acumulado OK Sustrato</label>
-            <input type="number" id="in-cal-ok" oninput="db.cal.ok=parseInt(this.value)||0; sync();">
+            <label>Acumulado OK en Cajón (Actual)</label>
+            <input type="number" id="in-cal-ok" placeholder="Contador manual..." oninput="db.cal.ok=parseInt(this.value)||0; sync();">
         </div>
     </div>
 
@@ -105,8 +108,8 @@
                 <div class="sem-btn" style="border-color:var(--orange); color:var(--orange)" onclick="openModal('R1', 'EMBALAJE')">R1<span class="sem-val" id="v-emb-r1">0</span></div>
                 <div class="sem-btn" style="border-color:var(--red); color:var(--red)" onclick="openModal('NO OK', 'EMBALAJE')">NO OK<span class="sem-val" id="v-emb-no">0</span></div>
             </div>
-            <label>Acumulado OK Final</label>
-            <input type="number" id="in-emb-ok" oninput="db.emb.ok=parseInt(this.value)||0; sync();">
+            <label>Acumulado OK en Cajón (Actual)</label>
+            <input type="number" id="in-emb-ok" placeholder="Contador manual..." oninput="db.emb.ok=parseInt(this.value)||0; sync();">
         </div>
     </div>
 
@@ -115,52 +118,43 @@
             <h3>Registro de Paradas</h3>
             <label>Estación</label>
             <select id="p-est">
-                <option>LGV</option><option>ROBOTIONS</option><option>CEPILLADORA</option><option>CABINA 1</option><option>HORNOS</option><option>ERRECE</option><option>KERAJET</option><option>TRASLOW</option><option>CABINA 2</option><option>EMBALAJE</option>
+                <option>LGV</option><option>ROBOTIONS</option><option>CEPILLADORA</option><option>CABINA 1</option><option>HORNOS</option><option>ERRECE</option><option>KERAJET</option><option>UV</option><option>TRASLOW</option><option>CABINA 2</option><option>EMBALAJE</option><option>OTRO</option>
             </select>
             <div style="display:flex; gap:10px; margin-top:8px;"><input type="time" id="p-h1"><input type="time" id="p-h2"></div>
-            <textarea id="p-obs" placeholder="Motivo de la parada..."></textarea>
+            <textarea id="p-obs" placeholder="Motivo o causa de la parada..."></textarea>
             <button class="btn-green" onclick="addParada()">Guardar Parada</button>
         </div>
     </div>
 
     <div id="tab4" class="sect">
         <div class="card">
-            <h3>Historial Sustrato</h3>
-            <div id="h-sum-cal" class="hist-summary"></div>
+            <h3>Historial Calidad Sustrato</h3>
             <div id="h-list-cal"></div>
         </div>
         <div class="card">
-            <h3>Historial Embalaje</h3>
-            <div id="h-sum-emb" class="hist-summary"></div>
+            <h3>Historial Embalaje Final</h3>
             <div id="h-list-emb"></div>
         </div>
         <div class="card">
-            <h3>Eventos</h3>
+            <h3>Historial de Paradas</h3>
             <div id="h-list-par"></div>
         </div>
-        <button class="btn-green" style="background:var(--blue)" onclick="generarPDF()">Generar PDF</button>
+        <button class="btn-green" style="background:var(--blue)" onclick="generarPDF()">Descargar Informe PDF Pro</button>
     </div>
 
     <div id="tab5" class="sect">
         <div class="card">
-            <h3>Configuración de Turno</h3>
-            <label>Cierre Turno</label><input type="time" id="cfg-h-fin" value="14:15" onchange="sync()">
-            <label>Cadencia (Segundos / Pieza)</label><input type="number" step="0.1" id="cfg-seg" value="6.5" onchange="sync()">
+            <h3>Maestro de Configuración</h3>
+            <label>Hora Cierre de Turno</label><input type="time" id="cfg-h-fin" value="14:00" onchange="sync()">
+            <label>Cadencia (Seg/Pieza)</label><input type="number" step="0.1" id="cfg-seg" value="6.5" onchange="sync()">
             <label>Piezas Iniciales en Cajón</label><input type="number" id="cfg-pz-ini" value="0" oninput="sync()">
-            
-            <label>Contador Digital Final (Fotocélula)</label><input type="number" id="cfg-digit" placeholder="Valor actual contador">
-            <label>Piezas Extraídas Manualmente</label><input type="number" id="cfg-manual" placeholder="Sacas por el lateral">
         </div>
-
         <div class="card">
             <h3>Configuración de Defectos</h3>
-            <button class="btn-green" onclick="openNewDefModal()">[+ NUEVO DEFECTO]</button>
-            <div id="def-list-custom" style="font-size:12px; margin-top:10px; color:#555;"></div>
+            <button class="btn-green" onclick="document.getElementById('m-new-def').style.display='flex'">[+ NUEVO DEFECTO]</button>
+            <div id="def-list-custom" style="font-size:11px; margin-top:10px; color:#555;"></div>
         </div>
-
-        <div class="card" style="border: 2px solid var(--red);">
-            <button class="btn-green" style="background:var(--red);" onclick="if(confirm('¿Borrar todo?')){localStorage.clear(); location.reload();}">REINICIAR TODO EL TURNO</button>
-        </div>
+        <button class="btn-green" style="background:var(--red); margin-top:20px;" onclick="if(confirm('¿BORRAR TODO?')){localStorage.clear(); location.reload();}">REINICIAR TURNO COMPLETO</button>
     </div>
 </div>
 
@@ -176,7 +170,7 @@
             <div id="m-extra-emb" style="display:none;">
                 <label>Estación Origen</label>
                 <select id="m-val-emb">
-                    <option>KERAJET</option><option>CABINA 2</option><option>UV</option><option>OTRO</option>
+                    <option>KERAJET</option><option>ROBOTIONS</option><option>CEPILLADORA</option><option>CABINA 1</option><option>HORNOS</option><option>ERRECE</option><option>TRASLOW</option><option>CABINA 2</option><option>EMBALAJE</option><option>OTRO</option>
                 </select>
             </div>
             <button class="btn-green" onclick="saveDef()">Confirmar Registro</button>
@@ -185,27 +179,22 @@
     </div>
 </div>
 
-<div id="modal-new-def" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:3000; justify-content:center; align-items:center;">
+<div id="m-new-def" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:3000; justify-content:center; align-items:center;">
     <div class="m-content">
         <h3>Crear Nuevo Defecto</h3>
-        <label>Nombre del Defecto</label><input type="text" id="nd-name" placeholder="Ej: Rayado Pulido">
-        <label>Zona Aplicable</label>
-        <select id="nd-zona"><option value="SUSTRATO">Calidad Sustrato</option><option value="EMBALAJE">Embalaje Final</option></select>
-        <label>Tipo</label>
-        <select id="nd-tipo"><option value="R1">R1 (Segunda Vida)</option><option value="NO OK">NO OK (Rechazo)</option></select>
-        <label>¿Pedir Trazabilidad?</label>
-        <select id="nd-traza"><option value="SI">SÍ</option><option value="NO">NO</option></select>
-        <button class="btn-green" onclick="createNewDefecto()">Guardar Defecto</button>
-        <button class="btn-green" style="background:#888" onclick="document.getElementById('modal-new-def').style.display='none'">Cancelar</button>
+        <label>Nombre</label><input type="text" id="nd-name" placeholder="Ej: Hundimiento">
+        <label>Zona</label><select id="nd-zona"><option value="SUSTRATO">Calidad Sustrato</option><option value="EMBALAJE">Embalaje Final</option></select>
+        <label>Tipo</label><select id="nd-tipo"><option value="R1">R1 (Segunda Vida)</option><option value="NO OK">NO OK (Rechazo)</option></select>
+        <button class="btn-green" onclick="createNewDef()">Guardar</button>
+        <button class="btn-green" style="background:#888" onclick="document.getElementById('m-new-def').style.display='none'">Cancelar</button>
     </div>
 </div>
 
 <script>
-    var db = JSON.parse(localStorage.getItem('decoline_v51')) || {
-        reg: { of:'', lote:'', graf:'', turno:'MAÑANA', equi:'T1' },
+    var db = JSON.parse(localStorage.getItem('decoline_v52')) || {
+        reg: { fecha: new Date().toISOString().split('T')[0], of:'', sap:'', lote:'', graf:'', sust:'', turno:'MAÑANA', equi:'T1' },
         cal: {ok:0, r1:0, no:0, hist:[]}, emb: {ok:0, r1:0, no:0, hist:[]},
-        parad: [], cfg: {h_fin:'14:15', seg:6.5, pz_ini:0},
-        customDefs: []
+        parad: [], cfg: {h_fin:'14:00', seg:6.5, pz_ini:0}, customDefs: []
     };
 
     let temp = {};
@@ -221,36 +210,37 @@
     }
 
     function sync() {
+        db.reg.fecha = document.getElementById('f-fecha').value;
         db.reg.of = document.getElementById('f-of').value;
+        db.reg.sap = document.getElementById('f-sap').value;
         db.reg.lote = document.getElementById('f-lote').value;
         db.reg.graf = document.getElementById('f-graf').value;
+        db.reg.sust = document.getElementById('f-sust').value;
         db.reg.turno = document.getElementById('f-turno').value;
         db.reg.equi = document.getElementById('f-equi').value;
         db.cfg.h_fin = document.getElementById('cfg-h-fin').value;
         db.cfg.seg = parseFloat(document.getElementById('cfg-seg').value) || 6.5;
         db.cfg.pz_ini = parseInt(document.getElementById('cfg-pz-ini').value) || 0;
-        localStorage.setItem('decoline_v51', JSON.stringify(db));
+        localStorage.setItem('decoline_v52', JSON.stringify(db));
         updateDash();
     }
 
     function updateDash() {
-        let okAcumulado = (parseInt(db.cal.ok)||0) + (parseInt(db.emb.ok)||0) + db.cfg.pz_ini;
+        let okActual = (parseInt(db.cal.ok)||0) + (parseInt(db.emb.ok)||0);
+        let okTot = okActual + db.cfg.pz_ini;
         let noTot = db.cal.no + db.emb.no;
-        let mermaP = (okAcumulado > 0) ? (noTot / okAcumulado) : 0;
+        let mermaP = (okActual + noTot) > 0 ? (noTot / (okActual + noTot)) : 0;
         
-        let ahora = new Date();
-        let f = db.cfg.h_fin.split(':');
-        let fin = new Date(); 
+        let ahora = new Date(), f = db.cfg.h_fin.split(':'), fin = new Date();
         fin.setHours(f[0], f[1], 0);
         if(fin < ahora) fin.setDate(fin.getDate()+1);
-        
         let segRest = (fin - ahora) / 1000;
         if(segRest < 0) segRest = 0;
         let pzRest = segRest / db.cfg.seg;
 
-        document.getElementById('f-a').innerText = Math.round(okAcumulado + pzRest);
-        document.getElementById('f-b').innerText = Math.round(okAcumulado + (pzRest * (1 - mermaP)));
-        document.getElementById('f-c').innerText = Math.round(okAcumulado + (pzRest * (1 - (mermaP + 0.1))));
+        document.getElementById('f-a').innerText = Math.round(okTot + pzRest);
+        document.getElementById('f-b').innerText = Math.round(okTot + (pzRest * (1 - mermaP)));
+        document.getElementById('f-c').innerText = Math.round(okTot + (pzRest * (1 - (mermaP * 1.8))));
 
         document.getElementById('v-cal-ok').innerText = db.cal.ok;
         document.getElementById('v-cal-r1').innerText = db.cal.r1;
@@ -266,7 +256,6 @@
         let ops = document.getElementById('m-ops'); ops.innerHTML = '';
         document.getElementById('m-extra').style.display = 'none';
         
-        // Cargar defectos base + personalizados
         let listado = [...DEFS_BASE];
         db.customDefs.filter(d => d.zona === zona && d.tipo === tipo).forEach(d => listado.push(d.name));
 
@@ -288,6 +277,8 @@
         if(temp.tipo === 'R1') t.r1++; else t.no++;
         let info = (temp.zona === 'SUSTRATO' ? document.getElementById('m-val-sust').value : document.getElementById('m-val-emb').value);
         t.hist.push({ def: temp.d, tipo: temp.tipo, hora: new Date().toLocaleTimeString().substring(0,5), info });
+        // Reset campos
+        document.getElementById('m-val-sust').value = '';
         sync(); closeM();
     }
 
@@ -296,46 +287,23 @@
         if(!h1 || !h2) return;
         let m = (parseInt(h2.split(':')[0])*60 + parseInt(h2.split(':')[1])) - (parseInt(h1.split(':')[0])*60 + parseInt(h1.split(':')[1]));
         db.parad.push({est: document.getElementById('p-est').value, h1, h2, min: m, obs: document.getElementById('p-obs').value});
+        // Reset campos
+        document.getElementById('p-h1').value = ''; document.getElementById('p-h2').value = ''; document.getElementById('p-obs').value = '';
         sync(); alert("Parada Guardada");
     }
 
-    function openNewDefModal() { document.getElementById('modal-new-def').style.display = 'flex'; }
-
-    function createNewDefecto() {
-        let name = document.getElementById('nd-name').value.toUpperCase();
-        if(!name) return;
-        db.customDefs.push({
-            name: name,
-            zona: document.getElementById('nd-zona').value,
-            tipo: document.getElementById('nd-tipo').value,
-            traza: document.getElementById('nd-traza').value
-        });
-        document.getElementById('nd-name').value = '';
-        document.getElementById('modal-new-def').style.display = 'none';
-        sync(); renderCustomDefList();
-    }
-
-    function renderCustomDefList() {
-        let h = "Defectos Personalizados:<br>";
-        db.customDefs.forEach((d, i) => {
-            h += `• ${d.name} (${d.zona}/${d.tipo}) <button onclick="db.customDefs.splice(${i},1); sync(); renderCustomDefList();">🗑️</button><br>`;
-        });
-        document.getElementById('def-list-custom').innerHTML = h;
-    }
-
     function renderHist() {
-        const gen = (target, listId, sumId, tipo) => {
-            document.getElementById(sumId).innerHTML = `<span>OK: ${target.ok}</span><span>R1: ${target.r1}</span><span>NO OK: ${target.no}</span>`;
-            let h = "";
+        const gen = (target, listId, tipo) => {
+            let h = `<div class="hist-block"><b>TOTAL: OK ${target.ok} | R1 ${target.r1} | NO OK ${target.no}</b></div>`;
             target.hist.forEach((x, i) => {
                 h += `<div class="hist-row"><span><b>${x.hora}</b> ${x.def} (${x.tipo}) - ${x.info}</span><button class="btn-del" onclick="delItem('${tipo}', ${i})">×</button></div>`;
             });
             document.getElementById(listId).innerHTML = h;
         };
-        gen(db.cal, 'h-list-cal', 'h-sum-cal', 'cal');
-        gen(db.emb, 'h-list-emb', 'h-sum-emb', 'emb');
+        gen(db.cal, 'h-list-cal', 'cal');
+        gen(db.emb, 'h-list-emb', 'emb');
         let p = "";
-        db.parad.forEach((x, i) => { p += `<div class="hist-row"><span><b>${x.h1}-${x.h2}</b> ${x.est} (${x.min}m)</span><button class="btn-del" onclick="delItem('par', ${i})">×</button></div>`; });
+        db.parad.forEach((x, i) => { p += `<div class="hist-row"><span><b>${x.h1}-${x.h2}</b> ${x.est} (${x.min}m): ${x.obs}</span><button class="btn-del" onclick="delItem('par', ${i})">×</button></div>`; });
         document.getElementById('h-list-par').innerHTML = p;
     }
 
@@ -346,22 +314,52 @@
         sync(); renderHist();
     }
 
+    function createNewDef() {
+        let name = document.getElementById('nd-name').value.toUpperCase();
+        if(!name) return;
+        db.customDefs.push({ name, zona: document.getElementById('nd-zona').value, tipo: document.getElementById('nd-tipo').value });
+        document.getElementById('nd-name').value = ''; document.getElementById('m-new-def').style.display='none';
+        sync(); renderCustomDefList();
+    }
+
+    function renderCustomDefList() {
+        let h = "";
+        db.customDefs.forEach((d, i) => { h += `<div style="padding:5px; border-bottom:1px solid #eee;">${d.name} (${d.zona}) <button onclick="db.customDefs.splice(${i},1); sync(); renderCustomDefList();">🗑️</button></div>`; });
+        document.getElementById('def-list-custom').innerHTML = h;
+    }
+
     function closeM() { document.getElementById('modal').style.display = 'none'; document.getElementById('m-ops').style.display = 'block'; }
 
     async function generarPDF() {
         const { jsPDF } = window.jspdf; const doc = new jsPDF();
-        doc.setFillColor(26, 35, 126); doc.rect(0,0,210,35,'F');
-        doc.setTextColor(255); doc.text("INFORME DECOLINE V51", 20, 22);
+        doc.setFillColor(26, 35, 126); doc.rect(0,0,210,40,'F');
+        doc.setTextColor(255); doc.setFontSize(18); doc.text("INFORME DECOLINE V52 - SMART REPORT", 20, 25);
         doc.setTextColor(0); doc.setFontSize(10);
-        doc.text(`OF: ${db.reg.of} | LOTE: ${db.reg.lote} | GRÁFICA: ${db.reg.graf}`, 20, 45);
-        doc.autoTable({ startY: 55, head: [['ZONA','OK','R1','NO OK']], body: [['SUSTRATO',db.cal.ok,db.cal.r1,db.cal.no],['EMBALAJE',db.emb.ok,db.emb.r1,db.emb.no]] });
-        doc.save(`Reporte_V51_${db.reg.of}.pdf`);
+        doc.text(`FECHA: ${db.reg.fecha} | OF: ${db.reg.of} | SAP: ${db.reg.sap} | LOTE: ${db.reg.lote}`, 20, 50);
+        doc.text(`GRÁFICA: ${db.reg.graf} | SUSTRATO: ${db.reg.sust} | TURNO: ${db.reg.turno} | EQUIPO: ${db.reg.equi}`, 20, 58);
+        doc.autoTable({ startY: 65, head: [['ZONA','OK','R1','NO OK']], body: [['SUSTRATO',db.cal.ok,db.cal.r1,db.cal.no],['EMBALAJE',db.emb.ok,db.emb.r1,db.emb.no]] });
+        
+        doc.text("EVENTOS DE PARADA", 20, doc.lastAutoTable.finalY + 10);
+        doc.autoTable({ startY: doc.lastAutoTable.finalY + 15, head: [['ESTACION','HORA','MIN','MOTIVO']], body: db.parad.map(p=>[p.est, `${p.h1}-${p.h2}`, p.min, p.obs]) });
+        
+        // Análisis IA
+        let pmin = db.parad.reduce((a,b)=>a+b.min,0);
+        doc.text("ANÁLISIS DE INTELIGENCIA DE TURNO", 20, doc.lastAutoTable.finalY + 15);
+        doc.setFontSize(9);
+        let reco = pmin > 30 ? "ATENCIÓN: Alta pérdida de tiempo por paradas. Revisar mantenimiento." : "Turno estable. Mantenimiento preventivo sugerido.";
+        doc.text(`Total Minutos Parada: ${pmin} min.`, 20, doc.lastAutoTable.finalY + 22);
+        doc.text(`Sugerencia: ${reco}`, 20, doc.lastAutoTable.finalY + 28);
+        
+        doc.save(`Reporte_Decoline_${db.reg.of}.pdf`);
     }
 
     window.onload = () => {
+        document.getElementById('f-fecha').value = db.reg.fecha;
         document.getElementById('f-of').value = db.reg.of;
+        document.getElementById('f-sap').value = db.reg.sap;
         document.getElementById('f-lote').value = db.reg.lote;
         document.getElementById('f-graf').value = db.reg.graf;
+        document.getElementById('f-sust').value = db.reg.sust;
         document.getElementById('cfg-h-fin').value = db.cfg.h_fin;
         document.getElementById('cfg-seg').value = db.cfg.seg;
         document.getElementById('cfg-pz-ini').value = db.cfg.pz_ini;
