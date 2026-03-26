@@ -349,4 +349,74 @@
         // Tabla Resumen Cantidades
         doc.autoTable({ 
             startY: 78, 
-            head: [['
+            head: [['ZONA','PIEZAS OK','R1 (RETROCESO)','NO OK (RECHAZO)']], 
+            body: [['SUSTRATO',db.cal.ok,db.cal.r1,db.cal.no],['EMBALAJE',db.emb.ok,db.emb.r1,db.emb.no]],
+            headStyles: {fillColor: [13, 71, 161]}
+        });
+
+        // Desglose de Fallos por Defecto
+        const defMapCal = {}; db.cal.hist.forEach(h => { defMapCal[h.def] = (defMapCal[h.def] || 0) + 1; });
+        const defMapEmb = {}; db.emb.hist.forEach(h => { defMapEmb[h.def] = (defMapEmb[h.def] || 0) + 1; });
+
+        doc.text("DESGLOSE DE CALIDAD (SUSTRATO)", 20, doc.lastAutoTable.finalY + 10);
+        doc.autoTable({ 
+            startY: doc.lastAutoTable.finalY + 15, 
+            head: [['DEFECTO','PIEZAS','TIPO']], 
+            body: Object.keys(defMapCal).map(k => [k, defMapCal[k], db.cal.hist.find(x=>x.def===k).tipo]),
+            headStyles: {fillColor: [38, 50, 56]}
+        });
+
+        doc.text("DESGLOSE DE DECORACIÓN (EMBALAJE)", 20, doc.lastAutoTable.finalY + 10);
+        doc.autoTable({ 
+            startY: doc.lastAutoTable.finalY + 15, 
+            head: [['DEFECTO','PIEZAS','ORIGEN']], 
+            body: Object.keys(defMapEmb).map(k => [k, defMapEmb[k], db.emb.hist.find(x=>x.def===k).info]),
+            headStyles: {fillColor: [38, 50, 56]}
+        });
+
+        // Cronograma de Paradas
+        doc.text("CRONOGRAMA DE PARADAS FORZADAS", 20, doc.lastAutoTable.finalY + 10);
+        doc.autoTable({ 
+            startY: doc.lastAutoTable.finalY + 15, 
+            head: [['ESTACIÓN','DURACIÓN','MOTIVO / CAUSA']], 
+            body: db.parad.map(p => [p.est, p.min + " min", p.obs]),
+            headStyles: {fillColor: [183, 28, 28]}
+        });
+
+        // ANÁLISIS IA - EL CORAZÓN DEL INFORME
+        let pmin = db.parad.reduce((a,b)=>a+b.min,0);
+        let aspParadas = db.parad.filter(p => p.obs.toLowerCase().includes("aspiracion") || p.obs.toLowerCase().includes("limpieza")).length;
+        let gotasEmb = db.emb.hist.filter(h => h.def === "GOTA").length;
+
+        doc.setFillColor(232, 234, 246); doc.rect(15, doc.lastAutoTable.finalY + 10, 180, 50, 'F');
+        doc.setTextColor(13, 71, 161); doc.setFontSize(12); doc.text("ANÁLISIS DE EFICIENCIA E INTELIGENCIA DE TURNO", 20, doc.lastAutoTable.finalY + 20);
+        doc.setTextColor(0); doc.setFontSize(9);
+        
+        let anal1 = `Se han detectado ${pmin} min. de paradas. El ${aspParadas > 0 ? "impacto por limpiezas de aspiración es CRÍTICO." : "flujo es estable."}`;
+        let anal2 = gotasEmb > 3 ? `ALERTA: Se registran ${gotasEmb} piezas por GOTA. Revisar purgado de Kerajet inmediatamente.` : "Mermas por decoración bajo control.";
+        let anal3 = "MEJORA REQUERIDA: Optimizar tiempos de mantenimiento para evitar paradas forzadas no preventivas.";
+
+        doc.text(anal1, 20, doc.lastAutoTable.finalY + 30);
+        doc.text(anal2, 20, doc.lastAutoTable.finalY + 37);
+        doc.setTextColor(183, 28, 28);
+        doc.text(anal3, 20, doc.lastAutoTable.finalY + 44);
+
+        doc.save(`Auditoria_OF_${db.reg.of}.pdf`);
+    }
+
+    window.onload = () => {
+        document.getElementById('f-fecha').value = db.reg.fecha;
+        document.getElementById('f-of').value = db.reg.of;
+        document.getElementById('f-sap').value = db.reg.sap;
+        document.getElementById('f-lote').value = db.reg.lote;
+        document.getElementById('f-graf').value = db.reg.graf;
+        document.getElementById('f-sust').value = db.reg.sust;
+        document.getElementById('cfg-h-fin').value = db.cfg.h_fin;
+        document.getElementById('cfg-seg').value = db.cfg.seg;
+        document.getElementById('cfg-pz-ini').value = db.cfg.pz_ini;
+        setInterval(updateDash, 1000);
+        sync();
+    };
+</script>
+</body>
+</html>
