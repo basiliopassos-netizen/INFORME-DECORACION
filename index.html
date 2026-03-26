@@ -3,43 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Decoline V66 - Nexus Instant</title>
+    <title>Decoline V68 - Nexus Final Auditor</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root { --blue: #0d47a1; --green: #2e7d32; --red: #b71c1c; --orange: #e65100; --gray: #eceff1; --sidebar-w: 75px; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--gray); display: flex; height: 100vh; overflow: hidden; }
-        
-        /* Sidebar */
         .sidebar { width: var(--sidebar-w); background: var(--blue); display: flex; flex-direction: column; align-items: center; padding-top: 15px; gap: 12px; box-shadow: 2px 0 10px rgba(0,0,0,0.3); z-index: 1001; }
         .side-btn { background: none; border: none; color: rgba(255,255,255,0.5); font-size: 24px; cursor: pointer; padding: 12px; border-radius: 15px; width: 60px; text-align: center; }
         .side-btn.active { color: white; background: rgba(255,255,255,0.2); }
         .side-label { font-size: 8px; display: block; margin-top: 4px; font-weight: bold; text-transform: uppercase; }
-
-        /* Contenido */
         .main { flex: 1; overflow-y: auto; padding: 15px; box-sizing: border-box; }
         .sect { display: none; }
         .sect.active { display: block; }
-
         .card { background: white; padding: 15px; border-radius: 18px; margin-bottom: 15px; border: 1px solid #cfd8dc; }
         h3 { margin: 0 0 10px 0; color: var(--blue); font-size: 11px; border-left: 4px solid var(--blue); padding-left: 10px; text-transform: uppercase; }
         label { font-weight: bold; font-size: 9px; color: #546e7a; display: block; margin-top: 8px; text-transform: uppercase; }
-        input, select, textarea { width: 100%; padding: 12px; margin-top: 4px; border: 1px solid #b0bec5; border-radius: 10px; font-size: 15px; box-sizing: border-box; text-transform: uppercase; }
-        
-        /* Botones Registro */
+        input, select, textarea { width: 100%; padding: 12px; margin-top: 4px; border: 1px solid #b0bec5; border-radius: 10px; font-size: 14px; box-sizing: border-box; text-transform: uppercase; }
+        input[type="time"], input[type="date"] { text-transform: none; }
         .grid-sem { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
         .sem-btn { padding: 15px 5px; border-radius: 15px; border: 2px solid; background: white; font-weight: bold; text-align: center; cursor: pointer; }
-        .sem-val { display: block; font-size: 24px; color: #263238; }
-
         .btn-green { background: var(--green); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        
-        /* MODAL VERTICAL FORZADO */
         #modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:2000; justify-content:center; align-items:center; }
         .m-content { background:white; width:92%; border-radius:25px; padding:20px; max-height: 85vh; overflow-y: auto; }
-        .m-list-vertical { display: flex; flex-direction: column; gap: 8px; width: 100%; }
-        .m-btn-vert { background: #f5f7f9; border: 1px solid #cfd8dc; padding: 18px; border-radius: 12px; font-weight: bold; text-align: left; font-size: 14px; width: 100%; display: block; }
-
-        .hist-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 11px; align-items: center; }
+        .m-list-vertical { display: flex; flex-direction: column; gap: 8px; }
+        .m-btn-vert { background: #f5f7f9; border: 1px solid #cfd8dc; padding: 18px; border-radius: 12px; font-weight: bold; text-align: left; width: 100%; }
+        .hist-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 11px; }
     </style>
 </head>
 <body>
@@ -55,15 +44,8 @@
 
 <div class="main">
     <div id="tab0" class="sect active">
-        <div class="card" style="background: var(--blue); color: white; text-align: center;">
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px;">
-                <div><small>OPTIMISTA</small><div id="f-a" style="font-size: 18px; font-weight: bold;">0</div></div>
-                <div><small>REALISTA</small><div id="f-b" style="font-size: 18px; font-weight: bold;">0</div></div>
-                <div><small>CRÍTICO</small><div id="f-c" style="font-size: 18px; font-weight: bold;">0</div></div>
-            </div>
-        </div>
         <div class="card">
-            <h3>Registro del Turno</h3>
+            <h3>Producción Activa</h3>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
                 <div><label>Fecha</label><input type="date" id="f-fecha" onchange="sync()"></div>
                 <div><label>Orden (OF)</label><input type="text" id="f-of" oninput="sync()"></div>
@@ -72,29 +54,39 @@
                 <div><label>Código SAP</label><input type="text" id="f-sap" oninput="sync()"></div>
                 <div><label>Lote ADN</label><input type="text" id="f-lote" oninput="sync()"></div>
             </div>
-            <label>Gráfica / Sustrato</label><input type="text" id="f-graf" oninput="sync()">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <div><label>Gráfica</label><input type="text" id="f-graf" oninput="sync()"></div>
+                <div><label>Sustrato</label><input type="text" id="f-sust" oninput="sync()"></div>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <div><label>Turno</label><select id="f-turno" onchange="sync()"><option>MAÑANA</option><option>TARDE</option><option>NOCHE</option></select></div>
+                <div><label>Equipo</label><select id="f-equi" onchange="sync()"><option>T1</option><option>T2</option><option>T3</option></select></div>
+            </div>
         </div>
     </div>
 
     <div id="tab1" class="sect">
         <div class="card">
-            <h3>Configuración Maestro</h3>
+            <h3>Ajustes Maestro</h3>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                <div><label>Inicio</label><input type="time" id="cfg-h-ini" value="06:00" onchange="sync()"></div>
-                <div><label>Cierre</label><input type="time" id="cfg-h-fin" value="14:15" onchange="sync()"></div>
+                <div><label>Inicio</label><input type="time" id="cfg-h-ini" onchange="sync()"></div>
+                <div><label>Cierre</label><input type="time" id="cfg-h-fin" onchange="sync()"></div>
             </div>
             <label>Cadencia (Seg/Pza)</label><input type="number" step="0.1" id="cfg-seg" value="6.5" onchange="sync()">
-            <label>Piezas Iniciales</label><input type="number" id="cfg-pz-ini" oninput="sync()">
-        </div>
-        <div class="card">
+            <label>Pzs Iniciales</label><input type="number" id="cfg-pz-ini" oninput="sync()">
             <button class="btn-green" onclick="document.getElementById('m-new-def').style.display='flex'">[+ NUEVO DEFECTO]</button>
-            <button class="btn-green" style="background:var(--orange)" onclick="document.getElementById('m-new-par').style.display='flex'">[+ NUEVO MOTIVO PARADA]</button>
+            <button class="btn-green" style="background:var(--orange)" onclick="document.getElementById('m-new-par').style.display='flex'">[+ MOTIVO PARADA]</button>
         </div>
-        <button class="btn-green" style="background:var(--red)" onclick="if(confirm('¿Reiniciar?')){localStorage.clear(); location.reload();}">REINICIAR TURNO</button>
+        <button class="btn-green" style="background:var(--red)" onclick="if(confirm('¿Reiniciar?')){localStorage.clear(); location.reload();}">REINICIAR DATOS</button>
     </div>
 
-    <div id="tab2" class="sect"><div class="card"><h3>Calidad Sustrato</h3><div class="grid-sem"><div class="sem-btn" style="border-color:var(--green)">OK<span class="sem-val" id="v-cal-ok">0</span></div><div class="sem-btn" style="border-color:var(--orange)" onclick="openModal('R1', 'SUSTRATO')">R1<span class="sem-val" id="v-cal-r1">0</span></div><div class="sem-btn" style="border-color:var(--red)" onclick="openModal('NO OK', 'SUSTRATO')">NO OK<span class="sem-val" id="v-cal-no">0</span></div></div><label>Contador OK Manual</label><input type="number" id="in-cal-ok" oninput="db.cal.ok=parseInt(this.value)||0; sync();"></div></div>
-    <div id="tab3" class="sect"><div class="card"><h3>Embalaje Final</h3><div class="grid-sem"><div class="sem-btn" style="border-color:var(--green)">OK<span class="sem-val" id="v-emb-ok">0</span></div><div class="sem-btn" style="border-color:var(--orange)" onclick="openModal('R1', 'EMBALAJE')">R1<span class="sem-val" id="v-emb-r1">0</span></div><div class="sem-btn" style="border-color:var(--red)" onclick="openModal('NO OK', 'EMBALAJE')">NO OK<span class="sem-val" id="v-emb-no">0</span></div></div><label>Contador OK Manual</label><input type="number" id="in-emb-ok" oninput="db.emb.ok=parseInt(this.value)||0; sync();"></div></div>
+    <div id="tab2" class="sect">
+        <div class="card"><h3>Calidad Sustrato</h3><div class="grid-sem"><div class="sem-btn">OK<div id="v-cal-ok">0</div></div><div class="sem-btn" onclick="openModal('R1', 'SUSTRATO')">R1<div id="v-cal-r1">0</div></div><div class="sem-btn" onclick="openModal('NO OK', 'SUSTRATO')">NO OK<div id="v-cal-no">0</div></div></div><label>Contador OK Manual</label><input type="number" id="in-cal-ok" oninput="db.cal.ok=parseInt(this.value)||0; sync();"></div>
+    </div>
+
+    <div id="tab3" class="sect">
+        <div class="card"><h3>Embalaje Final</h3><div class="grid-sem"><div class="sem-btn">OK<div id="v-emb-ok">0</div></div><div class="sem-btn" onclick="openModal('R1', 'EMBALAJE')">R1<div id="v-emb-r1">0</div></div><div class="sem-btn" onclick="openModal('NO OK', 'EMBALAJE')">NO OK<div id="v-emb-no">0</div></div></div><label>Contador OK Manual</label><input type="number" id="in-emb-ok" oninput="db.emb.ok=parseInt(this.value)||0; sync();"></div>
+    </div>
 
     <div id="tab4" class="sect">
         <div class="card">
@@ -102,41 +94,24 @@
             <label>Estación</label><select id="p-est"><option>LGV</option><option>ROBOTIONS</option><option>CEPILLADORA</option><option>CABINA 1</option><option>HORNOS</option><option>ERRECE</option><option>KERAJET</option><option>TRASLOW</option><option>CABINA 2</option><option>EMBALAJE</option></select>
             <label>Motivo Rápido</label><select id="p-quick-obs" onchange="document.getElementById('p-obs').value=this.value.toUpperCase()"></select>
             <div style="display:flex; gap:10px; margin-top:8px;"><input type="time" id="p-h1"><input type="time" id="p-h2"></div>
-            <textarea id="p-obs" placeholder="MOTIVO..."></textarea>
-            <button class="btn-green" onclick="addParada()">Guardar Evento</button>
+            <textarea id="p-obs" placeholder="DESCRIPCIÓN..."></textarea>
+            <button class="btn-green" onclick="addParada()">Guardar</button>
         </div>
     </div>
 
-    <div id="tab5" class="sect"><div class="card"><div id="h-content"></div></div><button class="btn-green" style="background:var(--blue)" onclick="generarPDF()">DESCARGAR AUDITORÍA V66</button></div>
-</div>
-
-<div id="modal">
-    <div class="m-content">
-        <h3 id="m-title">Seleccionar Defecto</h3>
-        <div id="m-ops" class="m-list-vertical"></div>
-        <div id="m-extra" style="display:none; border-top:2px solid #eee; margin-top:15px; padding-top:10px;">
-            <div id="m-extra-sust" style="display:none;">
-                <label>Info Trazabilidad</label><input type="text" id="m-val-traz" placeholder="LOTE / CAV / P1">
-            </div>
-            <div id="m-extra-emb" style="display:none;">
-                <label>Máquina del Fallo</label>
-                <select id="m-val-emb">
-                    <option>KERAJET</option><option>CABINA 1</option><option>CABINA 2</option><option>HORNOS</option><option>ERRECE</option><option>UV</option>
-                </select>
-            </div>
-            <label>Nota Adicional</label><input type="text" id="m-val-comm" placeholder="COMENTARIO...">
-            <button class="btn-green" onclick="saveDef()">Confirmar Registro</button>
-        </div>
-        <button class="btn-green" style="background:#888; margin-top:10px;" onclick="closeM()">Cerrar</button>
+    <div id="tab5" class="sect">
+        <div class="card"><div id="h-content"></div></div>
+        <button class="btn-green" style="background:var(--blue)" onclick="generarPDF()">DESCARGAR AUDITORÍA COMPLETA PDF</button>
     </div>
 </div>
 
-<div id="m-new-def" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:3000; justify-content:center; align-items:center;"><div class="m-content"><h3>Añadir Defecto</h3><label>Nombre</label><input type="text" id="nd-name"><label>Zona</label><select id="nd-zona"><option value="SUSTRATO">Calidad</option><option value="EMBALAJE">Embalaje</option></select><label>Tipo</label><select id="nd-tipo"><option value="R1">R1</option><option value="NO OK">NO OK</option></select><button class="btn-green" onclick="createNewDef()">Guardar</button><button class="btn-green" style="background:#888" onclick="document.getElementById('m-new-def').style.display='none'">Cerrar</button></div></div>
+<div id="modal"><div class="m-content"><h3>Defecto Detectado</h3><div id="m-ops" class="m-list-vertical"></div><div id="m-extra" style="display:none; border-top:1px solid #eee; padding-top:10px;"><label id="m-label-info">Info</label><input type="text" id="m-val-traz"><div id="m-extra-emb" style="display:none;"><label>Estación Fallo</label><select id="m-val-emb"><option>KERAJET</option><option>CABINA 1</option><option>CABINA 2</option><option>HORNOS</option><option>UV</option><option>OTRO</option></select></div><label>Comentario</label><input type="text" id="m-val-comment"><button class="btn-green" onclick="saveDef()">Confirmar y Cerrar</button></div><button class="btn-green" style="background:#888" onclick="closeM()">Cerrar</button></div></div>
 
-<div id="m-new-par" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:3000; justify-content:center; align-items:center;"><div class="m-content"><h3>Nuevo Motivo Rápido</h3><label>Descripción</label><input type="text" id="np-name"><button class="btn-green" onclick="createNewParadaMotivo()">Guardar</button><button class="btn-green" style="background:#888" onclick="document.getElementById('m-new-par').style.display='none'">Cerrar</button></div></div>
+<div id="m-new-def" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:3000; justify-content:center; align-items:center;"><div class="m-content"><h3>Nuevo Defecto</h3><label>Nombre</label><input type="text" id="nd-name"><label>Zona</label><select id="nd-zona"><option value="SUSTRATO">Calidad</option><option value="EMBALAJE">Embalaje</option></select><label>Tipo</label><select id="nd-tipo"><option value="R1">R1</option><option value="NO OK">NO OK</option></select><button class="btn-green" onclick="createNewDef()">Guardar</button><button class="btn-green" style="background:#888" onclick="document.getElementById('m-new-def').style.display='none'">Cerrar</button></div></div>
+<div id="m-new-par" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:3000; justify-content:center; align-items:center;"><div class="m-content"><h3>Motivo Parada</h3><label>Descripción</label><input type="text" id="np-name"><button class="btn-green" onclick="createNewParadaMotivo()">Guardar</button><button class="btn-green" style="background:#888" onclick="document.getElementById('m-new-par').style.display='none'">Cerrar</button></div></div>
 
 <script>
-    var db = JSON.parse(localStorage.getItem('decoline_v66')) || {
+    var db = JSON.parse(localStorage.getItem('decoline_v68')) || {
         reg: { fecha: new Date().toISOString().split('T')[0], of:'', sap:'', lote:'', graf:'', sust:'', turno:'MAÑANA', equi:'T1' },
         cal: {ok:0, r1:0, no:0, hist:[]}, emb: {ok:0, r1:0, no:0, hist:[]},
         parad: [], cfg: {h_ini:'06:00', h_fin:'14:15', seg:6.5, pz_ini:0}, customDefs: [], customPars: []
@@ -159,26 +134,14 @@
         db.reg.sap = document.getElementById('f-sap').value.toUpperCase();
         db.reg.lote = document.getElementById('f-lote').value.toUpperCase();
         db.reg.graf = document.getElementById('f-graf').value.toUpperCase();
+        db.reg.sust = document.getElementById('f-sust').value.toUpperCase();
+        db.reg.turno = document.getElementById('f-turno').value;
+        db.reg.equi = document.getElementById('f-equi').value;
         db.cfg.h_ini = document.getElementById('cfg-h-ini').value;
         db.cfg.h_fin = document.getElementById('cfg-h-fin').value;
         db.cfg.seg = parseFloat(document.getElementById('cfg-seg').value) || 6.5;
         db.cfg.pz_ini = parseInt(document.getElementById('cfg-pz-ini').value) || 0;
-        localStorage.setItem('decoline_v66', JSON.stringify(db));
-        updateDash();
-    }
-
-    function updateDash() {
-        let okTot = (parseInt(db.cal.ok)||0) + (parseInt(db.emb.ok)||0) + db.cfg.pz_ini;
-        let noTot = db.cal.no + db.emb.no;
-        let mermaP = (okTot > 0) ? (noTot / (okTot + noTot)) : 0;
-        let ahora = new Date(), f = db.cfg.h_fin.split(':'), fin = new Date();
-        fin.setHours(f[0], f[1], 0); if(fin < ahora) fin.setDate(fin.getDate()+1);
-        let pzRest = Math.max(0, ((fin - ahora) / 1000) / db.cfg.seg);
-        document.getElementById('f-a').innerText = Math.round(okTot + pzRest);
-        document.getElementById('f-b').innerText = Math.round(okTot + (pzRest * (1 - mermaP)));
-        document.getElementById('f-c').innerText = Math.round(okTot + (pzRest * (1 - (mermaP + 0.12))));
-        document.getElementById('v-cal-ok').innerText = db.cal.ok; document.getElementById('v-cal-r1').innerText = db.cal.r1; document.getElementById('v-cal-no').innerText = db.cal.no;
-        document.getElementById('v-emb-ok').innerText = db.emb.ok; document.getElementById('v-emb-r1').innerText = db.emb.r1; document.getElementById('v-emb-no').innerText = db.emb.no;
+        localStorage.setItem('decoline_v68', JSON.stringify(db));
     }
 
     function openModal(tipo, zona) {
@@ -187,18 +150,21 @@
         let list = [...DEFS_BASE]; db.customDefs.filter(d => d.zona === zona && d.tipo === tipo).forEach(d => list.push(d.name));
         list.forEach(d => {
             let b = document.createElement('button'); b.className = 'm-btn-vert'; b.innerText = d;
-            b.onclick = () => { temp.d = d; ops.style.display = 'none'; document.getElementById('m-extra').style.display = 'block'; document.getElementById('m-extra-sust').style.display = (zona === 'SUSTRATO' ? 'block' : 'none'); document.getElementById('m-extra-emb').style.display = (zona === 'EMBALAJE' ? 'block' : 'none'); };
+            b.onclick = () => { temp.d = d; ops.style.display = 'none'; document.getElementById('m-extra').style.display = 'block'; 
+                document.getElementById('m-label-info').innerText = (zona === 'SUSTRATO' ? 'Trazabilidad (Lote/Cav/Prensa)' : 'Estación Fallo');
+                document.getElementById('m-extra-emb').style.display = (zona === 'EMBALAJE' ? 'block' : 'none');
+            };
             ops.appendChild(b);
         });
     }
 
     function saveDef() {
         let t = (temp.zona === 'SUSTRATO' ? db.cal : db.emb); if(temp.tipo === 'R1') t.r1++; else t.no++;
-        let info_est = (temp.zona === 'SUSTRATO' ? document.getElementById('m-val-traz').value.toUpperCase() : document.getElementById('m-val-emb').value);
+        let info_base = (temp.zona === 'SUSTRATO' ? document.getElementById('m-val-traz').value.toUpperCase() : document.getElementById('m-val-emb').value);
         let comm = document.getElementById('m-val-comment').value.toUpperCase();
-        t.hist.push({ def: temp.d, tipo: temp.tipo, hora: new Date().toLocaleTimeString().substring(0,5), info: info_est + (comm ? " | " + comm : "") });
+        t.hist.push({ def: temp.d, tipo: temp.tipo, hora: new Date().toLocaleTimeString().substring(0,5), info: info_base + (comm ? " | " + comm : "") });
         document.getElementById('m-val-traz').value = ''; document.getElementById('m-val-comment').value = ''; 
-        sync(); closeM(); // AUTO-CIERRE
+        sync(); closeM();
     }
 
     function addParada() {
@@ -214,7 +180,7 @@
 
     function renderHist() {
         const gen = (target, title, tipo) => {
-            let h = `<div style="background:#ddd; padding:8px; border-radius:8px;"><b>${title}</b></div>`;
+            let h = `<div style="background:#ddd; padding:8px; border-radius:8px; margin-top:5px;"><b>${title}</b></div>`;
             target.hist.forEach((x, i) => { h += `<div class="hist-row"><span><b>${x.hora}</b> ${x.def} - ${x.info}</span><button onclick="delItem('${tipo}', ${i})">X</button></div>`; });
             return h;
         };
@@ -234,23 +200,40 @@
     async function generarPDF() {
         const { jsPDF } = window.jspdf; const doc = new jsPDF();
         doc.setFillColor(13, 71, 161); doc.rect(0,0,210,40,'F');
-        doc.setTextColor(255); doc.setFontSize(22); doc.text("AUDITORÍA NEXUS V66", 20, 25);
-        doc.setTextColor(0); doc.text(`OF: ${db.reg.of} | SAP: ${db.reg.sap} | LOTE: ${db.reg.lote}`, 20, 50);
-        doc.autoTable({ startY: 65, head: [['ZONA','OK','SEGUNDA VIDA','NO OK']], body: [['SUSTRATO',db.cal.ok,db.cal.r1,db.cal.no],['EMBALAJE',db.emb.ok,db.emb.r1,db.emb.no]], headStyles:{fillColor:[13,71,161]} });
+        doc.setTextColor(255); doc.setFontSize(22); doc.text("AUDITORÍA NEXUS V68", 20, 25);
+        doc.setTextColor(0); doc.setFontSize(10);
+        doc.text(`OF: ${db.reg.of} | SAP: ${db.reg.sap} | LOTE: ${db.reg.lote}`, 20, 50);
+        doc.text(`GRAFICA: ${db.reg.graf} | SUSTRATO: ${db.reg.sust} | TURNO: ${db.reg.turno} | EQUIPO: ${db.reg.equi}`, 20, 57);
         
+        doc.autoTable({ startY: 65, head: [['ZONA','OK','SEGUNDA VIDA (R1)','NO OK']], body: [['SUSTRATO',db.cal.ok,db.cal.r1,db.cal.no],['EMBALAJE',db.emb.ok,db.emb.r1,db.emb.no]], headStyles:{fillColor:[13,71,161]} });
+
+        // DESGLOSE R1 (SEGUNDA VIDA)
+        const r1List = [...db.cal.hist, ...db.emb.hist].filter(x => x.tipo === 'R1');
+        if(r1List.length > 0) {
+            doc.text("DESGLOSE SEGUNDA VIDA (R1)", 20, doc.lastAutoTable.finalY + 10);
+            doc.autoTable({ startY: doc.lastAutoTable.finalY + 15, head: [['HORA','DEFECTO','INFO/OBS']], body: r1List.map(x => [x.hora, x.def, x.info]) });
+        }
+
+        doc.text("CRONOGRAMA DE PARADAS", 20, doc.lastAutoTable.finalY + 10);
+        doc.autoTable({ startY: doc.lastAutoTable.finalY + 15, head: [['ESTACIÓN','MIN','MOTIVO']], body: db.parad.map(p=>[p.est, p.min, p.obs]), headStyles:{fillColor:[183,28,28]} });
+
         let pmin = db.parad.reduce((a,b)=>a+b.min,0);
         let gotas = db.emb.hist.filter(h => h.def === "GOTA").length;
         doc.setFillColor(232, 234, 246); doc.rect(15, doc.lastAutoTable.finalY + 10, 180, 45, 'F');
         doc.setTextColor(13, 71, 161); doc.text("ANÁLISIS INTELIGENTE", 20, doc.lastAutoTable.finalY + 20);
         doc.setTextColor(0); doc.setFontSize(9);
-        if(gotas > 2) doc.text(`ALERTA: Detectada SATURACIÓN DE VOLÁTILES en aspiración Kerajet.`, 20, doc.lastAutoTable.finalY + 30);
-        else doc.text("Flujo de producción estable.", 20, doc.lastAutoTable.finalY + 30);
+        doc.text(`Total Minutos Parada: ${pmin} min.`, 20, doc.lastAutoTable.finalY + 30);
+        if(gotas > 0) doc.text(`ALERTA: Detectadas ${gotas} GOTAS. Revisar saturación volátiles aspiración Kerajet.`, 20, doc.lastAutoTable.finalY + 37);
         doc.save(`Auditoria_${db.reg.of}.pdf`);
     }
 
     window.onload = () => {
         document.getElementById('f-fecha').value = db.reg.fecha;
-        setInterval(updateDash, 1000);
+        document.getElementById('f-of').value = db.reg.of;
+        document.getElementById('f-sap').value = db.reg.sap;
+        document.getElementById('f-lote').value = db.reg.lote;
+        document.getElementById('f-graf').value = db.reg.graf;
+        document.getElementById('f-sust').value = db.reg.sust;
         sync();
     };
 </script>
