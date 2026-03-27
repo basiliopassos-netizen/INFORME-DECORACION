@@ -1,4 +1,4 @@
-        <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -272,4 +272,23 @@
         let pmin = db.parad.reduce((a,b)=>a+b.min,0);
         let gotas = db.emb.hist.filter(h => h.def === "GOTA").length;
         doc.setFillColor(232, 234, 246); doc.rect(15, doc.lastAutoTable.finalY + 10, 180, 40, 'F');
-        doc.setTextColor(13, 71, 161); 
+        doc.setTextColor(13, 71, 161); doc.text("ANÁLISIS INTELIGENTE", 20, doc.lastAutoTable.finalY + 20);
+        doc.setTextColor(0); doc.setFontSize(9);
+        doc.text(`Total Minutos Parada: ${pmin} min.`, 20, doc.lastAutoTable.finalY + 30);
+        if(gotas > 2) doc.text(`ALERTA: Saturación de volátiles en Kerajet detectada.`, 20, doc.lastAutoTable.finalY + 37);
+
+        doc.save(`Auditoria_${db.reg.of}.pdf`);
+    }
+
+    window.onload = () => {
+        document.getElementById('f-fecha').value = db.reg.fecha;
+        document.getElementById('f-of').value = db.reg.of;
+        document.getElementById('f-sap').value = db.reg.sap;
+        document.getElementById('f-lote').value = db.reg.lote;
+        document.getElementById('f-graf').value = db.reg.graf;
+        document.getElementById('f-sust').value = db.reg.sust;
+        updateUI();
+    };
+</script>
+</body>
+</html>
