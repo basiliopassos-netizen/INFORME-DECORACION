@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+        <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Decoline V72 - Nexus Final Shield</title>
+    <title>Decoline V73 - Nexus Precision</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
@@ -46,7 +46,7 @@
 <div class="main">
     <div id="tab0" class="sect active">
         <div class="card">
-            <h3>Cabecera del Turno</h3>
+            <h3>Registro del Turno</h3>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
                 <div><label>Fecha</label><input type="date" id="f-fecha" onchange="sync()"></div>
                 <div><label>OF</label><input type="text" id="f-of" oninput="sync()"></div>
@@ -68,17 +68,17 @@
 
     <div id="tab1" class="sect">
         <div class="card">
-            <h3>Ajustes Maestro</h3>
+            <h3>Configuración Maestro</h3>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                <div><label>Inicio</label><input type="time" id="cfg-h-ini" value="06:00" onchange="sync()"></div>
-                <div><label>Cierre</label><input type="time" id="cfg-h-fin" value="14:15" onchange="sync()"></div>
+                <div><label>Inicio</label><input type="time" id="cfg-h-ini" onchange="sync()"></div>
+                <div><label>Cierre</label><input type="time" id="cfg-h-fin" onchange="sync()"></div>
             </div>
             <label>Cadencia (Seg/Pza)</label><input type="number" step="0.1" id="cfg-seg" value="6.5" onchange="sync()">
-            <label>Piezas Iniciales</label><input type="number" id="cfg-pz-ini" value="0" oninput="sync()">
+            <label>Piezas Iniciales</label><input type="number" id="cfg-pz-ini" oninput="sync()">
             <button class="btn-green" onclick="document.getElementById('m-new-def').style.display='flex'">[+ NUEVO DEFECTO]</button>
             <button class="btn-green" style="background:var(--orange)" onclick="document.getElementById('m-new-par').style.display='flex'">[+ MOTIVO PARADA]</button>
         </div>
-        <button class="btn-green" style="background:var(--red)" onclick="if(confirm('¿BORRAR TODO?')){localStorage.clear(); location.reload();}">REINICIAR DATOS</button>
+        <button class="btn-green" style="background:var(--red)" onclick="if(confirm('¿Reiniciar?')){localStorage.clear(); location.reload();}">REINICIAR DATOS</button>
     </div>
 
     <div id="tab2" class="sect">
@@ -89,7 +89,7 @@
                 <div class="sem-btn" style="border-color:var(--orange)" onclick="openModal('R1', 'SUSTRATO')">R1<span class="sem-val" id="v-cal-r1">0</span></div>
                 <div class="sem-btn" style="border-color:var(--red)" onclick="openModal('NO OK', 'SUSTRATO')">NO OK<span class="sem-val" id="v-cal-no">0</span></div>
             </div>
-            <label>Contador OK Manual</label>
+            <label>Contador Manual OK</label>
             <input type="number" id="in-cal-ok" oninput="db.cal.ok=parseInt(this.value)||0; sync(); updateUI();">
         </div>
     </div>
@@ -102,7 +102,7 @@
                 <div class="sem-btn" style="border-color:var(--orange)" onclick="openModal('R1', 'EMBALAJE')">R1<span class="sem-val" id="v-emb-r1">0</span></div>
                 <div class="sem-btn" style="border-color:var(--red)" onclick="openModal('NO OK', 'EMBALAJE')">NO OK<span class="sem-val" id="v-emb-no">0</span></div>
             </div>
-            <label>Contador OK Manual</label>
+            <label>Contador Manual OK</label>
             <input type="number" id="in-emb-ok" oninput="db.emb.ok=parseInt(this.value)||0; sync(); updateUI();">
         </div>
     </div>
@@ -113,7 +113,7 @@
             <label>Estación</label><select id="p-est"><option>LGV</option><option>ROBOTIONS</option><option>CEPILLADORA</option><option>CABINA 1</option><option>HORNOS</option><option>ERRECE</option><option>KERAJET</option><option>TRASLOW</option><option>CABINA 2</option><option>EMBALAJE</option></select>
             <label>Motivo Rápido</label><select id="p-quick-obs" onchange="document.getElementById('p-obs').value=this.value.toUpperCase()"></select>
             <div style="display:flex; gap:10px; margin-top:8px;"><input type="time" id="p-h1"><input type="time" id="p-h2"></div>
-            <textarea id="p-obs" placeholder="DESCRIPCIÓN..."></textarea>
+            <textarea id="p-obs" placeholder="MOTIVO..."></textarea>
             <button class="btn-green" onclick="addParada()">Guardar Evento</button>
         </div>
     </div>
@@ -133,23 +133,23 @@
                 <label>Trazabilidad (Lote/Cav/Prensa)</label><input type="text" id="m-val-traz">
             </div>
             <div id="m-extra-emb" style="display:none;">
-                <label>Estación del Fallo</label>
+                <label>Origen del Fallo</label>
                 <select id="m-val-emb">
-                    <option>KERAJET</option><option>CABINA 1</option><option>CABINA 2</option><option>HORNOS</option><option>TRASLOW</option><option>UV</option>
+                    <option>PROPIA PLANCHA</option><option>PRODUCCIÓN</option><option>KERAJET</option><option>CABINA 1</option><option>CABINA 2</option><option>HORNOS</option><option>TRASLOW</option><option>ERRECE</option><option>UV</option>
                 </select>
             </div>
-            <label>Comentario Extra</label><input type="text" id="m-val-comm">
+            <label>Comentario / Nota</label><input type="text" id="m-val-comm">
             <button class="btn-green" onclick="saveDef()">Confirmar y Cerrar</button>
         </div>
-        <button class="btn-green" style="background:#888" onclick="closeM()">Cancelar</button>
+        <button class="btn-green" style="background:#888" onclick="closeM()">Cerrar</button>
     </div>
 </div>
 
 <div id="m-new-def" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:3000; justify-content:center; align-items:center;"><div class="m-content"><h3>Nuevo Defecto</h3><label>Nombre</label><input type="text" id="nd-name"><label>Zona</label><select id="nd-zona"><option value="SUSTRATO">Calidad</option><option value="EMBALAJE">Embalaje</option></select><label>Tipo</label><select id="nd-tipo"><option value="R1">R1</option><option value="NO OK">NO OK</option></select><button class="btn-green" onclick="createNewDef()">Guardar</button><button class="btn-green" style="background:#888" onclick="document.getElementById('m-new-def').style.display='none'">Cerrar</button></div></div>
-<div id="m-new-par" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:3000; justify-content:center; align-items:center;"><div class="m-content"><h3>Motivo de Parada</h3><input type="text" id="np-name"><button class="btn-green" onclick="createNewParadaMotivo()">Guardar</button><button class="btn-green" style="background:#888" onclick="document.getElementById('m-new-par').style.display='none'">Cerrar</button></div></div>
+<div id="m-new-par" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:3000; justify-content:center; align-items:center;"><div class="m-content"><h3>Motivo Parada</h3><input type="text" id="np-name"><button class="btn-green" onclick="createNewParadaMotivo()">Guardar</button><button class="btn-green" style="background:#888" onclick="document.getElementById('m-new-par').style.display='none'">Cerrar</button></div></div>
 
 <script>
-    var db = JSON.parse(localStorage.getItem('decoline_v72')) || {
+    var db = JSON.parse(localStorage.getItem('decoline_v73')) || {
         reg: { fecha: new Date().toISOString().split('T')[0], of:'', sap:'', lote:'', graf:'', sust:'', turno:'MAÑANA', equi:'T1' },
         cal: {ok:0, r1:0, no:0, hist:[]}, emb: {ok:0, r1:0, no:0, hist:[]},
         parad: [], cfg: {h_ini:'06:00', h_fin:'14:15', seg:6.5, pz_ini:0}, customDefs: [], customPars: []
@@ -180,7 +180,7 @@
         db.cfg.h_fin = document.getElementById('cfg-h-fin').value;
         db.cfg.seg = parseFloat(document.getElementById('cfg-seg').value) || 6.5;
         db.cfg.pz_ini = parseInt(document.getElementById('cfg-pz-ini').value) || 0;
-        localStorage.setItem('decoline_v72', JSON.stringify(db));
+        localStorage.setItem('decoline_v73', JSON.stringify(db));
     }
 
     function updateUI() {
@@ -210,18 +210,19 @@
     function saveDef() {
         let t = (temp.zona === 'SUSTRATO' ? db.cal : db.emb); 
         if(temp.tipo === 'R1') t.r1++; else t.no++;
-        let info_est = (temp.zona === 'SUSTRATO' ? document.getElementById('m-val-traz').value.toUpperCase() : document.getElementById('m-val-emb').value);
+        let info_base = (temp.zona === 'SUSTRATO' ? document.getElementById('m-val-traz').value.toUpperCase() : document.getElementById('m-val-emb').value);
         let comm = document.getElementById('m-val-comm').value.toUpperCase();
-        t.hist.push({ def: temp.d, tipo: temp.tipo, hora: new Date().toLocaleTimeString().substring(0,5), info: info_est + (comm ? " | " + comm : "") });
+        t.hist.push({ def: temp.d, tipo: temp.tipo, hora: new Date().toLocaleTimeString().substring(0,5), info: info_base + (comm ? " | " + comm : "") });
+        
         document.getElementById('m-val-traz').value = ''; document.getElementById('m-val-comm').value = ''; 
-        sync(); updateUI(); closeM(); 
+        sync(); updateUI(); closeM();
     }
 
     function addParada() {
         let h1 = document.getElementById('p-h1').value, h2 = document.getElementById('p-h2').value; if(!h1 || !h2) return;
         let m = (parseInt(h2.split(':')[0])*60 + parseInt(h2.split(':')[1])) - (parseInt(h1.split(':')[0])*60 + parseInt(h1.split(':')[1]));
         db.parad.push({est: document.getElementById('p-est').value, h1, h2, min: m, obs: document.getElementById('p-obs').value.toUpperCase()});
-        document.getElementById('p-obs').value = ''; sync(); alert("EVENTO GUARDADO");
+        document.getElementById('p-obs').value = ''; sync(); alert("GUARDADO");
     }
 
     function createNewDef() { let n = document.getElementById('nd-name').value.toUpperCase(); if(n) db.customDefs.push({ name:n, zona: document.getElementById('nd-zona').value, tipo: document.getElementById('nd-tipo').value }); document.getElementById('nd-name').value=''; sync(); }
@@ -249,49 +250,26 @@
 
     async function generarPDF() {
         const { jsPDF } = window.jspdf; const doc = new jsPDF();
-        
         doc.setFillColor(13, 71, 161); doc.rect(0,0,210,40,'F');
-        doc.setTextColor(255); doc.setFontSize(22); doc.text("AUDITORÍA DE TURNO - NEXUS V72", 20, 25);
-        doc.setFontSize(10); doc.text("REPORTE TÉCNICO DE CALIDAD Y EFICIENCIA", 20, 33);
+        doc.setTextColor(255); doc.setFontSize(22); doc.text("AUDITORÍA DE TURNO - NEXUS V73", 20, 25);
+        doc.setFontSize(10); doc.text("REGISTRO DE ORIGEN DE DEFECTOS Y PRODUCCIÓN", 20, 33);
         
         doc.setTextColor(0); doc.setFontSize(10);
-        doc.text(`FECHA: ${db.reg.fecha}`, 20, 50);
-        doc.text(`OF: ${db.reg.of} | SAP: ${db.reg.sap} | LOTE: ${db.reg.lote}`, 20, 56);
-        doc.text(`GRAFICA: ${db.reg.graf} | SUSTRATO: ${db.reg.sust} | TURNO: ${db.reg.turno}`, 20, 62);
+        doc.text(`FECHA: ${db.reg.fecha} | OF: ${db.reg.of} | SAP: ${db.reg.sap}`, 20, 50);
+        doc.text(`GRAFICA: ${db.reg.graf} | SUSTRATO: ${db.reg.sust} | EQUIPO: ${db.reg.equi}`, 20, 57);
         
-        doc.autoTable({ startY: 68, head: [['ZONA','OK','SEGUNDA VIDA (R1)','NO OK']], body: [['SUSTRATO',db.cal.ok,db.cal.r1,db.cal.no],['EMBALAJE',db.emb.ok,db.emb.r1,db.emb.no]], headStyles:{fillColor:[13,71,161]} });
+        doc.autoTable({ startY: 65, head: [['ZONA','OK','SEGUNDA VIDA (R1)','NO OK']], body: [['SUSTRATO',db.cal.ok,db.cal.r1,db.cal.no],['EMBALAJE',db.emb.ok,db.emb.r1,db.emb.no]], headStyles:{fillColor:[13,71,161]} });
 
-        doc.text("DESGLOSE DE CALIDAD (DEFECTOS)", 20, doc.lastAutoTable.finalY + 10);
-        const allHist = [...db.cal.hist.map(h => ({...h, z: 'SUSTRATO'})), ...db.emb.hist.map(h => ({...h, z: 'EMBALAJE'}))];
-        doc.autoTable({ startY: doc.lastAutoTable.finalY + 15, head: [['ZONA','HORA','TIPO','DEFECTO','INFO/ESTACION']], body: allHist.map(h => [h.z, h.hora, h.tipo, h.def, h.info]) });
+        const r1List = [...db.cal.hist, ...db.emb.hist].filter(x => x.tipo === 'R1');
+        if(r1List.length > 0) {
+            doc.text("DESGLOSE SEGUNDA VIDA (R1) POR ORIGEN", 20, doc.lastAutoTable.finalY + 10);
+            doc.autoTable({ startY: doc.lastAutoTable.finalY + 15, head: [['HORA','DEFECTO','ORIGEN/ESTACIÓN']], body: r1List.map(x => [x.hora, x.def, x.info]) });
+        }
 
         doc.text("CRONOGRAMA DE PARADAS", 20, doc.lastAutoTable.finalY + 10);
-        doc.autoTable({ startY: doc.lastAutoTable.finalY + 15, head: [['ESTACIÓN','HORA','DURACIÓN','MOTIVO']], body: db.parad.map(p => [p.est, `${p.h1}-${p.h2}`, `${p.min} min`, p.obs]), headStyles:{fillColor:[183, 28, 28]} });
+        doc.autoTable({ startY: doc.lastAutoTable.finalY + 15, head: [['ESTACIÓN','MIN','MOTIVO']], body: db.parad.map(p=>[p.est, p.min, p.obs]), headStyles:{fillColor:[183,28,28]} });
 
         let pmin = db.parad.reduce((a,b)=>a+b.min,0);
         let gotas = db.emb.hist.filter(h => h.def === "GOTA").length;
-        doc.setFillColor(232, 234, 246); doc.rect(15, doc.lastAutoTable.finalY + 10, 180, 45, 'F');
-        doc.setTextColor(13, 71, 161); doc.setFontSize(12); doc.text("ANÁLISIS INTELIGENTE", 20, doc.lastAutoTable.finalY + 20);
-        doc.setTextColor(0); doc.setFontSize(9);
-        doc.text(`Tiempo de parada total: ${pmin} minutos.`, 20, doc.lastAutoTable.finalY + 30);
-        if(gotas > 0) {
-            doc.setTextColor(183, 28, 28);
-            doc.text(`ALERTA: Detectadas ${gotas} gotas. Saturación probable de volátiles en Kerajet.`, 20, doc.lastAutoTable.finalY + 37);
-            doc.text(`RECOMENDACIÓN: Limpieza profunda de conductos de aspiración.`, 20, doc.lastAutoTable.finalY + 43);
-        }
-        
-        doc.save(`Reporte_${db.reg.of}.pdf`);
-    }
-
-    window.onload = () => {
-        document.getElementById('f-fecha').value = db.reg.fecha;
-        document.getElementById('f-of').value = db.reg.of;
-        document.getElementById('f-sap').value = db.reg.sap;
-        document.getElementById('f-lote').value = db.reg.lote;
-        document.getElementById('f-graf').value = db.reg.graf;
-        document.getElementById('f-sust').value = db.reg.sust;
-        updateUI();
-    };
-</script>
-</body>
-</html>
+        doc.setFillColor(232, 234, 246); doc.rect(15, doc.lastAutoTable.finalY + 10, 180, 40, 'F');
+        doc.setTextColor(13, 71, 161); 
