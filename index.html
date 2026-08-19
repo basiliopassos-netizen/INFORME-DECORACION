@@ -2,293 +2,517 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Decoline V73 - Nexus Precision</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Tareas — J.A.</title>
+    <!-- Librería para generar PDF directamente en el navegador -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        :root { --blue: #0d47a1; --green: #2e7d32; --red: #b71c1c; --orange: #e65100; --gray: #eceff1; --sidebar-w: 75px; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--gray); display: flex; height: 100vh; overflow: hidden; }
-        .sidebar { width: var(--sidebar-w); background: var(--blue); display: flex; flex-direction: column; align-items: center; padding-top: 15px; gap: 12px; z-index: 1001; }
-        .side-btn { background: none; border: none; color: rgba(255,255,255,0.5); font-size: 24px; padding: 12px; width: 60px; text-align: center; border-radius: 15px; }
-        .side-btn.active { color: white; background: rgba(255,255,255,0.2); }
-        .side-label { font-size: 8px; display: block; margin-top: 4px; font-weight: bold; text-transform: uppercase; }
-        .main { flex: 1; overflow-y: auto; padding: 15px; box-sizing: border-box; }
-        .sect { display: none; }
-        .sect.active { display: block; }
-        .card { background: white; padding: 15px; border-radius: 18px; margin-bottom: 15px; border: 1px solid #cfd8dc; }
-        h3 { margin: 0 0 10px 0; color: var(--blue); font-size: 11px; border-left: 4px solid var(--blue); padding-left: 10px; text-transform: uppercase; }
-        label { font-weight: bold; font-size: 9px; color: #546e7a; display: block; margin-top: 8px; text-transform: uppercase; }
-        input, select, textarea { width: 100%; padding: 12px; margin-top: 4px; border: 1px solid #b0bec5; border-radius: 10px; font-size: 14px; box-sizing: border-box; text-transform: uppercase; }
-        input[type="time"], input[type="date"] { text-transform: none; }
-        .grid-sem { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        .sem-btn { padding: 15px 5px; border-radius: 15px; border: 2px solid; background: white; font-weight: bold; text-align: center; }
-        .sem-val { display: block; font-size: 24px; color: #333; margin-top: 5px; }
-        .btn-green { background: var(--green); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        #modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:2000; justify-content:center; align-items:center; }
-        .m-content { background:white; width:92%; border-radius:25px; padding:20px; max-height: 85vh; overflow-y: auto; }
-        .m-list-vertical { display: flex; flex-direction: column; gap: 8px; }
-        .m-btn-vert { background: #f5f7f9; border: 1px solid #cfd8dc; padding: 18px; border-radius: 12px; font-weight: bold; text-align: left; width: 100%; }
-        .hist-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 11px; align-items:center; }
+        :root {
+            --primary: #25D366;
+            --dark: #121212;
+            --card: #1e1e1e;
+            --text: #ffffff;
+            --subtext: #aaaaaa;
+            --danger: #dc3545;
+            --accent: #007bff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--dark);
+            color: var(--text);
+            margin: 0;
+            padding: 16px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background-color: var(--card);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        label {
+            font-size: 0.9em;
+            color: var(--subtext);
+            display: block;
+            margin-bottom: 6px;
+            margin-top: 10px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .time-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .time-col {
+            flex: 1;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background-color: #2a2a2a;
+            color: var(--text);
+            box-sizing: border-box;
+            font-size: 1em;
+            color-scheme: dark;
+        }
+
+        .btn-mic {
+            background-color: #e63946;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0 16px;
+            font-size: 1.2em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .btn-mic.listening {
+            background-color: #ffb703;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            margin-bottom: 6px;
+            transition: opacity 0.2s;
+        }
+
+        button:active {
+            opacity: 0.8;
+        }
+
+        .btn-add {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .btn-whatsapp {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-pdf {
+            background-color: #e63946;
+            color: white;
+        }
+
+        .btn-reset {
+            background-color: var(--danger);
+            color: white;
+            margin-top: 16px;
+        }
+
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #333;
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .task-date {
+            font-size: 0.75em;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .task-time {
+            font-size: 0.85em;
+            color: var(--subtext);
+        }
+
+        .btn-delete {
+            background: none;
+            border: none;
+            color: #ff5252;
+            font-size: 1.2em;
+            cursor: pointer;
+            width: auto;
+            margin: 0;
+            padding: 4px 8px;
+        }
+
+        .total-container {
+            font-weight: bold;
+            text-align: right;
+            margin-top: 12px;
+            color: var(--primary);
+        }
+
+        /* Plantilla oculta para generar el PDF elegante */
+        #pdf-template {
+            display: none;
+            font-family: Arial, sans-serif;
+            color: #333;
+            padding: 20px;
+            background: #fff;
+        }
+
+        #pdf-template .pdf-header {
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #pdf-template h2 {
+            margin: 0;
+            color: #007bff;
+            font-size: 20px;
+            text-align: left;
+        }
+
+        #pdf-template .pdf-subtitle {
+            font-size: 12px;
+            color: #666;
+        }
+
+        #pdf-template table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        #pdf-template th {
+            background-color: #f2f2f2;
+            color: #333;
+            text-align: left;
+            padding: 8px;
+            font-size: 12px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        #pdf-template td {
+            padding: 8px;
+            font-size: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        #pdf-template .pdf-total {
+            text-align: right;
+            font-size: 14px;
+            font-weight: bold;
+            color: #25D366;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
 
-<div class="sidebar">
-    <button class="side-btn active" onclick="setTab(0, this)">🏠<span class="side-label">DASH</span></button>
-    <button class="side-btn" onclick="setTab(1, this)">⚙️<span class="side-label">MAEST</span></button>
-    <button class="side-btn" onclick="setTab(2, this)">🔍<span class="side-label">CALID</span></button>
-    <button class="side-btn" onclick="setTab(3, this)">📦<span class="side-label">EMBAL</span></button>
-    <button class="side-btn" onclick="setTab(4, this)">⚠️<span class="side-label">PARAD</span></button>
-    <button class="side-btn" onclick="setTab(5, this)">📝<span class="side-label">HIST</span></button>
-</div>
+    <h1>📋 Control de Tareas — J.A.</h1>
 
-<div class="main">
-    <div id="tab0" class="sect active">
-        <div class="card">
-            <h3>Registro del Turno</h3>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                <div><label>Fecha</label><input type="date" id="f-fecha" onchange="sync()"></div>
-                <div><label>OF</label><input type="text" id="f-of" oninput="sync()"></div>
+    <!-- Formulario de Registro -->
+    <div class="card">
+        <label for="taskDate">Fecha de la tarea</label>
+        <input type="date" id="taskDate">
+
+        <label for="taskName">Acción / Tarea Realizada</label>
+        <div class="input-group">
+            <input type="text" id="taskName" placeholder="Escribe o pulsa el micro...">
+            <button class="btn-mic" id="micBtn" onclick="startVoiceRecognition()" title="Dictar por voz">🎤</button>
+        </div>
+
+        <div class="time-group">
+            <div class="time-col">
+                <label for="startTime">Desde (Inicio)</label>
+                <input type="time" id="startTime">
             </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                <div><label>SAP</label><input type="text" id="f-sap" oninput="sync()"></div>
-                <div><label>Lote ADN</label><input type="text" id="f-lote" oninput="sync()"></div>
-            </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                <div><label>Gráfica</label><input type="text" id="f-graf" oninput="sync()"></div>
-                <div><label>Sustrato</label><input type="text" id="f-sust" oninput="sync()"></div>
-            </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                <div><label>Turno</label><select id="f-turno" onchange="sync()"><option>MAÑANA</option><option>TARDE</option><option>NOCHE</option></select></div>
-                <div><label>Equipo</label><select id="f-equi" onchange="sync()"><option>T1</option><option>T2</option><option>T3</option></select></div>
+            <div class="time-col">
+                <label for="endTime">Hasta (Fin)</label>
+                <input type="time" id="endTime">
             </div>
         </div>
+
+        <button class="btn-add" onclick="addTask()">➕ Añadir Tarea</button>
     </div>
 
-    <div id="tab1" class="sect">
-        <div class="card">
-            <h3>Configuración Maestro</h3>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                <div><label>Inicio</label><input type="time" id="cfg-h-ini" onchange="sync()"></div>
-                <div><label>Cierre</label><input type="time" id="cfg-h-fin" onchange="sync()"></div>
+    <!-- Lista de Tareas -->
+    <div class="card">
+        <h2>Tareas Registradas</h2>
+        <div id="taskList"></div>
+        <div class="total-container" id="totalTime">Tiempo Total: 0 min</div>
+    </div>
+
+    <!-- Exportar, Compartir y Reiniciar -->
+    <div class="card">
+        <button class="btn-whatsapp" onclick="sendWhatsApp()">📲 Enviar Informe por WhatsApp</button>
+        <button class="btn-pdf" onclick="generatePDF()">📄 Descargar Informe PDF</button>
+        <button class="btn-reset" onclick="resetTasks()">🔄 Reiniciar Registro de Tareas</button>
+    </div>
+
+    <!-- Contenedor oculto exclusivamente para renderizar el PDF -->
+    <div id="pdf-template">
+        <div class="pdf-header">
+            <div>
+                <h2>INFORME DE CONTROL DE TAREAS</h2>
+                <div class="pdf-subtitle">Responsable: J.A.</div>
             </div>
-            <label>Cadencia (Seg/Pza)</label><input type="number" step="0.1" id="cfg-seg" value="6.5" onchange="sync()">
-            <label>Piezas Iniciales</label><input type="number" id="cfg-pz-ini" oninput="sync()">
-            <button class="btn-green" onclick="document.getElementById('m-new-def').style.display='flex'">[+ NUEVO DEFECTO]</button>
-            <button class="btn-green" style="background:var(--orange)" onclick="document.getElementById('m-new-par').style.display='flex'">[+ MOTIVO PARADA]</button>
+            <div style="text-align: right;" class="pdf-subtitle" id="pdf-date"></div>
         </div>
-        <button class="btn-green" style="background:var(--red)" onclick="if(confirm('¿Reiniciar?')){localStorage.clear(); location.reload();}">REINICIAR DATOS</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Tarea / Acción</th>
+                    <th>Horario</th>
+                    <th>Duración</th>
+                </tr>
+            </thead>
+            <tbody id="pdf-table-body"></tbody>
+        </table>
+        <div class="pdf-total" id="pdf-total-time"></div>
     </div>
 
-    <div id="tab2" class="sect">
-        <div class="card">
-            <h3>Calidad Sustrato</h3>
-            <div class="grid-sem">
-                <div class="sem-btn" style="border-color:var(--green)">OK<span class="sem-val" id="v-cal-ok">0</span></div>
-                <div class="sem-btn" style="border-color:var(--orange)" onclick="openModal('R1', 'SUSTRATO')">R1<span class="sem-val" id="v-cal-r1">0</span></div>
-                <div class="sem-btn" style="border-color:var(--red)" onclick="openModal('NO OK', 'SUSTRATO')">NO OK<span class="sem-val" id="v-cal-no">0</span></div>
-            </div>
-            <label>Contador Manual OK</label>
-            <input type="number" id="in-cal-ok" oninput="db.cal.ok=parseInt(this.value)||0; sync(); updateUI();">
-        </div>
-    </div>
+    <script>
+        let tasks = JSON.parse(localStorage.getItem('dailyTasks')) || [];
 
-    <div id="tab3" class="sect">
-        <div class="card">
-            <h3>Embalaje Final</h3>
-            <div class="grid-sem">
-                <div class="sem-btn" style="border-color:var(--green)">OK<span class="sem-val" id="v-emb-ok">0</span></div>
-                <div class="sem-btn" style="border-color:var(--orange)" onclick="openModal('R1', 'EMBALAJE')">R1<span class="sem-val" id="v-emb-r1">0</span></div>
-                <div class="sem-btn" style="border-color:var(--red)" onclick="openModal('NO OK', 'EMBALAJE')">NO OK<span class="sem-val" id="v-emb-no">0</span></div>
-            </div>
-            <label>Contador Manual OK</label>
-            <input type="number" id="in-emb-ok" oninput="db.emb.ok=parseInt(this.value)||0; sync(); updateUI();">
-        </div>
-    </div>
+        // Fecha de hoy por defecto al cargar
+        document.getElementById('taskDate').valueAsDate = new Date();
 
-    <div id="tab4" class="sect">
-        <div class="card">
-            <h3>Registro de Paradas</h3>
-            <label>Estación</label><select id="p-est"><option>LGV</option><option>ROBOTIONS</option><option>CEPILLADORA</option><option>CABINA 1</option><option>HORNOS</option><option>ERRECE</option><option>KERAJET</option><option>TRASLOW</option><option>CABINA 2</option><option>EMBALAJE</option></select>
-            <label>Motivo Rápido</label><select id="p-quick-obs" onchange="document.getElementById('p-obs').value=this.value.toUpperCase()"></select>
-            <div style="display:flex; gap:10px; margin-top:8px;"><input type="time" id="p-h1"><input type="time" id="p-h2"></div>
-            <textarea id="p-obs" placeholder="MOTIVO..."></textarea>
-            <button class="btn-green" onclick="addParada()">Guardar Evento</button>
-        </div>
-    </div>
-
-    <div id="tab5" class="sect">
-        <div class="card"><h3>Historial de Turno</h3><div id="h-content"></div></div>
-        <button class="btn-green" style="background:var(--blue)" onclick="generarPDF()">DESCARGAR AUDITORÍA COMPLETA PDF</button>
-    </div>
-</div>
-
-<div id="modal">
-    <div class="m-content">
-        <h3 id="m-title-mod">Registrar Fallo</h3>
-        <div id="m-ops" class="m-list-vertical"></div>
-        <div id="m-extra" style="display:none; border-top:1px solid #eee; padding-top:10px; margin-top:10px;">
-            <div id="m-extra-sust" style="display:none;">
-                <label>Trazabilidad (Lote/Cav/Prensa)</label><input type="text" id="m-val-traz">
-            </div>
-            <div id="m-extra-emb" style="display:none;">
-                <label>Origen del Fallo</label>
-                <select id="m-val-emb">
-                    <option>PROPIA PLANCHA</option><option>PRODUCCIÓN</option><option>KERAJET</option><option>CABINA 1</option><option>CABINA 2</option><option>HORNOS</option><option>TRASLOW</option><option>ERRECE</option><option>UV</option>
-                </select>
-            </div>
-            <label>Comentario / Nota</label><input type="text" id="m-val-comm">
-            <button class="btn-green" onclick="saveDef()">Confirmar y Cerrar</button>
-        </div>
-        <button class="btn-green" style="background:#888" onclick="closeM()">Cerrar</button>
-    </div>
-</div>
-
-<div id="m-new-def" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:3000; justify-content:center; align-items:center;"><div class="m-content"><h3>Nuevo Defecto</h3><label>Nombre</label><input type="text" id="nd-name"><label>Zona</label><select id="nd-zona"><option value="SUSTRATO">Calidad</option><option value="EMBALAJE">Embalaje</option></select><label>Tipo</label><select id="nd-tipo"><option value="R1">R1</option><option value="NO OK">NO OK</option></select><button class="btn-green" onclick="createNewDef()">Guardar</button><button class="btn-green" style="background:#888" onclick="document.getElementById('m-new-def').style.display='none'">Cerrar</button></div></div>
-<div id="m-new-par" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:3000; justify-content:center; align-items:center;"><div class="m-content"><h3>Motivo Parada</h3><input type="text" id="np-name"><button class="btn-green" onclick="createNewParadaMotivo()">Guardar</button><button class="btn-green" style="background:#888" onclick="document.getElementById('m-new-par').style.display='none'">Cerrar</button></div></div>
-
-<script>
-    var db = JSON.parse(localStorage.getItem('decoline_v73')) || {
-        reg: { fecha: new Date().toISOString().split('T')[0], of:'', sap:'', lote:'', graf:'', sust:'', turno:'MAÑANA', equi:'T1' },
-        cal: {ok:0, r1:0, no:0, hist:[]}, emb: {ok:0, r1:0, no:0, hist:[]},
-        parad: [], cfg: {h_ini:'06:00', h_fin:'14:15', seg:6.5, pz_ini:0}, customDefs: [], customPars: []
-    };
-    let temp = {};
-    const DEFS_BASE = ["ROTA", "BULTOS", "DIMENSIONES", "GOTA", "SUCIA", "MALLA", "OTRO"];
-
-    function setTab(n, btn) {
-        document.querySelectorAll('.sect').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.side-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.sect')[n].classList.add('active');
-        btn.classList.add('active');
-        if(n===4) updateQuickPars();
-        if(n===5) renderHist();
-        updateUI();
-    }
-
-    function sync() {
-        db.reg.fecha = document.getElementById('f-fecha').value;
-        db.reg.of = document.getElementById('f-of').value.toUpperCase();
-        db.reg.sap = document.getElementById('f-sap').value.toUpperCase();
-        db.reg.lote = document.getElementById('f-lote').value.toUpperCase();
-        db.reg.graf = document.getElementById('f-graf').value.toUpperCase();
-        db.reg.sust = document.getElementById('f-sust').value.toUpperCase();
-        db.reg.turno = document.getElementById('f-turno').value;
-        db.reg.equi = document.getElementById('f-equi').value;
-        db.cfg.h_ini = document.getElementById('cfg-h-ini').value;
-        db.cfg.h_fin = document.getElementById('cfg-h-fin').value;
-        db.cfg.seg = parseFloat(document.getElementById('cfg-seg').value) || 6.5;
-        db.cfg.pz_ini = parseInt(document.getElementById('cfg-pz-ini').value) || 0;
-        localStorage.setItem('decoline_v73', JSON.stringify(db));
-    }
-
-    function updateUI() {
-        document.getElementById('v-cal-ok').innerText = db.cal.ok;
-        document.getElementById('v-cal-r1').innerText = db.cal.r1;
-        document.getElementById('v-cal-no').innerText = db.cal.no;
-        document.getElementById('v-emb-ok').innerText = db.emb.ok;
-        document.getElementById('v-emb-r1').innerText = db.emb.r1;
-        document.getElementById('v-emb-no').innerText = db.emb.no;
-    }
-
-    function openModal(tipo, zona) {
-        temp = { tipo, zona }; document.getElementById('modal').style.display = 'flex';
-        let ops = document.getElementById('m-ops'); ops.innerHTML = ''; 
-        document.getElementById('m-extra').style.display = 'none';
-        let list = [...DEFS_BASE]; db.customDefs.filter(d => d.zona === zona && d.tipo === tipo).forEach(d => list.push(d.name));
-        list.forEach(d => {
-            let b = document.createElement('button'); b.className = 'm-btn-vert'; b.innerText = d;
-            b.onclick = () => { temp.d = d; ops.style.display = 'none'; document.getElementById('m-extra').style.display = 'block'; 
-                document.getElementById('m-extra-sust').style.display = (zona === 'SUSTRATO' ? 'block' : 'none');
-                document.getElementById('m-extra-emb').style.display = (zona === 'EMBALAJE' ? 'block' : 'none');
-            };
-            ops.appendChild(b);
-        });
-    }
-
-    function saveDef() {
-        let t = (temp.zona === 'SUSTRATO' ? db.cal : db.emb); 
-        if(temp.tipo === 'R1') t.r1++; else t.no++;
-        let info_base = (temp.zona === 'SUSTRATO' ? document.getElementById('m-val-traz').value.toUpperCase() : document.getElementById('m-val-emb').value);
-        let comm = document.getElementById('m-val-comm').value.toUpperCase();
-        t.hist.push({ def: temp.d, tipo: temp.tipo, hora: new Date().toLocaleTimeString().substring(0,5), info: info_base + (comm ? " | " + comm : "") });
-        
-        document.getElementById('m-val-traz').value = ''; document.getElementById('m-val-comm').value = ''; 
-        sync(); updateUI(); closeM();
-    }
-
-    function addParada() {
-        let h1 = document.getElementById('p-h1').value, h2 = document.getElementById('p-h2').value; if(!h1 || !h2) return;
-        let m = (parseInt(h2.split(':')[0])*60 + parseInt(h2.split(':')[1])) - (parseInt(h1.split(':')[0])*60 + parseInt(h1.split(':')[1]));
-        db.parad.push({est: document.getElementById('p-est').value, h1, h2, min: m, obs: document.getElementById('p-obs').value.toUpperCase()});
-        document.getElementById('p-obs').value = ''; sync(); alert("GUARDADO");
-    }
-
-    function createNewDef() { let n = document.getElementById('nd-name').value.toUpperCase(); if(n) db.customDefs.push({ name:n, zona: document.getElementById('nd-zona').value, tipo: document.getElementById('nd-tipo').value }); document.getElementById('nd-name').value=''; sync(); }
-    function createNewParadaMotivo() { let n = document.getElementById('np-name').value.toUpperCase(); if(n) db.customPars.push(n); document.getElementById('np-name').value=''; sync(); }
-    function updateQuickPars() { let sel = document.getElementById('p-quick-obs'); sel.innerHTML = '<option value="">-- SELECCIONAR --</option>'; db.customPars.forEach(p => { sel.innerHTML += `<option value="${p}">${p}</option>`; }); }
-
-    function renderHist() {
-        const gen = (target, title, tipo) => {
-            let h = `<div style="background:#ddd; padding:8px; border-radius:8px; margin-top:5px;"><b>${title}</b></div>`;
-            target.hist.forEach((x, i) => { h += `<div class="hist-row"><span><b>${x.hora}</b> ${x.def} - ${x.info}</span><button style="color:red; font-weight:bold; border:none; background:none;" onclick="delItem('${tipo}', ${i})">X</button></div>`; });
-            return h;
-        };
-        let p = `<h3>Paradas</h3>`; db.parad.forEach((x, i) => { p += `<div class="hist-row"><span><b>${x.h1}-${x.h2}</b> ${x.est} (${x.min}m)</span><button style="color:red; font-weight:bold; border:none; background:none;" onclick="delItem('par', ${i})">X</button></div>`; });
-        document.getElementById('h-content').innerHTML = gen(db.cal, 'SUSTRATO', 'cal') + gen(db.emb, 'EMBALAJE', 'emb') + p;
-    }
-
-    function delItem(tipo, i) {
-        if(tipo === 'cal') { let x=db.cal.hist[i]; if(x.tipo==='R1') db.cal.r1--; else db.cal.no--; db.cal.hist.splice(i,1); }
-        else if(tipo === 'emb') { let x=db.emb.hist[i]; if(x.tipo==='R1') db.emb.r1--; else db.emb.no--; db.emb.hist.splice(i,1); }
-        else db.parad.splice(i,1);
-        sync(); updateUI(); renderHist();
-    }
-
-    function closeM() { document.getElementById('modal').style.display = 'none'; document.getElementById('m-ops').style.display = 'block'; }
-
-    async function generarPDF() {
-        const { jsPDF } = window.jspdf; const doc = new jsPDF();
-        doc.setFillColor(13, 71, 161); doc.rect(0,0,210,40,'F');
-        doc.setTextColor(255); doc.setFontSize(22); doc.text("AUDITORÍA DE TURNO - NEXUS V73", 20, 25);
-        doc.setFontSize(10); doc.text("REGISTRO DE ORIGEN DE DEFECTOS Y PRODUCCIÓN", 20, 33);
-        
-        doc.setTextColor(0); doc.setFontSize(10);
-        doc.text(`FECHA: ${db.reg.fecha} | OF: ${db.reg.of} | SAP: ${db.reg.sap}`, 20, 50);
-        doc.text(`GRAFICA: ${db.reg.graf} | SUSTRATO: ${db.reg.sust} | EQUIPO: ${db.reg.equi}`, 20, 57);
-        
-        doc.autoTable({ startY: 65, head: [['ZONA','OK','SEGUNDA VIDA (R1)','NO OK']], body: [['SUSTRATO',db.cal.ok,db.cal.r1,db.cal.no],['EMBALAJE',db.emb.ok,db.emb.r1,db.emb.no]], headStyles:{fillColor:[13,71,161]} });
-
-        const r1List = [...db.cal.hist, ...db.emb.hist].filter(x => x.tipo === 'R1');
-        if(r1List.length > 0) {
-            doc.text("DESGLOSE SEGUNDA VIDA (R1) POR ORIGEN", 20, doc.lastAutoTable.finalY + 10);
-            doc.autoTable({ startY: doc.lastAutoTable.finalY + 15, head: [['HORA','DEFECTO','ORIGEN/ESTACIÓN']], body: r1List.map(x => [x.hora, x.def, x.info]) });
+        function calculateMinutes(start, end) {
+            const [startH, startM] = start.split(':').map(Number);
+            const [endH, endM] = end.split(':').map(Number);
+            let startTotal = startH * 60 + startM;
+            let endTotal = endH * 60 + endM;
+            if (endTotal < startTotal) endTotal += 24 * 60;
+            return endTotal - startTotal;
         }
 
-        doc.text("CRONOGRAMA DE PARADAS", 20, doc.lastAutoTable.finalY + 10);
-        doc.autoTable({ startY: doc.lastAutoTable.finalY + 15, head: [['ESTACIÓN','MIN','MOTIVO']], body: db.parad.map(p=>[p.est, p.min, p.obs]), headStyles:{fillColor:[183,28,28]} });
+        function renderTasks() {
+            const listEl = document.getElementById('taskList');
+            listEl.innerHTML = '';
+            let totalMinutes = 0;
 
-        let pmin = db.parad.reduce((a,b)=>a+b.min,0);
-        let gotas = db.emb.hist.filter(h => h.def === "GOTA").length;
-        doc.setFillColor(232, 234, 246); doc.rect(15, doc.lastAutoTable.finalY + 10, 180, 40, 'F');
-        doc.setTextColor(13, 71, 161); doc.text("ANÁLISIS INTELIGENTE", 20, doc.lastAutoTable.finalY + 20);
-        doc.setTextColor(0); doc.setFontSize(9);
-        doc.text(`Total Minutos Parada: ${pmin} min.`, 20, doc.lastAutoTable.finalY + 30);
-        if(gotas > 2) doc.text(`ALERTA: Saturación de volátiles en Kerajet detectada.`, 20, doc.lastAutoTable.finalY + 37);
+            if (tasks.length === 0) {
+                listEl.innerHTML = '<p style="text-align:center; color: var(--subtext);">No hay tareas registradas.</p>';
+            }
 
-        doc.save(`Auditoria_${db.reg.of}.pdf`);
-    }
+            tasks.sort((a, b) => new Date(a.date + 'T' + a.start) - new Date(b.date + 'T' + b.start));
 
-    window.onload = () => {
-        document.getElementById('f-fecha').value = db.reg.fecha;
-        document.getElementById('f-of').value = db.reg.of;
-        document.getElementById('f-sap').value = db.reg.sap;
-        document.getElementById('f-lote').value = db.reg.lote;
-        document.getElementById('f-graf').value = db.reg.graf;
-        document.getElementById('f-sust').value = db.reg.sust;
-        updateUI();
-    };
-</script>
+            tasks.forEach((task, index) => {
+                const duration = calculateMinutes(task.start, task.end);
+                totalMinutes += duration;
+
+                const formattedDate = new Date(task.date + 'T00:00:00').toLocaleDateString('es-ES', {
+                    day: '2-digit', month: '2-digit', year: 'numeric'
+                });
+
+                listEl.innerHTML += `
+                    <div class="task-item">
+                        <div class="task-info">
+                            <span class="task-date">📅 ${formattedDate}</span>
+                            <strong>${task.name}</strong>
+                            <span class="task-time">⏱️ ${task.start} a ${task.end} (${duration} min)</span>
+                        </div>
+                        <button class="btn-delete" onclick="deleteTask(${index})">🗑️</button>
+                    </div>
+                `;
+            });
+
+            document.getElementById('totalTime').innerText = `Tiempo Total: ${totalMinutes} min (${(totalMinutes/60).toFixed(1)} h)`;
+            localStorage.setItem('dailyTasks', JSON.stringify(tasks));
+        }
+
+        function addTask() {
+            const dateInput = document.getElementById('taskDate');
+            const nameInput = document.getElementById('taskName');
+            const startInput = document.getElementById('startTime');
+            const endInput = document.getElementById('endTime');
+
+            if (!dateInput.value || !nameInput.value.trim() || !startInput.value || !endInput.value) {
+                alert('Por favor, completa la fecha, la tarea y las horas de inicio y fin.');
+                return;
+            }
+
+            tasks.push({
+                date: dateInput.value,
+                name: nameInput.value.trim(),
+                start: startInput.value,
+                end: endInput.value
+            });
+
+            nameInput.value = '';
+            startInput.value = '';
+            endInput.value = '';
+            renderTasks();
+        }
+
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            renderTasks();
+        }
+
+        function resetTasks() {
+            if (tasks.length === 0) {
+                alert('No hay tareas registradas para borrar.');
+                return;
+            }
+            const confirmReset = confirm('⚠️ ¿Estás seguro de que deseas borrar TODAS las tareas registradas?\n\nEsta acción no se puede deshacer.');
+            if (confirmReset) {
+                tasks = [];
+                renderTasks();
+            }
+        }
+
+        function generateTextReport() {
+            let report = `📊 *CONTROL DE TAREAS — J.A.*\n`;
+            report += `-----------------------------------\n`;
+
+            let totalMinutes = 0;
+            tasks.forEach((t, i) => {
+                const duration = calculateMinutes(t.start, t.end);
+                totalMinutes += duration;
+                const formattedDate = new Date(t.date + 'T00:00:00').toLocaleDateString('es-ES');
+                report += `${i + 1}. [${formattedDate}] ${t.name}\n   ⏰ ${t.start} - ${t.end} (*${duration} min*)\n`;
+            });
+
+            report += `-----------------------------------\n`;
+            report += `⏱️ *Tiempo Total:* ${totalMinutes} min (${(totalMinutes/60).toFixed(1)} h)`;
+            return report;
+        }
+
+        function sendWhatsApp() {
+            if (tasks.length === 0) {
+                alert('No hay tareas para enviar.');
+                return;
+            }
+            const text = encodeURIComponent(generateTextReport());
+            window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+        }
+
+        function generatePDF() {
+            if (tasks.length === 0) {
+                alert('No hay tareas para exportar a PDF.');
+                return;
+            }
+
+            // Rellenar datos en la plantilla de PDF
+            const pdfTable = document.getElementById('pdf-table-body');
+            pdfTable.innerHTML = '';
+            let totalMinutes = 0;
+
+            tasks.forEach(t => {
+                const duration = calculateMinutes(t.start, t.end);
+                totalMinutes += duration;
+                const formattedDate = new Date(t.date + 'T00:00:00').toLocaleDateString('es-ES');
+                
+                pdfTable.innerHTML += `
+                    <tr>
+                        <td>${formattedDate}</td>
+                        <td><strong>${t.name}</strong></td>
+                        <td>${t.start} - ${t.end}</td>
+                        <td>${duration} min</td>
+                    </tr>
+                `;
+            });
+
+            const todayStr = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            document.getElementById('pdf-date').innerText = `Emisión: ${todayStr}`;
+            document.getElementById('pdf-total-time').innerText = `Tiempo Total Acumulado: ${totalMinutes} min (${(totalMinutes/60).toFixed(1)} h)`;
+
+            // Mostrar el contenedor temporalmente para que html2pdf lo capture
+            const element = document.getElementById('pdf-template');
+            element.style.display = 'block';
+
+            const opt = {
+                margin:       10,
+                filename:     `Informe_Tareas_JA_${new Date().toISOString().split('T')[0]}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.style.display = 'none'; // Ocultar de nuevo
+            });
+        }
+
+        // Dictado por voz
+        function startVoiceRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+            if (!SpeechRecognition) {
+                alert('Tu navegador no soporta el reconocimiento de voz. Intenta usar Chrome o Safari.');
+                return;
+            }
+
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'es-ES';
+            recognition.interimResults = false;
+
+            const micBtn = document.getElementById('micBtn');
+            const taskInput = document.getElementById('taskName');
+
+            recognition.onstart = function() {
+                micBtn.classList.add('listening');
+            };
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                taskInput.value = transcript;
+                micBtn.classList.remove('listening');
+            };
+
+            recognition.onerror = function() {
+                alert('Error al reconocer la voz. Asegúrate de dar permisos de micrófono.');
+                micBtn.classList.remove('listening');
+            };
+
+            recognition.onend = function() {
+                micBtn.classList.remove('listening');
+            };
+
+            recognition.start();
+        }
+
+        renderTasks();
+    </script>
 </body>
 </html>
