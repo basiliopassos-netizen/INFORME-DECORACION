@@ -3,516 +3,280 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control de Tareas — J.A.</title>
-    <!-- Librería para generar PDF directamente en el navegador -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <style>
-        :root {
-            --primary: #25D366;
-            --dark: #121212;
-            --card: #1e1e1e;
-            --text: #ffffff;
-            --subtext: #aaaaaa;
-            --danger: #dc3545;
-            --accent: #007bff;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--dark);
-            color: var(--text);
-            margin: 0;
-            padding: 16px;
-        }
-
-        h1, h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .card {
-            background-color: var(--card);
-            padding: 16px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        label {
-            font-size: 0.9em;
-            color: var(--subtext);
-            display: block;
-            margin-bottom: 6px;
-            margin-top: 10px;
-        }
-
-        .input-group {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-
-        .time-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        .time-col {
-            flex: 1;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #333;
-            background-color: #2a2a2a;
-            color: var(--text);
-            box-sizing: border-box;
-            font-size: 1em;
-            color-scheme: dark;
-        }
-
-        .btn-mic {
-            background-color: #e63946;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 0 16px;
-            font-size: 1.2em;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s;
-        }
-
-        .btn-mic.listening {
-            background-color: #ffb703;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            margin-bottom: 6px;
-            transition: opacity 0.2s;
-        }
-
-        button:active {
-            opacity: 0.8;
-        }
-
-        .btn-add {
-            background-color: var(--accent);
-            color: white;
-        }
-
-        .btn-whatsapp {
-            background-color: var(--primary);
-            color: white;
-        }
-
-        .btn-pdf {
-            background-color: #e63946;
-            color: white;
-        }
-
-        .btn-reset {
-            background-color: var(--danger);
-            color: white;
-            margin-top: 16px;
-        }
-
-        .task-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            border-bottom: 1px solid #333;
-        }
-
-        .task-item:last-child {
-            border-bottom: none;
-        }
-
-        .task-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .task-date {
-            font-size: 0.75em;
-            color: var(--accent);
-            font-weight: bold;
-        }
-
-        .task-time {
-            font-size: 0.85em;
-            color: var(--subtext);
-        }
-
-        .btn-delete {
-            background: none;
-            border: none;
-            color: #ff5252;
-            font-size: 1.2em;
-            cursor: pointer;
-            width: auto;
-            margin: 0;
-            padding: 4px 8px;
-        }
-
-        .total-container {
-            font-weight: bold;
-            text-align: right;
-            margin-top: 12px;
-            color: var(--primary);
-        }
-
-        /* Plantilla oculta para generar el PDF elegante */
-        #pdf-template {
-            display: none;
-            font-family: Arial, sans-serif;
-            color: #333;
-            padding: 20px;
-            background: #fff;
-        }
-
-        #pdf-template .pdf-header {
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        #pdf-template h2 {
-            margin: 0;
-            color: #007bff;
-            font-size: 20px;
-            text-align: left;
-        }
-
-        #pdf-template .pdf-subtitle {
-            font-size: 12px;
-            color: #666;
-        }
-
-        #pdf-template table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        #pdf-template th {
-            background-color: #f2f2f2;
-            color: #333;
-            text-align: left;
-            padding: 8px;
-            font-size: 12px;
-            border-bottom: 2px solid #ddd;
-        }
-
-        #pdf-template td {
-            padding: 8px;
-            font-size: 12px;
-            border-bottom: 1px solid #eee;
-        }
-
-        #pdf-template .pdf-total {
-            text-align: right;
-            font-size: 14px;
-            font-weight: bold;
-            color: #25D366;
-            background: #f9f9f9;
-            padding: 10px;
-            border-radius: 4px;
-        }
-    </style>
+    <title>Registro de Fábrica</title>
+    <!-- Tailwind CSS para un diseño moderno y responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js para la reactividad de las pestañas y el CRUD -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
+<body class="bg-gray-100 min-h-screen text-gray-800" x-data="fabricaApp()">
 
-    <h1>📋 Control de Tareas — J.A.</h1>
-
-    <!-- Formulario de Registro -->
-    <div class="card">
-        <label for="taskDate">Fecha de la tarea</label>
-        <input type="date" id="taskDate">
-
-        <label for="taskName">Acción / Tarea Realizada</label>
-        <div class="input-group">
-            <input type="text" id="taskName" placeholder="Escribe o pulsa el micro...">
-            <button class="btn-mic" id="micBtn" onclick="startVoiceRecognition()" title="Dictar por voz">🎤</button>
-        </div>
-
-        <div class="time-group">
-            <div class="time-col">
-                <label for="startTime">Desde (Inicio)</label>
-                <input type="time" id="startTime">
-            </div>
-            <div class="time-col">
-                <label for="endTime">Hasta (Fin)</label>
-                <input type="time" id="endTime">
+    <!-- Header Principal -->
+    <header class="bg-slate-800 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center">
+            <h1 class="text-2xl font-bold flex items-center gap-2">
+                <i class="fa-solid fa-industry text-blue-400"></i> Control de Fábrica
+            </h1>
+            <div class="mt-3 sm:mt-0 flex gap-2">
+                <button @click="generarInformeWhatsApp()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition shadow">
+                    <i class="fa-brands fa-whatsapp text-lg"></i> Copiar Informe WhatsApp
+                </button>
+                <button @click="exportarPDF()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition shadow">
+                    <i class="fa-solid fa-file-pdf text-lg"></i> Descargar PDF / Imprimir
+                </button>
             </div>
         </div>
+    </header>
 
-        <button class="btn-add" onclick="addTask()">➕ Añadir Tarea</button>
-    </div>
-
-    <!-- Lista de Tareas -->
-    <div class="card">
-        <h2>Tareas Registradas</h2>
-        <div id="taskList"></div>
-        <div class="total-container" id="totalTime">Tiempo Total: 0 min</div>
-    </div>
-
-    <!-- Exportar, Compartir y Reiniciar -->
-    <div class="card">
-        <button class="btn-whatsapp" onclick="sendWhatsApp()">📲 Enviar Informe por WhatsApp</button>
-        <button class="btn-pdf" onclick="generatePDF()">📄 Descargar Informe PDF</button>
-        <button class="btn-reset" onclick="resetTasks()">🔄 Reiniciar Registro de Tareas</button>
-    </div>
-
-    <!-- Contenedor oculto exclusivamente para renderizar el PDF -->
-    <div id="pdf-template">
-        <div class="pdf-header">
-            <div>
-                <h2>INFORME DE CONTROL DE TAREAS</h2>
-                <div class="pdf-subtitle">Responsable: J.A.</div>
-            </div>
-            <div style="text-align: right;" class="pdf-subtitle" id="pdf-date"></div>
+    <!-- Navegación por Pestañas -->
+    <nav class="bg-white shadow border-b">
+        <div class="max-w-7xl mx-auto flex overflow-x-auto">
+            <button @click="activeTab = 'produccion'" :class="activeTab === 'produccion' ? 'border-blue-600 text-blue-600 font-bold bg-blue-50/50' : 'border-transparent text-gray-500 hover:text-gray-700'" class="flex-1 min-w-[120px] py-4 px-6 text-center border-b-2 font-medium text-sm transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-gears"></i> Producción
+            </button>
+            <button @click="activeTab = 'decoracion'" :class="activeTab === 'decoracion' ? 'border-blue-600 text-blue-600 font-bold bg-blue-50/50' : 'border-transparent text-gray-500 hover:text-gray-700'" class="flex-1 min-w-[120px] py-4 px-6 text-center border-b-2 font-medium text-sm transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-paint-roller"></i> Decoración
+            </button>
+            <button @click="activeTab = 'corte'" :class="activeTab === 'corte' ? 'border-blue-600 text-blue-600 font-bold bg-blue-50/50' : 'border-transparent text-gray-500 hover:text-gray-700'" class="flex-1 min-w-[120px] py-4 px-6 text-center border-b-2 font-medium text-sm transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-scissors"></i> Corte
+            </button>
+            <button @click="activeTab = 'cunas'" :class="activeTab === 'cunas' ? 'border-blue-600 text-blue-600 font-bold bg-blue-50/50' : 'border-transparent text-gray-500 hover:text-gray-700'" class="flex-1 min-w-[120px] py-4 px-6 text-center border-b-2 font-medium text-sm transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-box-archive"></i> Cunas
+            </button>
         </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Fecha</th>
-                    <th>Tarea / Acción</th>
-                    <th>Horario</th>
-                    <th>Duración</th>
-                </tr>
-            </thead>
-            <tbody id="pdf-table-body"></tbody>
-        </table>
-        <div class="pdf-total" id="pdf-total-time"></div>
-    </div>
+    </nav>
 
-    <script>
-        let tasks = JSON.parse(localStorage.getItem('dailyTasks')) || [];
+    <!-- Contenido Principal -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
 
-        // Fecha de hoy por defecto al cargar
-        document.getElementById('taskDate').valueAsDate = new Date();
+        <!-- NOTIFICACIÓN FLOTANTE -->
+        <div x-show="mensajeAlerta" x-transition class="mb-4 p-4 rounded-lg bg-green-100 border border-green-400 text-green-700 flex justify-between items-center">
+            <span x-text="mensajeAlerta"></span>
+            <button @click="mensajeAlerta = ''" class="text-green-900 font-bold">&times;</button>
+        </div>
 
-        function calculateMinutes(start, end) {
-            const [startH, startM] = start.split(':').map(Number);
-            const [endH, endM] = end.split(':').map(Number);
-            let startTotal = startH * 60 + startM;
-            let endTotal = endH * 60 + endM;
-            if (endTotal < startTotal) endTotal += 24 * 60;
-            return endTotal - startTotal;
-        }
-
-        function renderTasks() {
-            const listEl = document.getElementById('taskList');
-            listEl.innerHTML = '';
-            let totalMinutes = 0;
-
-            if (tasks.length === 0) {
-                listEl.innerHTML = '<p style="text-align:center; color: var(--subtext);">No hay tareas registradas.</p>';
-            }
-
-            tasks.sort((a, b) => new Date(a.date + 'T' + a.start) - new Date(b.date + 'T' + b.start));
-
-            tasks.forEach((task, index) => {
-                const duration = calculateMinutes(task.start, task.end);
-                totalMinutes += duration;
-
-                const formattedDate = new Date(task.date + 'T00:00:00').toLocaleDateString('es-ES', {
-                    day: '2-digit', month: '2-digit', year: 'numeric'
-                });
-
-                listEl.innerHTML += `
-                    <div class="task-item">
-                        <div class="task-info">
-                            <span class="task-date">📅 ${formattedDate}</span>
-                            <strong>${task.name}</strong>
-                            <span class="task-time">⏱️ ${task.start} a ${task.end} (${duration} min)</span>
-                        </div>
-                        <button class="btn-delete" onclick="deleteTask(${index})">🗑️</button>
+        <!-- ================= PESTAÑA: PRODUCCIÓN ================= -->
+        <div x-show="activeTab === 'produccion'" class="space-y-6">
+            <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-plus text-blue-600"></i> 
+                    <span x-text="editIndex.produccion !== null ? 'Modificar Registro de Producción' : 'Nuevo Registro de Producción'"></span>
+                </h2>
+                <form @submit.prevent="guardarProduccion" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Fecha</label>
+                        <input type="date" x-model="formProduccion.fecha" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
                     </div>
-                `;
-            });
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Sustrato</label>
+                        <input type="text" x-model="formProduccion.sustrato" placeholder="Ej. Cerámico A" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">N° de Línea</label>
+                        <select x-model="formProduccion.linea" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                            <option value="">Seleccione...</option>
+                            <option value="L1">L1</option>
+                            <option value="L2">L2</option>
+                            <option value="L3">L3</option>
+                            <option value="L4">L4</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Turno</label>
+                        <select x-model="formProduccion.turno" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Tarde">Tarde</option>
+                            <option value="Noche">Noche</option>
+                            <option value="Mañana">Mañana</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Cantidad</label>
+                        <input type="number" x-model="formProduccion.cantidad" placeholder="Ej. 1500" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                    </div>
+                    <div class="md:col-span-2 lg:col-span-3 flex gap-2 pt-2">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg shadow transition">
+                            <i class="fa-solid fa-floppy-disk mr-1"></i> <span x-text="editIndex.produccion !== null ? 'Actualizar Registro' : 'Guardar Registro'"></span>
+                        </button>
+                        <template x-if="editIndex.produccion !== null">
+                            <button type="button" @click="cancelarEdicion('produccion')" class="bg-gray-400 hover:bg-gray-500 text-white font-semibold px-4 py-2 rounded-lg transition">Cancelar</button>
+                        </template>
+                    </div>
+                </form>
+            </div>
 
-            document.getElementById('totalTime').innerText = `Tiempo Total: ${totalMinutes} min (${(totalMinutes/60).toFixed(1)} h)`;
-            localStorage.setItem('dailyTasks', JSON.stringify(tasks));
-        }
+            <!-- Tabla de Registros -->
+            <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                <h3 class="text-md font-bold text-slate-800 mb-4">Registros Guardados - Producción</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-gray-100 border-b">
+                                <th class="p-3">Fecha</th>
+                                <th class="p-3">Sustrato</th>
+                                <th class="p-3">Línea</th>
+                                <th class="p-3">Turno</th>
+                                <th class="p-3">Cantidad</th>
+                                <th class="p-3 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="(item, index) in registros.produccion" :key="index">
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="p-3" x-text="item.fecha"></td>
+                                    <td class="p-3" x-text="item.sustrato"></td>
+                                    <td class="p-3 font-semibold" x-text="item.linea"></td>
+                                    <td class="p-3" x-text="item.turno"></td>
+                                    <td class="p-3 font-semibold text-blue-600" x-text="item.cantidad"></td>
+                                    <td class="p-3 text-center flex justify-center gap-2">
+                                        <button @click="editarRegistro('produccion', index)" class="text-amber-600 hover:text-amber-800 p-1" title="Modificar"><i class="fa-solid fa-pen-to-square"></i></button>
+                                        <button @click="eliminarRegistro('produccion', index)" class="text-red-600 hover:text-red-800 p-1" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </template>
+                            <template x-if="registros.produccion.length === 0">
+                                <tr><td colspan="6" class="p-4 text-center text-gray-400">No hay registros guardados todavía.</td></tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-        function addTask() {
-            const dateInput = document.getElementById('taskDate');
-            const nameInput = document.getElementById('taskName');
-            const startInput = document.getElementById('startTime');
-            const endInput = document.getElementById('endTime');
+        <!-- ================= PESTAÑA: DECORACIÓN ================= -->
+        <div x-show="activeTab === 'decoracion'" class="space-y-6" style="display: none;">
+            <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-plus text-blue-600"></i>
+                    <span x-text="editIndex.decoracion !== null ? 'Modificar Registro de Decoración' : 'Nuevo Registro de Decoración'"></span>
+                </h2>
+                <form @submit.prevent="guardarDecoracion" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Fecha</label>
+                        <input type="date" x-model="formDecoracion.fecha" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Sustrato</label>
+                        <input type="text" x-model="formDecoracion.sustrato" placeholder="Ej. Esmalte B" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Equipo</label>
+                        <select x-model="formDecoracion.equipo" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                            <option value="">Seleccione...</option>
+                            <option value="D1">D1</option>
+                            <option value="D2">D2</option>
+                            <option value="Tono I+D">Tono I+D</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Cantidad</label>
+                        <input type="number" x-model="formDecoracion.cantidad" placeholder="Ej. 1200" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                    </div>
+                    <div class="md:col-span-2 lg:col-span-3 flex gap-2 pt-2">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg shadow transition">
+                            <i class="fa-solid fa-floppy-disk mr-1"></i> <span x-text="editIndex.decoracion !== null ? 'Actualizar Registro' : 'Guardar Registro'"></span>
+                        </button>
+                        <template x-if="editIndex.decoracion !== null">
+                            <button type="button" @click="cancelarEdicion('decoracion')" class="bg-gray-400 hover:bg-gray-500 text-white font-semibold px-4 py-2 rounded-lg transition">Cancelar</button>
+                        </template>
+                    </div>
+                </form>
+            </div>
 
-            if (!dateInput.value || !nameInput.value.trim() || !startInput.value || !endInput.value) {
-                alert('Por favor, completa la fecha, la tarea y las horas de inicio y fin.');
-                return;
-            }
+            <!-- Tabla Decoración -->
+            <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                <h3 class="text-md font-bold text-slate-800 mb-4">Registros Guardados - Decoración</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-gray-100 border-b">
+                                <th class="p-3">Fecha</th>
+                                <th class="p-3">Sustrato</th>
+                                <th class="p-3">Equipo</th>
+                                <th class="p-3">Cantidad</th>
+                                <th class="p-3 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="(item, index) in registros.decoracion" :key="index">
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="p-3" x-text="item.fecha"></td>
+                                    <td class="p-3" x-text="item.sustrato"></td>
+                                    <td class="p-3 font-semibold" x-text="item.equipo"></td>
+                                    <td class="p-3 font-semibold text-blue-600" x-text="item.cantidad"></td>
+                                    <td class="p-3 text-center flex justify-center gap-2">
+                                        <button @click="editarRegistro('decoracion', index)" class="text-amber-600 hover:text-amber-800 p-1" title="Modificar"><i class="fa-solid fa-pen-to-square"></i></button>
+                                        <button @click="eliminarRegistro('decoracion', index)" class="text-red-600 hover:text-red-800 p-1" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </template>
+                            <template x-if="registros.decoracion.length === 0">
+                                <tr><td colspan="5" class="p-4 text-center text-gray-400">No hay registros guardados todavía.</td></tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-            tasks.push({
-                date: dateInput.value,
-                name: nameInput.value.trim(),
-                start: startInput.value,
-                end: endInput.value
-            });
+        <!-- ================= PESTAÑA: CORTE ================= -->
+        <div x-show="activeTab === 'corte'" class="space-y-6" style="display: none;">
+            <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-plus text-blue-600"></i>
+                    <span x-text="editIndex.corte !== null ? 'Modificar Registro de Corte' : 'Nuevo Registro de Corte'"></span>
+                </h2>
+                <form @submit.prevent="guardarCorte" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Fecha</label>
+                        <input type="date" x-model="formCorte.fecha" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Sustrato</label>
+                        <input type="text" x-model="formCorte.sustrato" placeholder="Ej. Base C" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Equipo</label>
+                        <select x-model="formCorte.equipo" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                            <option value="">Seleccione...</option>
+                            <option value="C1">C1</option>
+                            <option value="C2">C2</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Cantidad</label>
+                        <input type="number" x-model="formCorte.cantidad" placeholder="Ej. 800" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                    </div>
+                    <div class="md:col-span-2 lg:col-span-3 flex gap-2 pt-2">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg shadow transition">
+                            <i class="fa-solid fa-floppy-disk mr-1"></i> <span x-text="editIndex.corte !== null ? 'Actualizar Registro' : 'Guardar Registro'"></span>
+                        </button>
+                        <template x-if="editIndex.corte !== null">
+                            <button type="button" @click="cancelarEdicion('corte')" class="bg-gray-400 hover:bg-gray-500 text-white font-semibold px-4 py-2 rounded-lg transition">Cancelar</button>
+                        </template>
+                    </div>
+                </form>
+            </div>
 
-            nameInput.value = '';
-            startInput.value = '';
-            endInput.value = '';
-            renderTasks();
-        }
-
-        function deleteTask(index) {
-            tasks.splice(index, 1);
-            renderTasks();
-        }
-
-        function resetTasks() {
-            if (tasks.length === 0) {
-                alert('No hay tareas registradas para borrar.');
-                return;
-            }
-            const confirmReset = confirm('⚠️ ¿Estás seguro de que deseas borrar TODAS las tareas registradas?\n\nEsta acción no se puede deshacer.');
-            if (confirmReset) {
-                tasks = [];
-                renderTasks();
-            }
-        }
-
-        function generateTextReport() {
-            let report = `📊 *CONTROL DE TAREAS — J.A.*\n`;
-            report += `-----------------------------------\n`;
-
-            let totalMinutes = 0;
-            tasks.forEach((t, i) => {
-                const duration = calculateMinutes(t.start, t.end);
-                totalMinutes += duration;
-                const formattedDate = new Date(t.date + 'T00:00:00').toLocaleDateString('es-ES');
-                report += `${i + 1}. [${formattedDate}] ${t.name}\n   ⏰ ${t.start} - ${t.end} (*${duration} min*)\n`;
-            });
-
-            report += `-----------------------------------\n`;
-            report += `⏱️ *Tiempo Total:* ${totalMinutes} min (${(totalMinutes/60).toFixed(1)} h)`;
-            return report;
-        }
-
-        function sendWhatsApp() {
-            if (tasks.length === 0) {
-                alert('No hay tareas para enviar.');
-                return;
-            }
-            const text = encodeURIComponent(generateTextReport());
-            window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
-        }
-
-        function generatePDF() {
-            if (tasks.length === 0) {
-                alert('No hay tareas para exportar a PDF.');
-                return;
-            }
-
-            // Rellenar datos en la plantilla de PDF
-            const pdfTable = document.getElementById('pdf-table-body');
-            pdfTable.innerHTML = '';
-            let totalMinutes = 0;
-
-            tasks.forEach(t => {
-                const duration = calculateMinutes(t.start, t.end);
-                totalMinutes += duration;
-                const formattedDate = new Date(t.date + 'T00:00:00').toLocaleDateString('es-ES');
-                
-                pdfTable.innerHTML += `
-                    <tr>
-                        <td>${formattedDate}</td>
-                        <td><strong>${t.name}</strong></td>
-                        <td>${t.start} - ${t.end}</td>
-                        <td>${duration} min</td>
-                    </tr>
-                `;
-            });
-
-            const todayStr = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
-            document.getElementById('pdf-date').innerText = `Emisión: ${todayStr}`;
-            document.getElementById('pdf-total-time').innerText = `Tiempo Total Acumulado: ${totalMinutes} min (${(totalMinutes/60).toFixed(1)} h)`;
-
-            // Mostrar el contenedor temporalmente para que html2pdf lo capture
-            const element = document.getElementById('pdf-template');
-            element.style.display = 'block';
-
-            const opt = {
-                margin:       10,
-                filename:     `Informe_Tareas_JA_${new Date().toISOString().split('T')[0]}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            html2pdf().set(opt).from(element).save().then(() => {
-                element.style.display = 'none'; // Ocultar de nuevo
-            });
-        }
-
-        // Dictado por voz
-        function startVoiceRecognition() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-            if (!SpeechRecognition) {
-                alert('Tu navegador no soporta el reconocimiento de voz. Intenta usar Chrome o Safari.');
-                return;
-            }
-
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'es-ES';
-            recognition.interimResults = false;
-
-            const micBtn = document.getElementById('micBtn');
-            const taskInput = document.getElementById('taskName');
-
-            recognition.onstart = function() {
-                micBtn.classList.add('listening');
-            };
-
-            recognition.onresult = function(event) {
-                const transcript = event.results[0][0].transcript;
-                taskInput.value = transcript;
-                micBtn.classList.remove('listening');
-            };
-
-            recognition.onerror = function() {
-                alert('Error al reconocer la voz. Asegúrate de dar permisos de micrófono.');
-                micBtn.classList.remove('listening');
-            };
-
-            recognition.onend = function() {
-                micBtn.classList.remove('listening');
-            };
-
-            recognition.start();
-        }
-
-        renderTasks();
-    </script>
-</body>
-</html>
+            <!-- Tabla Corte -->
+            <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                <h3 class="text-md font-bold text-slate-800 mb-4">Registros Guardados - Corte</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-gray-100 border-b">
+                                <th class="p-3">Fecha</th>
+                                <th class="p-3">Sustrato</th>
+                                <th class="p-3">Equipo</th>
+                                <th class="p-3">Cantidad</th>
+                                <th class="p-3 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="(item, index) in registros.corte" :key="index">
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="p-3" x-text="item.fecha"></td>
+                                    <td class="p-3" x-text="item.sustrato"></td>
+                                    <td class="p-3 font-semibold" x-text="i
