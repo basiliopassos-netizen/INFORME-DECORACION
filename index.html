@@ -544,7 +544,7 @@
                                 <tr class="border-b hover:bg-gray-50">
                                     <td class="p-3" x-text="item.fecha"></td>
                                     <td class="p-3 font-medium" x-text="item.sustrato"></td>
-                                    <td class="p-3 font-semibold text-purple-600" x-text="item.cantidad"></td>
+                                    <td class="p-3 font-semibold" :class="item.cantidad < 0 ? 'text-red-600' : 'text-purple-600'" x-text="item.cantidad"></td>
                                     <td class="p-3 text-center flex justify-center gap-2">
                                         <button @click="editarRegistro('almacen1701', index)" class="text-amber-600 hover:text-amber-800 p-1" title="Modificar"><i class="fa-solid fa-pen-to-square"></i></button>
                                         <button @click="eliminarRegistro('almacen1701', index)" class="text-red-600 hover:text-red-800 p-1" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
@@ -616,7 +616,7 @@
                                 <tr class="border-b hover:bg-gray-50">
                                     <td class="p-3" x-text="item.fecha"></td>
                                     <td class="p-3 font-medium" x-text="item.sustrato"></td>
-                                    <td class="p-3 font-semibold text-purple-600" x-text="item.cantidad"></td>
+                                    <td class="p-3 font-semibold" :class="item.cantidad < 0 ? 'text-red-600' : 'text-purple-600'" x-text="item.cantidad"></td>
                                     <td class="p-3 text-center flex justify-center gap-2">
                                         <button @click="editarRegistro('almacen1702', index)" class="text-amber-600 hover:text-amber-800 p-1" title="Modificar"><i class="fa-solid fa-pen-to-square"></i></button>
                                         <button @click="eliminarRegistro('almacen1702', index)" class="text-red-600 hover:text-red-800 p-1" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
@@ -886,31 +886,49 @@
                     let cantTraspaso = parseFloat(this.formTraspasos.cantidad) || 0;
                     let origen = this.formTraspasos.origen;
                     let sustrato = this.formTraspasos.sustrato;
-
-                    // Calcular stock actual en el almacén de origen para ese sustrato
                     let claveAlmacen = origen === '1701' ? 'almacen1701' : 'almacen1702';
-                    let totalEntradas = this.registros[claveAlmacen]
+
+                    // Calcular stock actual sumando todas las cantidades (positivas y negativas previas) para ese sustrato
+                    let stockDisponible = this.registros[claveAlmacen]
                         .filter(item => item.sustrato === sustrato)
                         .reduce((sum, item) => sum + (parseFloat(item.cantidad) || 0), 0);
 
-                    let totalTraspasadosPrevios = this.registros.traspasos
-                        .filter(item => item.origen === origen && item.sustrato === sustrato && this.editIndex.traspasos === null)
-                        .reduce((sum, item) => sum + (parseFloat(item.cantidad) || 0), 0);
+                    // Si estamos editando un traspaso anterior, devolvemos temporalmente su cantidad para calcular bien el stock
+                    if (this.editIndex.traspasos !== null) {
+                        let traspasoAnterior = this.registros.traspasos[this.editIndex.traspasos];
+                        if (traspasoAnterior.origen === origen && traspasoAnterior.sustrato === sustrato) {
+                            stockDisponible += parseFloat(traspasoAnterior.cantidad) || 0;
+                        }
+                    }
 
-                    let stockDisponible = totalEntradas - totalTraspasadosPrevios;
-
-                    // Validar si hay suficiente stock
-                    if (cantTraspaso > stockDisponible && this.editIndex.traspasos === null) {
-                        alert(`⚠️ Stock insuficiente en Almacén ${origen} para el sustrato "${sustrato}". Stock disponible: ${stockDisponible}`);
+                    // Validación estricta: Si intentas sacar más de lo que hay, se bloquea
+                    if (cantTraspaso > stockDisponible) {
+                        alert(`⚠️ Stock insuficiente en Almacén ${origen} para el sustrato "${sustrato}". Stock disponible actual: ${stockDisponible}`);
                         return;
                     }
 
                     if (this.editIndex.traspasos !== null) {
+                        // Si se edita, revertimos el movimiento viejo en el almacén y aplicamos el nuevo
+                        let viejo = this.registros.traspasos[this.editIndex.traspasos];
+                        let claveVieja = viejo.origen === '1701' ? 'almacen1701' : 'almacen1702';
+                        
+                        // Eliminar el registro negativo antiguo de su almacén origen
+                        this.registros[claveVieja] = this.registros[claveVieja].filter(item => !(item.fecha === viejo.fecha && item.sustrato === viejo.sustrato && item.cantidad == -parseFloat(viejo.cantidad)));
+                        
+                        // Añadir el nuevo movimiento negativo
+                        this.registros[claveAlmacen].push({
+                            fecha: this.formTraspasos.fecha,
+                            sustrato: sustrato,
+                            cantidad: -cantTraspaso
+                        });
+
                         this.registros.traspasos[this.editIndex.traspasos] = { ...this.formTraspasos };
                         this.editIndex.traspasos = null;
-                        this.mostrarAlerta('Traspaso actualizado correctamente.');
+                        this.guardarLocal(claveVieja);
+                        if (claveVieja !== claveAlmacen) this.guardarLocal(claveAlmacen);
+                        this.mostrarAlerta('Traspaso actualizado y stock recalculado.');
                     } else {
-                        // Crear registro negativo en el almacén correspondiente para restar stock automáticamente
+                        // Crear registro negativo automático en el almacén de origen
                         this.registros[claveAlmacen].push({
                             fecha: this.formTraspasos.fecha,
                             sustrato: sustrato,
@@ -919,7 +937,7 @@
 
                         this.registros.traspasos.push({ ...this.formTraspasos });
                         this.guardarLocal(claveAlmacen);
-                        this.mostrarAlerta('Traspaso registrado y stock descontado con éxito.');
+                        this.mostrarAlerta('Traspaso registrado y cantidad restada del almacén con éxito.');
                     }
                     
                     this.guardarLocal('traspasos');
@@ -950,6 +968,7 @@
 
                 eliminarRegistro(seccion, index) {
                     if (confirm('¿Estás seguro de eliminar este registro?')) {
+                        // Si se elimina un traspaso, idealmente podríamos revertir el stock o dejarlo; aquí eliminamos el item de la lista
                         this.registros[seccion].splice(index, 1);
                         this.guardarLocal(seccion);
                         this.mostrarAlerta('Registro eliminado.');
@@ -989,7 +1008,7 @@
                         texto += `${i+1}. Fecha: ${item.fecha} | Sustrato: ${item.sustrato} | Cantidad: ${item.cantidad}\n`;
                     });
 
-                    texto += "\n🏭 *ALmacén 1702:*\n";
+                    texto += "\n🏭 *ALMACÉN 1702:*\n";
                     if (this.registros.almacen1702.length === 0) texto += "Sin registros.\n";
                     this.registros.almacen1702.forEach((item, i) => {
                         texto += `${i+1}. Fecha: ${item.fecha} | Sustrato: ${item.sustrato} | Cantidad: ${item.cantidad}\n`;
