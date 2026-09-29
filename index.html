@@ -883,14 +883,45 @@
                 },
 
                 guardarTraspasos() {
+                    let cantTraspaso = parseFloat(this.formTraspasos.cantidad) || 0;
+                    let origen = this.formTraspasos.origen;
+                    let sustrato = this.formTraspasos.sustrato;
+
+                    // Calcular stock actual en el almacén de origen para ese sustrato
+                    let claveAlmacen = origen === '1701' ? 'almacen1701' : 'almacen1702';
+                    let totalEntradas = this.registros[claveAlmacen]
+                        .filter(item => item.sustrato === sustrato)
+                        .reduce((sum, item) => sum + (parseFloat(item.cantidad) || 0), 0);
+
+                    let totalTraspasadosPrevios = this.registros.traspasos
+                        .filter(item => item.origen === origen && item.sustrato === sustrato && this.editIndex.traspasos === null)
+                        .reduce((sum, item) => sum + (parseFloat(item.cantidad) || 0), 0);
+
+                    let stockDisponible = totalEntradas - totalTraspasadosPrevios;
+
+                    // Validar si hay suficiente stock
+                    if (cantTraspaso > stockDisponible && this.editIndex.traspasos === null) {
+                        alert(`⚠️ Stock insuficiente en Almacén ${origen} para el sustrato "${sustrato}". Stock disponible: ${stockDisponible}`);
+                        return;
+                    }
+
                     if (this.editIndex.traspasos !== null) {
                         this.registros.traspasos[this.editIndex.traspasos] = { ...this.formTraspasos };
                         this.editIndex.traspasos = null;
                         this.mostrarAlerta('Traspaso actualizado correctamente.');
                     } else {
+                        // Crear registro negativo en el almacén correspondiente para restar stock automáticamente
+                        this.registros[claveAlmacen].push({
+                            fecha: this.formTraspasos.fecha,
+                            sustrato: sustrato,
+                            cantidad: -cantTraspaso
+                        });
+
                         this.registros.traspasos.push({ ...this.formTraspasos });
-                        this.mostrarAlerta('Traspaso registrado con éxito.');
+                        this.guardarLocal(claveAlmacen);
+                        this.mostrarAlerta('Traspaso registrado y stock descontado con éxito.');
                     }
+                    
                     this.guardarLocal('traspasos');
                     this.formTraspasos = { fecha: getFechaHoy(), origen: '', sustrato: '', cantidad: '', destino: '', destinoOtro: '', nroOrden: '' };
                 },
@@ -928,7 +959,7 @@
                 enviarWhatsAppDirecto() {
                     let texto = "📊 *INFORME DE FÁBRICA* 📊\n\n";
                     
-                    texto += "⚙️️ *PRODUCCIÓN:*\n";
+                    texto += "⚙️ *PRODUCCIÓN:*\n";
                     if (this.registros.produccion.length === 0) texto += "Sin registros.\n";
                     this.registros.produccion.forEach((item, i) => {
                         texto += `${i+1}. Fecha: ${item.fecha} | Sustrato: ${item.sustrato} | Línea: ${item.linea} | Turno: ${item.turno} | K.O.: ${item.cantKO || 0} | R1: ${item.cantR1 || 0}\n`;
@@ -958,7 +989,7 @@
                         texto += `${i+1}. Fecha: ${item.fecha} | Sustrato: ${item.sustrato} | Cantidad: ${item.cantidad}\n`;
                     });
 
-                    texto += "\n🏭 *ALMACÉN 1702:*\n";
+                    texto += "\n🏭 *ALmacén 1702:*\n";
                     if (this.registros.almacen1702.length === 0) texto += "Sin registros.\n";
                     this.registros.almacen1702.forEach((item, i) => {
                         texto += `${i+1}. Fecha: ${item.fecha} | Sustrato: ${item.sustrato} | Cantidad: ${item.cantidad}\n`;
