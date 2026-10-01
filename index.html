@@ -78,7 +78,6 @@
                 <p class="text-gray-500 text-xs">Selecciona una sección para comenzar</p>
             </div>
 
-            <!-- Cuadrícula compacta sin scroll -->
             <div class="grid grid-cols-2 gap-2.5 sm:gap-3 w-full max-w-md">
                 <button @click="activeTab = 'produccion'" class="bg-white hover:bg-blue-50 border-2 border-slate-200 hover:border-blue-500 rounded-xl p-3 shadow transition flex flex-col items-center text-center group">
                     <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-lg mb-1 group-hover:bg-blue-600 group-hover:text-white transition">
@@ -143,11 +142,12 @@
                     </div>
                     <div>
                         <label class="block text-sm font-semibold mb-1">Sustrato</label>
-                        <select x-model="formProduccion.sustrato" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                        <select x-model="formProduccion.sustrato" @change="verificarNuevoSustrato(formProduccion, 'sustrato')" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
                             <option value="">Seleccione sustrato...</option>
                             <template x-for="sustrato in listaSustratos" :key="sustrato">
                                 <option :value="sustrato" x-text="sustrato"></option>
                             </template>
+                            <option value="__NUEVO__" class="font-bold text-blue-600">+ Crear nuevo producto...</option>
                         </select>
                     </div>
                     <div>
@@ -206,7 +206,7 @@
                         <tbody>
                             <template x-for="(item, index) in registros.produccion" :key="index">
                                 <tr class="border-b hover:bg-gray-50">
-                                    <td class="p-3" x-text="item.fecha"></td>
+                                    <td class="p-3" x-text="formatearFecha(item.fecha)"></td>
                                     <td class="p-3 font-medium" x-text="item.sustrato"></td>
                                     <td class="p-3 font-semibold" x-text="item.linea"></td>
                                     <td class="p-3" x-text="item.turno"></td>
@@ -244,11 +244,12 @@
                     </div>
                     <div>
                         <label class="block text-sm font-semibold mb-1">Sustrato</label>
-                        <select x-model="formDecoracion.sustrato" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                        <select x-model="formDecoracion.sustrato" @change="verificarNuevoSustrato(formDecoracion, 'sustrato')" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
                             <option value="">Seleccione sustrato...</option>
                             <template x-for="sustrato in listaSustratos" :key="sustrato">
                                 <option :value="sustrato" x-text="sustrato"></option>
                             </template>
+                            <option value="__NUEVO__" class="font-bold text-blue-600">+ Crear nuevo producto...</option>
                         </select>
                     </div>
                     <div>
@@ -296,7 +297,7 @@
                         <tbody>
                             <template x-for="(item, index) in registros.decoracion" :key="index">
                                 <tr class="border-b hover:bg-gray-50">
-                                    <td class="p-3" x-text="item.fecha"></td>
+                                    <td class="p-3" x-text="formatearFecha(item.fecha)"></td>
                                     <td class="p-3 font-medium" x-text="item.sustrato"></td>
                                     <td class="p-3 font-semibold" x-text="item.equipo"></td>
                                     <td class="p-3 font-semibold text-blue-600" x-text="item.cantKO || 0"></td>
@@ -333,11 +334,12 @@
                     </div>
                     <div>
                         <label class="block text-sm font-semibold mb-1">Sustrato</label>
-                        <select x-model="formCorte.sustrato" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                        <select x-model="formCorte.sustrato" @change="verificarNuevoSustrato(formCorte, 'sustrato')" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
                             <option value="">Seleccione sustrato...</option>
                             <template x-for="sustrato in listaSustratos" :key="sustrato">
                                 <option :value="sustrato" x-text="sustrato"></option>
                             </template>
+                            <option value="__NUEVO__" class="font-bold text-blue-600">+ Crear nuevo producto...</option>
                         </select>
                     </div>
                     <div>
@@ -351,6 +353,10 @@
                     <div>
                         <label class="block text-sm font-semibold mb-1">Cantidad K.O.</label>
                         <input type="number" x-model="formCorte.cantKO" placeholder="Ej. 800" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Cantidad OK</label>
+                        <input type="number" x-model="formCorte.cantOK" placeholder="Ej. 500" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold mb-1">Cantidad RT1</label>
@@ -377,6 +383,7 @@
                                 <th class="p-3">Sustrato</th>
                                 <th class="p-3">Equipo</th>
                                 <th class="p-3">Cant. K.O.</th>
+                                <th class="p-3">Cant. OK</th>
                                 <th class="p-3">Cant. RT1</th>
                                 <th class="p-3 text-center">Acciones</th>
                             </tr>
@@ -384,10 +391,11 @@
                         <tbody>
                             <template x-for="(item, index) in registros.corte" :key="index">
                                 <tr class="border-b hover:bg-gray-50">
-                                    <td class="p-3" x-text="item.fecha"></td>
+                                    <td class="p-3" x-text="formatearFecha(item.fecha)"></td>
                                     <td class="p-3 font-medium" x-text="item.sustrato"></td>
                                     <td class="p-3 font-semibold" x-text="item.equipo"></td>
                                     <td class="p-3 font-semibold text-blue-600" x-text="item.cantKO || 0"></td>
+                                    <td class="p-3 font-semibold text-emerald-600" x-text="item.cantOK || 0"></td>
                                     <td class="p-3 font-semibold text-indigo-600" x-text="item.cantRT1 || 0"></td>
                                     <td class="p-3 text-center flex justify-center gap-2">
                                         <button @click="editarRegistro('corte', index)" class="text-amber-600 hover:text-amber-800 p-1" title="Modificar"><i class="fa-solid fa-pen-to-square"></i></button>
@@ -396,7 +404,7 @@
                                 </tr>
                             </template>
                             <template x-if="registros.corte.length === 0">
-                                <tr><td colspan="6" class="p-4 text-center text-gray-400">No hay registros guardados todavía.</td></tr>
+                                <tr><td colspan="7" class="p-4 text-center text-gray-400">No hay registros guardados todavía.</td></tr>
                             </template>
                         </tbody>
                     </table>
@@ -425,11 +433,12 @@
                     </div>
                     <div>
                         <label class="block text-sm font-semibold mb-1">Sustrato</label>
-                        <select x-model="formCunas.sustrato" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                        <select x-model="formCunas.sustrato" @change="verificarNuevoSustrato(formCunas, 'sustrato')" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
                             <option value="">Seleccione sustrato...</option>
                             <template x-for="sustrato in listaSustratos" :key="sustrato">
                                 <option :value="sustrato" x-text="sustrato"></option>
                             </template>
+                            <option value="__NUEVO__" class="font-bold text-blue-600">+ Crear nuevo producto...</option>
                         </select>
                     </div>
                     <div>
@@ -468,7 +477,7 @@
                         <tbody>
                             <template x-for="(item, index) in registros.cunas" :key="index">
                                 <tr class="border-b hover:bg-gray-50">
-                                    <td class="p-3" x-text="item.fecha"></td>
+                                    <td class="p-3" x-text="formatearFecha(item.fecha)"></td>
                                     <td class="p-3 font-semibold" x-text="item.nroCuna"></td>
                                     <td class="p-3 font-medium" x-text="item.sustrato"></td>
                                     <td class="p-3 font-semibold text-blue-600" x-text="item.cantKO || 0"></td>
@@ -505,11 +514,12 @@
                     </div>
                     <div>
                         <label class="block text-sm font-semibold mb-1">Nombre de Sustrato</label>
-                        <select x-model="formAlmacen1701.sustrato" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none" required>
+                        <select x-model="formAlmacen1701.sustrato" @change="verificarNuevoSustrato(formAlmacen1701, 'sustrato')" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none" required>
                             <option value="">Seleccione sustrato...</option>
                             <template x-for="sustrato in listaSustratos" :key="sustrato">
                                 <option :value="sustrato" x-text="sustrato"></option>
                             </template>
+                            <option value="__NUEVO__" class="font-bold text-blue-600">+ Crear nuevo producto...</option>
                         </select>
                     </div>
                     <div>
@@ -542,7 +552,7 @@
                         <tbody>
                             <template x-for="(item, index) in registros.almacen1701" :key="index">
                                 <tr class="border-b hover:bg-gray-50">
-                                    <td class="p-3" x-text="item.fecha"></td>
+                                    <td class="p-3" x-text="formatearFecha(item.fecha)"></td>
                                     <td class="p-3 font-medium" x-text="item.sustrato"></td>
                                     <td class="p-3 font-semibold text-purple-600" x-text="item.cantidad"></td>
                                     <td class="p-3 text-center flex justify-center gap-2">
@@ -577,11 +587,12 @@
                     </div>
                     <div>
                         <label class="block text-sm font-semibold mb-1">Nombre de Sustrato</label>
-                        <select x-model="formAlmacen1702.sustrato" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none" required>
+                        <select x-model="formAlmacen1702.sustrato" @change="verificarNuevoSustrato(formAlmacen1702, 'sustrato')" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none" required>
                             <option value="">Seleccione sustrato...</option>
                             <template x-for="sustrato in listaSustratos" :key="sustrato">
                                 <option :value="sustrato" x-text="sustrato"></option>
                             </template>
+                            <option value="__NUEVO__" class="font-bold text-blue-600">+ Crear nuevo producto...</option>
                         </select>
                     </div>
                     <div>
@@ -614,7 +625,7 @@
                         <tbody>
                             <template x-for="(item, index) in registros.almacen1702" :key="index">
                                 <tr class="border-b hover:bg-gray-50">
-                                    <td class="p-3" x-text="item.fecha"></td>
+                                    <td class="p-3" x-text="formatearFecha(item.fecha)"></td>
                                     <td class="p-3 font-medium" x-text="item.sustrato"></td>
                                     <td class="p-3 font-semibold text-purple-600" x-text="item.cantidad"></td>
                                     <td class="p-3 text-center flex justify-center gap-2">
@@ -657,11 +668,12 @@
                     </div>
                     <div>
                         <label class="block text-sm font-semibold mb-1">Sustrato</label>
-                        <select x-model="formTraspasos.sustrato" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-cyan-500 outline-none" required>
+                        <select x-model="formTraspasos.sustrato" @change="verificarNuevoSustrato(formTraspasos, 'sustrato')" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-cyan-500 outline-none" required>
                             <option value="">Seleccione sustrato...</option>
                             <template x-for="sustrato in listaSustratos" :key="sustrato">
                                 <option :value="sustrato" x-text="sustrato"></option>
                             </template>
+                            <option value="__NUEVO__" class="font-bold text-blue-600">+ Crear nuevo producto...</option>
                         </select>
                     </div>
                     <div>
@@ -717,7 +729,7 @@
                         <tbody>
                             <template x-for="(item, index) in registros.traspasos" :key="index">
                                 <tr class="border-b hover:bg-gray-50">
-                                    <td class="p-3" x-text="item.fecha"></td>
+                                    <td class="p-3" x-text="formatearFecha(item.fecha)"></td>
                                     <td class="p-3 font-semibold" x-text="'Almacén ' + item.origen"></td>
                                     <td class="p-3 font-medium" x-text="item.sustrato"></td>
                                     <td class="p-3 font-semibold text-cyan-600" x-text="item.cantidad"></td>
@@ -747,12 +759,21 @@
             return hoy.toISOString().split('T')[0];
         }
 
+        function formatearFecha(fechaStr) {
+            if (!fechaStr) return '';
+            let partes = fechaStr.split('-');
+            if (partes.length === 3) {
+                return `${partes[2]}/${partes[1]}/${partes[0]}`;
+            }
+            return fechaStr;
+        }
+
         function fabricaApp() {
             return {
                 activeTab: 'inicio',
                 mensajeAlerta: '',
 
-                listaSustratos: [
+                listaSustratos: JSON.parse(localStorage.getItem('fabrica_lista_sustratos')) || [
                     'Alveo',
                     'Anticato',
                     'Apomazado',
@@ -768,7 +789,7 @@
                 
                 formProduccion: { fecha: getFechaHoy(), sustrato: '', linea: '', turno: '', cantKO: '', cantR1: '' },
                 formDecoracion: { fecha: getFechaHoy(), sustrato: '', equipo: '', cantKO: '', cantRP1: '' },
-                formCorte: { fecha: getFechaHoy(), sustrato: '', equipo: '', cantKO: '', cantRT1: '' },
+                formCorte: { fecha: getFechaHoy(), sustrato: '', equipo: '', cantKO: '', cantOK: '', cantRT1: '' },
                 formCunas: { fecha: getFechaHoy(), nroCuna: '', sustrato: '', cantKO: '', cantR1: '' },
                 formAlmacen1701: { fecha: getFechaHoy(), sustrato: '', cantidad: '' },
                 formAlmacen1702: { fecha: getFechaHoy(), sustrato: '', cantidad: '' },
@@ -793,6 +814,22 @@
 
                 guardarLocal(seccion) {
                     localStorage.setItem('fabrica_' + seccion, JSON.stringify(this.registros[seccion]));
+                },
+
+                verificarNuevoSustrato(formObjeto, campo) {
+                    if (formObjeto[campo] === '__NUEVO__') {
+                        let nuevo = prompt('Introduce el nombre del nuevo producto o sustrato:');
+                        if (nuevo && nuevo.trim() !== '') {
+                            let nombreLimpio = nuevo.trim();
+                            if (!this.listaSustratos.includes(nombreLimpio)) {
+                                this.listaSustratos.push(nombreLimpio);
+                                localStorage.setItem('fabrica_lista_sustratos', JSON.stringify(this.listaSustratos));
+                            }
+                            formObjeto[campo] = nombreLimpio;
+                        } else {
+                            formObjeto[campo] = '';
+                        }
+                    }
                 },
 
                 vaciarSeccion(seccion) {
@@ -840,7 +877,7 @@
                         this.mostrarAlerta('Registro de Corte guardado con éxito.');
                     }
                     this.guardarLocal('corte');
-                    this.formCorte = { fecha: getFechaHoy(), sustrato: '', equipo: '', cantKO: '', cantRT1: '' };
+                    this.formCorte = { fecha: getFechaHoy(), sustrato: '', equipo: '', cantKO: '', cantOK: '', cantRT1: '' };
                 },
 
                 guardarCunas() {
@@ -862,8 +899,17 @@
                         this.editIndex.almacen1701 = null;
                         this.mostrarAlerta('Registro de Almacén 1701 actualizado correctamente.');
                     } else {
-                        this.registros.almacen1701.push({ ...this.formAlmacen1701 });
-                        this.mostrarAlerta('Registro de Almacén 1701 guardado con éxito.');
+                        let indexExistente = this.registros.almacen1701.findIndex(item => item.sustrato === this.formAlmacen1701.sustrato);
+                        if (indexExistente !== -1) {
+                            let cantActual = parseFloat(this.registros.almacen1701[indexExistente].cantidad) || 0;
+                            let cantNueva = parseFloat(this.formAlmacen1701.cantidad) || 0;
+                            this.registros.almacen1701[indexExistente].cantidad = cantActual + cantNueva;
+                            this.registros.almacen1701[indexExistente].fecha = this.formAlmacen1701.fecha;
+                            this.mostrarAlerta('Stock acumulado en Almacén 1701 correctamente.');
+                        } else {
+                            this.registros.almacen1701.push({ ...this.formAlmacen1701 });
+                            this.mostrarAlerta('Registro de Almacén 1701 guardado con éxito.');
+                        }
                     }
                     this.guardarLocal('almacen1701');
                     this.formAlmacen1701 = { fecha: getFechaHoy(), sustrato: '', cantidad: '' };
@@ -875,8 +921,17 @@
                         this.editIndex.almacen1702 = null;
                         this.mostrarAlerta('Registro de Almacén 1702 actualizado correctamente.');
                     } else {
-                        this.registros.almacen1702.push({ ...this.formAlmacen1702 });
-                        this.mostrarAlerta('Registro de Almacén 1702 guardado con éxito.');
+                        let indexExistente = this.registros.almacen1702.findIndex(item => item.sustrato === this.formAlmacen1702.sustrato);
+                        if (indexExistente !== -1) {
+                            let cantActual = parseFloat(this.registros.almacen1702[indexExistente].cantidad) || 0;
+                            let cantNueva = parseFloat(this.formAlmacen1702.cantidad) || 0;
+                            this.registros.almacen1702[indexExistente].cantidad = cantActual + cantNueva;
+                            this.registros.almacen1702[indexExistente].fecha = this.formAlmacen1702.fecha;
+                            this.mostrarAlerta('Stock acumulado en Almacén 1702 correctamente.');
+                        } else {
+                            this.registros.almacen1702.push({ ...this.formAlmacen1702 });
+                            this.mostrarAlerta('Registro de Almacén 1702 guardado con éxito.');
+                        }
                     }
                     this.guardarLocal('almacen1702');
                     this.formAlmacen1702 = { fecha: getFechaHoy(), sustrato: '', cantidad: '' };
@@ -888,13 +943,9 @@
                     let sustrato = this.formTraspasos.sustrato;
                     let claveAlmacen = origen === '1701' ? 'almacen1701' : 'almacen1702';
 
-                    // Buscar el índice del registro de ese sustrato en el almacén de origen
                     let indexAlmacen = this.registros[claveAlmacen].findIndex(item => item.sustrato === sustrato);
-
-                    // Si no existe el sustrato en ese almacén o su cantidad es 0
                     let stockActual = indexAlmacen !== -1 ? (parseFloat(this.registros[claveAlmacen][indexAlmacen].cantidad) || 0) : 0;
 
-                    // Si estamos editando un traspaso existente, devolvemos temporalmente su cantidad anterior al cálculo
                     if (this.editIndex.traspasos !== null) {
                         let traspasoAnterior = this.registros.traspasos[this.editIndex.traspasos];
                         if (traspasoAnterior.origen === origen && traspasoAnterior.sustrato === sustrato) {
@@ -902,14 +953,12 @@
                         }
                     }
 
-                    // Validación: comprobar si hay suficiente stock
                     if (cantTraspaso > stockActual) {
                         alert(`⚠️ Stock insuficiente en Almacén ${origen} para el sustrato "${sustrato}". Stock disponible actual: ${stockActual}`);
                         return;
                     }
 
                     if (this.editIndex.traspasos !== null) {
-                        // Revertir el traspaso antiguo en su almacén original y aplicar el nuevo cambio directo
                         let viejo = this.registros.traspasos[this.editIndex.traspasos];
                         let claveVieja = viejo.origen === '1701' ? 'almacen1701' : 'almacen1702';
                         let indexViejo = this.registros[claveVieja].findIndex(item => item.sustrato === viejo.sustrato);
@@ -918,7 +967,6 @@
                             this.registros[claveVieja][indexViejo].cantidad = (parseFloat(this.registros[claveVieja][indexViejo].cantidad) || 0) + parseFloat(viejo.cantidad);
                         }
 
-                        // Aplicar la nueva resta en el almacén actual
                         let indexNuevo = this.registros[claveAlmacen].findIndex(item => item.sustrato === sustrato);
                         if (indexNuevo !== -1) {
                             this.registros[claveAlmacen][indexNuevo].cantidad = (parseFloat(this.registros[claveAlmacen][indexNuevo].cantidad) || 0) - cantTraspaso;
@@ -928,15 +976,13 @@
                         this.editIndex.traspasos = null;
                         this.guardarLocal(claveVieja);
                         if (claveVieja !== claveAlmacen) this.guardarLocal(claveAlmacen);
-                        this.mostrarAlerta('Traspaso actualizado y stock recalculado directamente.');
+                        this.mostrarAlerta('Traspaso actualizado y stock recalculado.');
                     } else {
-                        // Restar directamente la cantidad en la fila existente del almacén
                         this.registros[claveAlmacen][indexAlmacen].cantidad = stockActual - cantTraspaso;
 
-                        // Guardar el nuevo traspaso
                         this.registros.traspasos.push({ ...this.formTraspasos });
                         this.guardarLocal(claveAlmacen);
-                        this.mostrarAlerta('Traspaso registrado y cantidad restada directamente en el almacén.');
+                        this.mostrarAlerta('Traspaso registrado y cantidad restada directamente.');
                     }
                     
                     this.guardarLocal('traspasos');
@@ -958,7 +1004,7 @@
                     this.editIndex[seccion] = null;
                     if (seccion === 'produccion') this.formProduccion = { fecha: getFechaHoy(), sustrato: '', linea: '', turno: '', cantKO: '', cantR1: '' };
                     if (seccion === 'decoracion') this.formDecoracion = { fecha: getFechaHoy(), sustrato: '', equipo: '', cantKO: '', cantRP1: '' };
-                    if (seccion === 'corte') this.formCorte = { fecha: getFechaHoy(), sustrato: '', equipo: '', cantKO: '', cantRT1: '' };
+                    if (seccion === 'corte') this.formCorte = { fecha: getFechaHoy(), sustrato: '', equipo: '', cantKO: '', cantOK: '', cantRT1: '' };
                     if (seccion === 'cunas') this.formCunas = { fecha: getFechaHoy(), nroCuna: '', sustrato: '', cantKO: '', cantR1: '' };
                     if (seccion === 'almacen1701') this.formAlmacen1701 = { fecha: getFechaHoy(), sustrato: '', cantidad: '' };
                     if (seccion === 'almacen1702') this.formAlmacen1702 = { fecha: getFechaHoy(), sustrato: '', cantidad: '' };
@@ -979,44 +1025,44 @@
                     texto += "⚙️ *PRODUCCIÓN:*\n";
                     if (this.registros.produccion.length === 0) texto += "Sin registros.\n";
                     this.registros.produccion.forEach((item, i) => {
-                        texto += `${i+1}. Fecha: ${item.fecha} | Sustrato: ${item.sustrato} | Línea: ${item.linea} | Turno: ${item.turno} | K.O.: ${item.cantKO || 0} | R1: ${item.cantR1 || 0}\n`;
+                        texto += `${i+1}. Fecha: ${formatearFecha(item.fecha)} | Sustrato: ${item.sustrato} | Línea: ${item.linea} | Turno: ${item.turno} | K.O.: ${item.cantKO || 0} | R1: ${item.cantR1 || 0}\n`;
                     });
 
                     texto += "\n🎨 *DECORACIÓN:*\n";
                     if (this.registros.decoracion.length === 0) texto += "Sin registros.\n";
                     this.registros.decoracion.forEach((item, i) => {
-                        texto += `${i+1}. Fecha: ${item.fecha} | Sustrato: ${item.sustrato} | Equipo: ${item.equipo} | K.O.: ${item.cantKO || 0} | RP1: ${item.cantRP1 || 0}\n`;
+                        texto += `${i+1}. Fecha: ${formatearFecha(item.fecha)} | Sustrato: ${item.sustrato} | Equipo: ${item.equipo} | K.O.: ${item.cantKO || 0} | RP1: ${item.cantRP1 || 0}\n`;
                     });
 
                     texto += "\n✂️ *CORTE:*\n";
                     if (this.registros.corte.length === 0) texto += "Sin registros.\n";
                     this.registros.corte.forEach((item, i) => {
-                        texto += `${i+1}. Fecha: ${item.fecha} | Sustrato: ${item.sustrato} | Equipo: ${item.equipo} | K.O.: ${item.cantKO || 0} | RT1: ${item.cantRT1 || 0}\n`;
+                        texto += `${i+1}. Fecha: ${formatearFecha(item.fecha)} | Sustrato: ${item.sustrato} | Equipo: ${item.equipo} | K.O.: ${item.cantKO || 0} | OK: ${item.cantOK || 0} | RT1: ${item.cantRT1 || 0}\n`;
                     });
 
                     texto += "\n📦 *CUNAS:*\n";
                     if (this.registros.cunas.length === 0) texto += "Sin registros.\n";
                     this.registros.cunas.forEach((item, i) => {
-                        texto += `${i+1}. Fecha: ${item.fecha} | Cuna: ${item.nroCuna} | Sustrato: ${item.sustrato} | K.O.: ${item.cantKO || 0} | R1: ${item.cantR1 || 0}\n`;
+                        texto += `${i+1}. Fecha: ${formatearFecha(item.fecha)} | Cuna: ${item.nroCuna} | Sustrato: ${item.sustrato} | K.O.: ${item.cantKO || 0} | R1: ${item.cantR1 || 0}\n`;
                     });
 
                     texto += "\n🏭 *ALMACÉN 1701:*\n";
                     if (this.registros.almacen1701.length === 0) texto += "Sin registros.\n";
                     this.registros.almacen1701.forEach((item, i) => {
-                        texto += `${i+1}. Fecha: ${item.fecha} | Sustrato: ${item.sustrato} | Cantidad: ${item.cantidad}\n`;
+                        texto += `${i+1}. Fecha: ${formatearFecha(item.fecha)} | Sustrato: ${item.sustrato} | Cantidad: ${item.cantidad}\n`;
                     });
 
                     texto += "\n🏭 *ALMACÉN 1702:*\n";
                     if (this.registros.almacen1702.length === 0) texto += "Sin registros.\n";
                     this.registros.almacen1702.forEach((item, i) => {
-                        texto += `${i+1}. Fecha: ${item.fecha} | Sustrato: ${item.sustrato} | Cantidad: ${item.cantidad}\n`;
+                        texto += `${i+1}. Fecha: ${formatearFecha(item.fecha)} | Sustrato: ${item.sustrato} | Cantidad: ${item.cantidad}\n`;
                     });
 
                     texto += "\n🔄 *TRASPASOS:*\n";
                     if (this.registros.traspasos.length === 0) texto += "Sin registros.\n";
                     this.registros.traspasos.forEach((item, i) => {
                         let dest = item.destino === 'Otros' ? 'Otros (' + item.destinoOtro + ')' : item.destino;
-                        texto += `${i+1}. Fecha: ${item.fecha} | Origen: ${item.origen} | Sustrato: ${item.sustrato} | Cant: ${item.cantidad} | Destino: ${dest} | Orden: ${item.nroOrden}\n`;
+                        texto += `${i+1}. Fecha: ${formatearFecha(item.fecha)} | Origen: ${item.origen} | Sustrato: ${item.sustrato} | Cant: ${item.cantidad} | Destino: ${dest} | Orden: ${item.nroOrden}\n`;
                     });
 
                     let url = `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
