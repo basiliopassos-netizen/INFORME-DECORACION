@@ -189,7 +189,12 @@
             </div>
 
             <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
-                <h3 class="text-md font-bold text-slate-800 mb-4">Registros Guardados - Producción</h3>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-md font-bold text-slate-800">Registros Guardados - Producción</h3>
+                    <button @click="exportarExcel('produccion')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-excel"></i> Descargar Excel
+                    </button>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
@@ -281,7 +286,12 @@
             </div>
 
             <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
-                <h3 class="text-md font-bold text-slate-800 mb-4">Registros Guardados - Decoración</h3>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-md font-bold text-slate-800">Registros Guardados - Decoración</h3>
+                    <button @click="exportarExcel('decoracion')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-excel"></i> Descargar Excel
+                    </button>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
@@ -374,7 +384,12 @@
             </div>
 
             <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
-                <h3 class="text-md font-bold text-slate-800 mb-4">Registros Guardados - Corte</h3>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-md font-bold text-slate-800">Registros Guardados - Corte</h3>
+                    <button @click="exportarExcel('corte')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-excel"></i> Descargar Excel
+                    </button>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
@@ -461,7 +476,12 @@
             </div>
 
             <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
-                <h3 class="text-md font-bold text-slate-800 mb-4">Registros Guardados - Cunas</h3>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-md font-bold text-slate-800">Registros Guardados - Cunas</h3>
+                    <button @click="exportarExcel('cunas')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-excel"></i> Descargar Excel
+                    </button>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
@@ -538,7 +558,12 @@
             </div>
 
             <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
-                <h3 class="text-md font-bold text-slate-800 mb-4">Registros Guardados - Almacén 1701</h3>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-md font-bold text-slate-800">Registros Guardados - Almacén 1701</h3>
+                    <button @click="exportarExcel('almacen1701')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-excel"></i> Descargar Excel
+                    </button>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
@@ -611,7 +636,12 @@
             </div>
 
             <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
-                <h3 class="text-md font-bold text-slate-800 mb-4">Registros Guardados - Almacén 1702</h3>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-md font-bold text-slate-800">Registros Guardados - Almacén 1702</h3>
+                    <button @click="exportarExcel('almacen1702')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-excel"></i> Descargar Excel
+                    </button>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
@@ -712,7 +742,12 @@
             </div>
 
             <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
-                <h3 class="text-md font-bold text-slate-800 mb-4">Registros Guardados - Traspasos</h3>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-md font-bold text-slate-800">Registros Guardados - Traspasos</h3>
+                    <button @click="exportarExcel('traspasos')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-excel"></i> Descargar Excel
+                    </button>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
@@ -839,6 +874,60 @@
                         this.cancelarEdicion(seccion);
                         this.mostrarAlerta('Se ha vaciado la sección correctamente.');
                     }
+                },
+
+                exportarExcel(seccion) {
+                    let datos = this.registros[seccion];
+                    if (!datos || datos.length === 0) {
+                        alert('No hay registros en esta sección para exportar.');
+                        return;
+                    }
+
+                    let csvContent = "\uFEFF"; // BOM para correcta lectura de tildes en Excel
+                    let headers = [];
+                    let rows = [];
+
+                    if (seccion === 'produccion') {
+                        headers = ['Fecha', 'Sustrato', 'Linea', 'Turno', 'Cant. K.O.', 'Cant. R1'];
+                        rows = datos.map(i => [formatearFecha(i.fecha), i.sustrato, i.linea, i.turno, i.cantKO || 0, i.cantR1 || 0]);
+                    } else if (seccion === 'decoracion') {
+                        headers = ['Fecha', 'Sustrato', 'Equipo', 'Cant. K.O.', 'Cant. RP1'];
+                        rows = datos.map(i => [formatearFecha(i.fecha), i.sustrato, i.equipo, i.cantKO || 0, i.cantRP1 || 0]);
+                    } else if (seccion === 'corte') {
+                        headers = ['Fecha', 'Sustrato', 'Equipo', 'Cant. K.O.', 'Cant. OK', 'Cant. RT1'];
+                        rows = datos.map(i => [formatearFecha(i.fecha), i.sustrato, i.equipo, i.cantKO || 0, i.cantOK || 0, i.cantRT1 || 0]);
+                    } else if (seccion === 'cunas') {
+                        headers = ['Fecha', 'N. Cuna', 'Sustrato', 'Cant. K.O.', 'Cant. R1'];
+                        rows = datos.map(i => [formatearFecha(i.fecha), i.nroCuna, i.sustrato, i.cantKO || 0, i.cantR1 || 0]);
+                    } else if (seccion === 'almacen1701' || seccion === 'almacen1702') {
+                        headers = ['Fecha', 'Nombre de Sustrato', 'Cantidad'];
+                        rows = datos.map(i => [formatearFecha(i.fecha), i.sustrato, i.cantidad]);
+                    } else if (seccion === 'traspasos') {
+                        headers = ['Fecha', 'Origen', 'Sustrato', 'Cantidad', 'Destino', 'N. Orden'];
+                        rows = datos.map(i => [
+                            formatearFecha(i.fecha),
+                            'Almacén ' + i.origen,
+                            i.sustrato,
+                            i.cantidad,
+                            i.destino === 'Otros' ? 'Otros: ' + i.destinoOtro : i.destino,
+                            i.nroOrden
+                        ]);
+                    }
+
+                    csvContent += headers.join(';') + '\n';
+                    rows.forEach(row => {
+                        csvContent += row.map(val => `"${val}"`).join(';') + '\n';
+                    });
+
+                    let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    let url = URL.createObjectURL(blob);
+                    let link = document.createElement('a');
+                    link.setAttribute('href', url);
+                    link.setAttribute('download', `Registro_${seccion}.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    this.mostrarAlerta(`Archivo Excel de ${seccion} descargado con éxito.`);
                 },
 
                 guardarProduccion() {
