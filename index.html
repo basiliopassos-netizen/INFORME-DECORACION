@@ -480,3 +480,774 @@
                         </template>
                     </div>
                 </form>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-md font-bold text-slate-800">Registros Guardados - Cunas</h3>
+                    <button @click="exportarExcel('cunas')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-excel"></i> Descargar Excel
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-gray-100 border-b">
+                                <th class="p-3">Fecha</th>
+                                <th class="p-3">N° de Cuna</th>
+                                <th class="p-3">Sustrato</th>
+                                <th class="p-3">Cant. K.O.</th>
+                                <th class="p-3">Cant. R1</th>
+                                <th class="p-3 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="(item, index) in registros.cunas" :key="index">
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="p-3" x-text="formatearFecha(item.fecha)"></td>
+                                    <td class="p-3 font-semibold" x-text="item.nroCuna"></td>
+                                    <td class="p-3 font-medium" x-text="item.sustrato"></td>
+                                    <td class="p-3 font-semibold text-blue-600" x-text="item.cantKO || 0"></td>
+                                    <td class="p-3 font-semibold text-indigo-600" x-text="item.cantR1 || 0"></td>
+                                    <td class="p-3 text-center flex justify-center gap-2">
+                                        <button @click="editarRegistro('cunas', index)" class="text-amber-600 hover:text-amber-800 p-1" title="Modificar"><i class="fa-solid fa-pen-to-square"></i></button>
+                                        <button @click="eliminarRegistro('cunas', index)" class="text-red-600 hover:text-red-800 p-1" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </template>
+                            <template x-if="registros.cunas.length === 0">
+                                <tr><td colspan="6" class="p-4 text-center text-gray-400">No hay registros guardados todavía.</td></tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PESTAÑA: ALMACÉN 1701 ================= -->
+        <div x-show="activeTab === 'almacen1701'" class="space-y-6" style="display: none;">
+            <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <i class="fa-solid fa-circle-plus text-purple-600"></i>
+                        <span x-text="editIndex.almacen1701 !== null ? 'Modificar Registro - Almacén 1701' : 'Nuevo Registro - Almacén 1701'"></span>
+                    </span>
+                    <button type="button" @click="vaciarSeccion('almacen1701')" class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded-lg transition shadow">Borrar pestaña</button>
+                </h2>
+                <form @submit.prevent="guardarAlmacen1701" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Fecha</label>
+                        <input type="date" x-model="formAlmacen1701.fecha" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Nombre de Sustrato</label>
+                        <select x-model="formAlmacen1701.sustrato" @change="verificarNuevoSustrato(formAlmacen1701, 'sustrato')" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none" required>
+                            <option value="">Seleccione sustrato...</option>
+                            <template x-for="sustrato in listaSustratos" :key="sustrato">
+                                <option :value="sustrato" x-text="sustrato"></option>
+                            </template>
+                            <option value="__NUEVO__" class="font-bold text-blue-600">+ Crear nuevo producto...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Cantidad</label>
+                        <input type="number" x-model="formAlmacen1701.cantidad" placeholder="Ej. 1000" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none" required>
+                    </div>
+                    <div class="md:col-span-2 lg:col-span-3 flex gap-2 pt-2">
+                        <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-2 rounded-lg shadow transition">
+                            <i class="fa-solid fa-floppy-disk mr-1"></i> <span x-text="editIndex.almacen1701 !== null ? 'Actualizar Registro' : 'Guardar Registro'"></span>
+                        </button>
+                        <template x-if="editIndex.almacen1701 !== null">
+                            <button type="button" @click="cancelarEdicion('almacen1701')" class="bg-gray-400 hover:bg-gray-500 text-white font-semibold px-4 py-2 rounded-lg transition">Cancelar</button>
+                        </template>
+                    </div>
+                </form>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-md font-bold text-slate-800">Registros Guardados - Almacén 1701</h3>
+                    <button @click="exportarExcel('almacen1701')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-excel"></i> Descargar Excel
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-gray-100 border-b">
+                                <th class="p-3">Fecha</th>
+                                <th class="p-3">Nombre de Sustrato</th>
+                                <th class="p-3">Cantidad</th>
+                                <th class="p-3 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="(item, index) in registros.almacen1701" :key="index">
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="p-3" x-text="formatearFecha(item.fecha)"></td>
+                                    <td class="p-3 font-medium" x-text="item.sustrato"></td>
+                                    <td class="p-3 font-semibold text-purple-600" x-text="item.cantidad"></td>
+                                    <td class="p-3 text-center flex justify-center gap-2">
+                                        <button @click="editarRegistro('almacen1701', index)" class="text-amber-600 hover:text-amber-800 p-1" title="Modificar"><i class="fa-solid fa-pen-to-square"></i></button>
+                                        <button @click="eliminarRegistro('almacen1701', index)" class="text-red-600 hover:text-red-800 p-1" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </template>
+                            <template x-if="registros.almacen1701.length === 0">
+                                <tr><td colspan="4" class="p-4 text-center text-gray-400">No hay registros guardados todavía.</td></tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PESTAÑA: ALMACÉN 1702 ================= -->
+        <div x-show="activeTab === 'almacen1702'" class="space-y-6" style="display: none;">
+            <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <i class="fa-solid fa-circle-plus text-purple-600"></i>
+                        <span x-text="editIndex.almacen1702 !== null ? 'Modificar Registro - Almacén 1702' : 'Nuevo Registro - Almacén 1702'"></span>
+                    </span>
+                    <button type="button" @click="vaciarSeccion('almacen1702')" class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded-lg transition shadow">Borrar pestaña</button>
+                </h2>
+                <form @submit.prevent="guardarAlmacen1702" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Fecha</label>
+                        <input type="date" x-model="formAlmacen1702.fecha" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Nombre de Sustrato</label>
+                        <select x-model="formAlmacen1702.sustrato" @change="verificarNuevoSustrato(formAlmacen1702, 'sustrato')" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none" required>
+                            <option value="">Seleccione sustrato...</option>
+                            <template x-for="sustrato in listaSustratos" :key="sustrato">
+                                <option :value="sustrato" x-text="sustrato"></option>
+                            </template>
+                            <option value="__NUEVO__" class="font-bold text-blue-600">+ Crear nuevo producto...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Cantidad</label>
+                        <input type="number" x-model="formAlmacen1702.cantidad" placeholder="Ej. 1000" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none" required>
+                    </div>
+                    <div class="md:col-span-2 lg:col-span-3 flex gap-2 pt-2">
+                        <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-2 rounded-lg shadow transition">
+                            <i class="fa-solid fa-floppy-disk mr-1"></i> <span x-text="editIndex.almacen1702 !== null ? 'Actualizar Registro' : 'Guardar Registro'"></span>
+                        </button>
+                        <template x-if="editIndex.almacen1702 !== null">
+                            <button type="button" @click="cancelarEdicion('almacen1702')" class="bg-gray-400 hover:bg-gray-500 text-white font-semibold px-4 py-2 rounded-lg transition">Cancelar</button>
+                        </template>
+                    </div>
+                </form>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-md font-bold text-slate-800">Registros Guardados - Almacén 1702</h3>
+                    <button @click="exportarExcel('almacen1702')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-excel"></i> Descargar Excel
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-gray-100 border-b">
+                                <th class="p-3">Fecha</th>
+                                <th class="p-3">Nombre de Sustrato</th>
+                                <th class="p-3">Cantidad</th>
+                                <th class="p-3 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="(item, index) in registros.almacen1702" :key="index">
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="p-3" x-text="formatearFecha(item.fecha)"></td>
+                                    <td class="p-3 font-medium" x-text="item.sustrato"></td>
+                                    <td class="p-3 font-semibold text-purple-600" x-text="item.cantidad"></td>
+                                    <td class="p-3 text-center flex justify-center gap-2">
+                                        <button @click="editarRegistro('almacen1702', index)" class="text-amber-600 hover:text-amber-800 p-1" title="Modificar"><i class="fa-solid fa-pen-to-square"></i></button>
+                                        <button @click="eliminarRegistro('almacen1702', index)" class="text-red-600 hover:text-red-800 p-1" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </template>
+                            <template x-if="registros.almacen1702.length === 0">
+                                <tr><td colspan="4" class="p-4 text-center text-gray-400">No hay registros guardados todavía.</td></tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PESTAÑA: TRASPASOS ================= -->
+        <div x-show="activeTab === 'traspasos'" class="space-y-6" style="display: none;">
+            <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <i class="fa-solid fa-circle-plus text-cyan-600"></i>
+                        <span x-text="editIndex.traspasos !== null ? 'Modificar Registro de Traspaso' : 'Nuevo Traspaso'"></span>
+                    </span>
+                    <button type="button" @click="vaciarSeccion('traspasos')" class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded-lg transition shadow">Borrar pestaña</button>
+                </h2>
+                <form @submit.prevent="guardarTraspasos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Fecha</label>
+                        <input type="date" x-model="formTraspasos.fecha" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-cyan-500 outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Almacén Origen</label>
+                        <select x-model="formTraspasos.origen" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-cyan-500 outline-none" required>
+                            <option value="">Seleccione origen...</option>
+                            <option value="1701">1701</option>
+                            <option value="1702">1702</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Sustrato</label>
+                        <select x-model="formTraspasos.sustrato" @change="verificarNuevoSustrato(formTraspasos, 'sustrato')" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-cyan-500 outline-none" required>
+                            <option value="">Seleccione sustrato...</option>
+                            <template x-for="sustrato in listaSustratos" :key="sustrato">
+                                <option :value="sustrato" x-text="sustrato"></option>
+                            </template>
+                            <option value="__NUEVO__" class="font-bold text-blue-600">+ Crear nuevo producto...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Cantidad</label>
+                        <input type="number" x-model="formTraspasos.cantidad" placeholder="Ej. 300" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-cyan-500 outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Destino</label>
+                        <select x-model="formTraspasos.destino" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-cyan-500 outline-none" required>
+                            <option value="">Seleccione destino...</option>
+                            <option value="Decoración">Decoración</option>
+                            <option value="Corte">Corte</option>
+                            <option value="Rotura">Rotura</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                    </div>
+                    <template x-if="formTraspasos.destino === 'Otros'">
+                        <div>
+                            <label class="block text-sm font-semibold mb-1">Especifique Destino (Otros)</label>
+                            <input type="text" x-model="formTraspasos.destinoOtro" placeholder="Detalle el destino..." class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-cyan-500 outline-none" required>
+                        </div>
+                    </template>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">N° de Orden</label>
+                        <input type="text" x-model="formTraspasos.nroOrden" placeholder="Ej. ORD-9988" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-cyan-500 outline-none" required>
+                    </div>
+                    <div class="md:col-span-2 lg:col-span-3 flex gap-2 pt-2">
+                        <button type="submit" class="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold px-6 py-2 rounded-lg shadow transition">
+                            <i class="fa-solid fa-floppy-disk mr-1"></i> <span x-text="editIndex.traspasos !== null ? 'Actualizar Traspaso' : 'Guardar Traspaso'"></span>
+                        </button>
+                        <template x-if="editIndex.traspasos !== null">
+                            <button type="button" @click="cancelarEdicion('traspasos')" class="bg-gray-400 hover:bg-gray-500 text-white font-semibold px-4 py-2 rounded-lg transition">Cancelar</button>
+                        </template>
+                    </div>
+                </form>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-md font-bold text-slate-800">Registros Guardados - Traspasos</h3>
+                    <button @click="exportarExcel('traspasos')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-excel"></i> Descargar Excel
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-gray-100 border-b">
+                                <th class="p-3">Fecha</th>
+                                <th class="p-3">Origen</th>
+                                <th class="p-3">Sustrato</th>
+                                <th class="p-3">Cantidad</th>
+                                <th class="p-3">Destino</th>
+                                <th class="p-3">N° Orden</th>
+                                <th class="p-3 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="(item, index) in registros.traspasos" :key="index">
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="p-3" x-text="formatearFecha(item.fecha)"></td>
+                                    <td class="p-3 font-semibold" x-text="'Almacén ' + item.origen"></td>
+                                    <td class="p-3 font-medium" x-text="item.sustrato"></td>
+                                    <td class="p-3 font-semibold text-cyan-600" x-text="item.cantidad"></td>
+                                    <td class="p-3" x-text="item.destino === 'Otros' ? 'Otros: ' + item.destinoOtro : item.destino"></td>
+                                    <td class="p-3 font-semibold" x-text="item.nroOrden"></td>
+                                    <td class="p-3 text-center flex justify-center gap-2">
+                                        <button @click="editarRegistro('traspasos', index)" class="text-amber-600 hover:text-amber-800 p-1" title="Modificar"><i class="fa-solid fa-pen-to-square"></i></button>
+                                        <button @click="eliminarRegistro('traspasos', index)" class="text-red-600 hover:text-red-800 p-1" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </template>
+                            <template x-if="registros.traspasos.length === 0">
+                                <tr><td colspan="7" class="p-4 text-center text-gray-400">No hay registros de traspasos todavía.</td></tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Script de Lógica con Alpine.js y localStorage -->
+    <script>
+        function getFechaHoy() {
+            const hoy = new Date();
+            return hoy.toISOString().split('T')[0];
+        }
+
+        function formatearFecha(fechaStr) {
+            if (!fechaStr) return '';
+            let partes = fechaStr.split('-');
+            if (partes.length === 3) {
+                return `${partes[2]}/${partes[1]}/${partes[0]}`;
+            }
+            return fechaStr;
+        }
+
+        function fabricaApp() {
+            return {
+                activeTab: 'inicio',
+                mensajeAlerta: '',
+
+                listaSustratos: JSON.parse(localStorage.getItem('fabrica_lista_sustratos')) || [
+                    'Alveo',
+                    'Anticato',
+                    'Apomazado',
+                    'Arenisca',
+                    'Bamboo',
+                    'Lineal',
+                    'Pausa',
+                    'Piano',
+                    'Prisma',
+                    'Roca',
+                    'Rústico'
+                ],
+                
+                formProduccion: { fecha: getFechaHoy(), sustrato: '', linea: '', turno: '', cantKO: '', cantR1: '' },
+                formDecoracion: { fecha: getFechaHoy(), sustrato: '', equipo: '', cantKO: '', cantRP1: '' },
+                formCorte: { fecha: getFechaHoy(), sustrato: '', equipo: '', cantKO: '', cantOK: '', cantRT1: '' },
+                formCunas: { fecha: getFechaHoy(), nroCuna: '', sustrato: '', cantKO: '', cantR1: '' },
+                formAlmacen1701: { fecha: getFechaHoy(), sustrato: '', cantidad: '' },
+                formAlmacen1702: { fecha: getFechaHoy(), sustrato: '', cantidad: '' },
+                formTraspasos: { fecha: getFechaHoy(), origen: '', sustrato: '', cantidad: '', destino: '', destinoOtro: '', nroOrden: '' },
+
+                editIndex: { produccion: null, decoracion: null, corte: null, cunas: null, almacen1701: null, almacen1702: null, traspasos: null },
+
+                registros: {
+                    produccion: JSON.parse(localStorage.getItem('fabrica_produccion')) || [],
+                    decoracion: JSON.parse(localStorage.getItem('fabrica_decoracion')) || [],
+                    corte: JSON.parse(localStorage.getItem('fabrica_corte')) || [],
+                    cunas: JSON.parse(localStorage.getItem('fabrica_cunas')) || [],
+                    almacen1701: JSON.parse(localStorage.getItem('fabrica_almacen1701')) || [],
+                    almacen1702: JSON.parse(localStorage.getItem('fabrica_almacen1702')) || [],
+                    traspasos: JSON.parse(localStorage.getItem('fabrica_traspasos')) || []
+                },
+
+                mostrarAlerta(texto) {
+                    this.mensajeAlerta = texto;
+                    setTimeout(() => { this.mensajeAlerta = ''; }, 4000);
+                },
+
+                guardarLocal(seccion) {
+                    localStorage.setItem('fabrica_' + seccion, JSON.stringify(this.registros[seccion]));
+                },
+
+                verificarNuevoSustrato(formObjeto, campo) {
+                    if (formObjeto[campo] === '__NUEVO__') {
+                        let nuevo = prompt('Introduce el nombre del nuevo producto o sustrato:');
+                        if (nuevo && nuevo.trim() !== '') {
+                            let nombreLimpio = nuevo.trim();
+                            if (!this.listaSustratos.includes(nombreLimpio)) {
+                                this.listaSustratos.push(nombreLimpio);
+                                localStorage.setItem('fabrica_lista_sustratos', JSON.stringify(this.listaSustratos));
+                            }
+                            formObjeto[campo] = nombreLimpio;
+                        } else {
+                            formObjeto[campo] = '';
+                        }
+                    }
+                },
+
+                vaciarSeccion(seccion) {
+                    if (confirm('¿Estás seguro de que deseas borrar todo el contenido de esta sección?')) {
+                        this.registros[seccion] = [];
+                        this.guardarLocal(seccion);
+                        this.cancelarEdicion(seccion);
+                        this.mostrarAlerta('Se ha vaciado la sección correctamente.');
+                    }
+                },
+
+                exportarRespaldoJSON() {
+                    let datosCompletos = {
+                        listaSustratos: this.listaSustratos,
+                        registros: this.registros
+                    };
+                    let blob = new Blob([JSON.stringify(datosCompletos, null, 2)], { type: 'application/json' });
+                    let url = URL.createObjectURL(blob);
+                    let link = document.createElement('a');
+                    link.setAttribute('href', url);
+                    link.setAttribute('download', `respaldo_fabrica_${getFechaHoy()}.json`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    this.mostrarAlerta('Copia de seguridad exportada con éxito.');
+                },
+
+                importarRespaldoJSON(event) {
+                    let archivo = event.target.files[0];
+                    if (!archivo) return;
+                    let lector = new FileReader();
+                    lector.onload = (e) => {
+                        try {
+                            let contenido = JSON.parse(e.target.result);
+                            if (contenido.registros && contenido.listaSustratos) {
+                                if (confirm('¿Deseas restaurar esta copia de seguridad? Se sobrescribirán los datos actuales en este equipo.')) {
+                                    this.listaSustratos = contenido.listaSustratos;
+                                    localStorage.setItem('fabrica_lista_sustratos', JSON.stringify(this.listaSustratos));
+
+                                    for (let sec in contenido.registros) {
+                                        this.registros[sec] = contenido.registros[sec];
+                                        this.guardarLocal(sec);
+                                    }
+                                    this.mostrarAlerta('¡Copia de seguridad importada correctamente!');
+                                }
+                            } else {
+                                alert('El archivo seleccionado no es válido.');
+                            }
+                        } catch (err) {
+                            alert('Error al leer el archivo JSON.');
+                        }
+                    };
+                    lector.readAsText(archivo);
+                    event.target.value = '';
+                },
+
+                exportarExcel(seccion) {
+                    let datos = this.registros[seccion];
+                    if (!datos || datos.length === 0) {
+                        alert('No hay registros en esta sección para exportar.');
+                        return;
+                    }
+
+                    let csvContent = "\uFEFF"; 
+                    let headers = [];
+                    let rows = [];
+
+                    if (seccion === 'produccion') {
+                        headers = ['Fecha', 'Sustrato', 'Linea', 'Turno', 'Cant. K.O.', 'Cant. R1'];
+                        rows = datos.map(i => [formatearFecha(i.fecha), i.sustrato, i.linea, i.turno, i.cantKO || 0, i.cantR1 || 0]);
+                    } else if (seccion === 'decoracion') {
+                        headers = ['Fecha', 'Sustrato', 'Equipo', 'Cant. K.O.', 'Cant. RP1'];
+                        rows = datos.map(i => [formatearFecha(i.fecha), i.sustrato, i.equipo, i.cantKO || 0, i.cantRP1 || 0]);
+                    } else if (seccion === 'corte') {
+                        headers = ['Fecha', 'Sustrato', 'Equipo', 'Cant. K.O.', 'Cant. OK', 'Cant. RT1'];
+                        rows = datos.map(i => [formatearFecha(i.fecha), i.sustrato, i.equipo, i.cantKO || 0, i.cantOK || 0, i.cantRT1 || 0]);
+                    } else if (seccion === 'cunas') {
+                        headers = ['Fecha', 'N. Cuna', 'Sustrato', 'Cant. K.O.', 'Cant. R1'];
+                        rows = datos.map(i => [formatearFecha(i.fecha), i.nroCuna, i.sustrato, i.cantKO || 0, i.cantR1 || 0]);
+                    } else if (seccion === 'almacen1701' || seccion === 'almacen1702') {
+                        headers = ['Fecha', 'Nombre de Sustrato', 'Cantidad'];
+                        rows = datos.map(i => [formatearFecha(i.fecha), i.sustrato, i.cantidad]);
+                    } else if (seccion === 'traspasos') {
+                        headers = ['Fecha', 'Origen', 'Sustrato', 'Cantidad', 'Destino', 'N. Orden'];
+                        rows = datos.map(i => [
+                            formatearFecha(i.fecha),
+                            'Almacén ' + i.origen,
+                            i.sustrato,
+                            i.cantidad,
+                            i.destino === 'Otros' ? 'Otros: ' + i.destinoOtro : i.destino,
+                            i.nroOrden
+                        ]);
+                    }
+
+                    csvContent += headers.join(';') + '\n';
+                    rows.forEach(row => {
+                        csvContent += row.map(val => `"${val}"`).join(';') + '\n';
+                    });
+
+                    let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    let url = URL.createObjectURL(blob);
+                    let link = document.createElement('a');
+                    link.setAttribute('href', url);
+                    link.setAttribute('download', `Registro_${seccion}.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    this.mostrarAlerta(`Archivo Excel de ${seccion} descargado con éxito.`);
+                },
+
+                guardarProduccion() {
+                    if (this.editIndex.produccion !== null) {
+                        this.registros.produccion[this.editIndex.produccion] = { ...this.formProduccion };
+                        this.editIndex.produccion = null;
+                        this.mostrarAlerta('Registro de Producción actualizado correctamente.');
+                    } else {
+                        this.registros.produccion.push({ ...this.formProduccion });
+                        this.mostrarAlerta('Registro de Producción guardado con éxito.');
+                    }
+                    this.guardarLocal('produccion');
+                    this.formProduccion = { fecha: getFechaHoy(), sustrato: '', linea: '', turno: '', cantKO: '', cantR1: '' };
+                },
+
+                guardarDecoracion() {
+                    if (this.editIndex.decoracion !== null) {
+                        this.registros.decoracion[this.editIndex.decoracion] = { ...this.formDecoracion };
+                        this.editIndex.decoracion = null;
+                        this.mostrarAlerta('Registro de Decoración actualizado correctamente.');
+                    } else {
+                        this.registros.decoracion.push({ ...this.formDecoracion });
+                        this.mostrarAlerta('Registro de Decoración guardado con éxito.');
+                    }
+                    this.guardarLocal('decoracion');
+                    this.formDecoracion = { fecha: getFechaHoy(), sustrato: '', equipo: '', cantKO: '', cantRP1: '' };
+                },
+
+                guardarCorte() {
+                    let sustrato = this.formCorte.sustrato;
+                    let fecha = this.formCorte.fecha;
+                    let cantOK = parseFloat(this.formCorte.cantOK) || 0;
+                    let cantRT1 = parseFloat(this.formCorte.cantRT1) || 0;
+
+                    if (this.editIndex.corte !== null) {
+                        // Si estamos editando, guardamos directamente el registro
+                        this.registros.corte[this.editIndex.corte] = { ...this.formCorte };
+                        this.editIndex.corte = null;
+                        this.mostrarAlerta('Registro de Corte actualizado correctamente.');
+                    } else {
+                        // 1. Sumar cantidad OK al Almacén 1702
+                        if (cantOK > 0) {
+                            let idx1702 = this.registros.almacen1702.findIndex(item => item.sustrato === sustrato);
+                            if (idx1702 !== -1) {
+                                let actual = parseFloat(this.registros.almacen1702[idx1702].cantidad) || 0;
+                                this.registros.almacen1702[idx1702].cantidad = actual + cantOK;
+                                this.registros.almacen1702[idx1702].fecha = fecha;
+                            } else {
+                                this.registros.almacen1702.push({ fecha: fecha, sustrato: sustrato, cantidad: cantOK });
+                            }
+                            this.guardarLocal('almacen1702');
+                        }
+
+                        // 2. Sumar cantidad RT1 al Almacén 1701
+                        if (cantRT1 > 0) {
+                            let idx1701 = this.registros.almacen1701.findIndex(item => item.sustrato === sustrato);
+                            if (idx1701 !== -1) {
+                                let actual = parseFloat(this.registros.almacen1701[idx1701].cantidad) || 0;
+                                this.registros.almacen1701[idx1701].cantidad = actual + cantRT1;
+                                this.registros.almacen1701[idx1701].fecha = fecha;
+                            } else {
+                                this.registros.almacen1701.push({ fecha: fecha, sustrato: sustrato, cantidad: cantRT1 });
+                            }
+                            this.guardarLocal('almacen1701');
+                        }
+
+                        this.registros.corte.push({ ...this.formCorte });
+                        this.mostrarAlerta('Corte guardado y stock actualizado en almacenes automáticamente.');
+                    }
+
+                    this.guardarLocal('corte');
+                    this.formCorte = { fecha: getFechaHoy(), sustrato: '', equipo: '', cantKO: '', cantOK: '', cantRT1: '' };
+                },
+
+                guardarCunas() {
+                    if (this.editIndex.cunas !== null) {
+                        this.registros.cunas[this.editIndex.cunas] = { ...this.formCunas };
+                        this.editIndex.cunas = null;
+                        this.mostrarAlerta('Registro de Cunas actualizado correctamente.');
+                    } else {
+                        this.registros.cunas.push({ ...this.formCunas });
+                        this.mostrarAlerta('Registro de Cunas guardado con éxito.');
+                    }
+                    this.guardarLocal('cunas');
+                    this.formCunas = { fecha: getFechaHoy(), nroCuna: '', sustrato: '', cantKO: '', cantR1: '' };
+                },
+
+                guardarAlmacen1701() {
+                    if (this.editIndex.almacen1701 !== null) {
+                        this.registros.almacen1701[this.editIndex.almacen1701] = { ...this.formAlmacen1701 };
+                        this.editIndex.almacen1701 = null;
+                        this.mostrarAlerta('Registro de Almacén 1701 actualizado correctamente.');
+                    } else {
+                        let indexExistente = this.registros.almacen1701.findIndex(item => item.sustrato === this.formAlmacen1701.sustrato);
+                        if (indexExistente !== -1) {
+                            let cantActual = parseFloat(this.registros.almacen1701[indexExistente].cantidad) || 0;
+                            let cantNueva = parseFloat(this.formAlmacen1701.cantidad) || 0;
+                            this.registros.almacen1701[indexExistente].cantidad = cantActual + cantNueva;
+                            this.registros.almacen1701[indexExistente].fecha = this.formAlmacen1701.fecha;
+                            this.mostrarAlerta('Stock acumulado en Almacén 1701 correctamente.');
+                        } else {
+                            this.registros.almacen1701.push({ ...this.formAlmacen1701 });
+                            this.mostrarAlerta('Registro de Almacén 1701 guardado con éxito.');
+                        }
+                    }
+                    this.guardarLocal('almacen1701');
+                    this.formAlmacen1701 = { fecha: getFechaHoy(), sustrato: '', cantidad: '' };
+                },
+
+                guardarAlmacen1702() {
+                    if (this.editIndex.almacen1702 !== null) {
+                        this.registros.almacen1702[this.editIndex.almacen1702] = { ...this.formAlmacen1702 };
+                        this.editIndex.almacen1702 = null;
+                        this.mostrarAlerta('Registro de Almacén 1702 actualizado correctamente.');
+                    } else {
+                        let indexExistente = this.registros.almacen1702.findIndex(item => item.sustrato === this.formAlmacen1702.sustrato);
+                        if (indexExistente !== -1) {
+                            let cantActual = parseFloat(this.registros.almacen1702[indexExistente].cantidad) || 0;
+                            let cantNueva = parseFloat(this.formAlmacen1702.cantidad) || 0;
+                            this.registros.almacen1702[indexExistente].cantidad = cantActual + cantNueva;
+                            this.registros.almacen1702[indexExistente].fecha = this.formAlmacen1702.fecha;
+                            this.mostrarAlerta('Stock acumulado en Almacén 1702 correctamente.');
+                        } else {
+                            this.registros.almacen1702.push({ ...this.formAlmacen1702 });
+                            this.mostrarAlerta('Registro de Almacén 1702 guardado con éxito.');
+                        }
+                    }
+                    this.guardarLocal('almacen1702');
+                    this.formAlmacen1702 = { fecha: getFechaHoy(), sustrato: '', cantidad: '' };
+                },
+
+                guardarTraspasos() {
+                    let cantTraspaso = parseFloat(this.formTraspasos.cantidad) || 0;
+                    let origen = this.formTraspasos.origen;
+                    let sustrato = this.formTraspasos.sustrato;
+                    let claveAlmacen = origen === '1701' ? 'almacen1701' : 'almacen1702';
+
+                    let indexAlmacen = this.registros[claveAlmacen].findIndex(item => item.sustrato === sustrato);
+                    let stockActual = indexAlmacen !== -1 ? (parseFloat(this.registros[claveAlmacen][indexAlmacen].cantidad) || 0) : 0;
+
+                    if (this.editIndex.traspasos !== null) {
+                        let traspasoAnterior = this.registros.traspasos[this.editIndex.traspasos];
+                        if (traspasoAnterior.origen === origen && traspasoAnterior.sustrato === sustrato) {
+                            stockActual += parseFloat(traspasoAnterior.cantidad) || 0;
+                        }
+                    }
+
+                    if (cantTraspaso > stockActual) {
+                        alert(`⚠️ Stock insuficiente en Almacén ${origen} para el sustrato "${sustrato}". Stock disponible actual: ${stockActual}`);
+                        return;
+                    }
+
+                    if (this.editIndex.traspasos !== null) {
+                        let viejo = this.registros.traspasos[this.editIndex.traspasos];
+                        let claveVieja = viejo.origen === '1701' ? 'almacen1701' : 'almacen1702';
+                        let indexViejo = this.registros[claveVieja].findIndex(item => item.sustrato === viejo.sustrato);
+                        
+                        if (indexViejo !== -1) {
+                            this.registros[claveVieja][indexViejo].cantidad = (parseFloat(this.registros[claveVieja][indexViejo].cantidad) || 0) + parseFloat(viejo.cantidad);
+                        }
+
+                        let indexNuevo = this.registros[claveAlmacen].findIndex(item => item.sustrato === sustrato);
+                        if (indexNuevo !== -1) {
+                            this.registros[claveAlmacen][indexNuevo].cantidad = (parseFloat(this.registros[claveAlmacen][indexNuevo].cantidad) || 0) - cantTraspaso;
+                        }
+
+                        this.registros.traspasos[this.editIndex.traspasos] = { ...this.formTraspasos };
+                        this.editIndex.traspasos = null;
+                        this.guardarLocal(claveVieja);
+                        if (claveVieja !== claveAlmacen) this.guardarLocal(claveAlmacen);
+                        this.mostrarAlerta('Traspaso actualizado y stock recalculado.');
+                    } else {
+                        this.registros[claveAlmacen][indexAlmacen].cantidad = stockActual - cantTraspaso;
+
+                        this.registros.traspasos.push({ ...this.formTraspasos });
+                        this.guardarLocal(claveAlmacen);
+                        this.mostrarAlerta('Traspaso registrado y cantidad restada directamente.');
+                    }
+                    
+                    this.guardarLocal('traspasos');
+                    this.formTraspasos = { fecha: getFechaHoy(), origen: '', sustrato: '', cantidad: '', destino: '', destinoOtro: '', nroOrden: '' };
+                },
+
+                editarRegistro(seccion, index) {
+                    this.editIndex[seccion] = index;
+                    if (seccion === 'produccion') this.formProduccion = { ...this.registros.produccion[index] };
+                    if (seccion === 'decoracion') this.formDecoracion = { ...this.registros.decoracion[index] };
+                    if (seccion === 'corte') this.formCorte = { ...this.registros.corte[index] };
+                    if (seccion === 'cunas') this.formCunas = { ...this.registros.cunas[index] };
+                    if (seccion === 'almacen1701') this.formAlmacen1701 = { ...this.registros.almacen1701[index] };
+                    if (seccion === 'almacen1702') this.formAlmacen1702 = { ...this.registros.almacen1702[index] };
+                    if (seccion === 'traspasos') this.formTraspasos = { ...this.registros.traspasos[index] };
+                },
+
+                cancelarEdicion(seccion) {
+                    this.editIndex[seccion] = null;
+                    if (seccion === 'produccion') this.formProduccion = { fecha: getFechaHoy(), sustrato: '', linea: '', turno: '', cantKO: '', cantR1: '' };
+                    if (seccion === 'decoracion') this.formDecoracion = { fecha: getFechaHoy(), sustrato: '', equipo: '', cantKO: '', cantRP1: '' };
+                    if (seccion === 'corte') this.formCorte = { fecha: getFechaHoy(), sustrato: '', equipo: '', cantKO: '', cantOK: '', cantRT1: '' };
+                    if (seccion === 'cunas') this.formCunas = { fecha: getFechaHoy(), nroCuna: '', sustrato: '', cantKO: '', cantR1: '' };
+                    if (seccion === 'almacen1701') this.formAlmacen1701 = { fecha: getFechaHoy(), sustrato: '', cantidad: '' };
+                    if (seccion === 'almacen1702') this.formAlmacen1702 = { fecha: getFechaHoy(), sustrato: '', cantidad: '' };
+                    if (seccion === 'traspasos') this.formTraspasos = { fecha: getFechaHoy(), origen: '', sustrato: '', cantidad: '', destino: '', destinoOtro: '', nroOrden: '' };
+                },
+
+                eliminarRegistro(seccion, index) {
+                    if (confirm('¿Estás seguro de eliminar este registro?')) {
+                        this.registros[seccion].splice(index, 1);
+                        this.guardarLocal(seccion);
+                        this.mostrarAlerta('Registro eliminado.');
+                    }
+                },
+
+                enviarWhatsAppDirecto() {
+                    let texto = "📊 *INFORME DE FÁBRICA* 📊\n\n";
+                    
+                    texto += "⚙️ *PRODUCCIÓN:*\n";
+                    if (this.registros.produccion.length === 0) texto += "Sin registros.\n";
+                    this.registros.produccion.forEach((item, i) => {
+                        texto += `${i+1}. Fecha: ${formatearFecha(item.fecha)} | Sustrato: ${item.sustrato} | Línea: ${item.linea} | Turno: ${item.turno} | K.O.: ${item.cantKO || 0} | R1: ${item.cantR1 || 0}\n`;
+                    });
+
+                    texto += "\n🎨 *DECORACIÓN:*\n";
+                    if (this.registros.decoracion.length === 0) texto += "Sin registros.\n";
+                    this.registros.decoracion.forEach((item, i) => {
+                        texto += `${i+1}. Fecha: ${formatearFecha(item.fecha)} | Sustrato: ${item.sustrato} | Equipo: ${item.equipo} | K.O.: ${item.cantKO || 0} | RP1: ${item.cantRP1 || 0}\n`;
+                    });
+
+                    texto += "\n✂️ *CORTE:*\n";
+                    if (this.registros.corte.length === 0) texto += "Sin registros.\n";
+                    this.registros.corte.forEach((item, i) => {
+                        texto += `${i+1}. Fecha: ${formatearFecha(item.fecha)} | Sustrato: ${item.sustrato} | Equipo: ${item.equipo} | K.O.: ${item.cantKO || 0} | OK: ${item.cantOK || 0} | RT1: ${item.cantRT1 || 0}\n`;
+                    });
+
+                    texto += "\n📦 *CUNAS:*\n";
+                    if (this.registros.cunas.length === 0) texto += "Sin registros.\n";
+                    this.registros.cunas.forEach((item, i) => {
+                        texto += `${i+1}. Fecha: ${formatearFecha(item.fecha)} | Cuna: ${item.nroCuna} | Sustrato: ${item.sustrato} | K.O.: ${item.cantKO || 0} | R1: ${item.cantR1 || 0}\n`;
+                    });
+
+                    texto += "\n🏭 *ALMACÉN 1701:*\n";
+                    if (this.registros.almacen1701.length === 0) texto += "Sin registros.\n";
+                    this.registros.almacen1701.forEach((item, i) => {
+                        texto += `${i+1}. Fecha: ${formatearFecha(item.fecha)} | Sustrato: ${item.sustrato} | Cantidad: ${item.cantidad}\n`;
+                    });
+
+                    texto += "\n🏭 *ALMACÉN 1702:*\n";
+                    if (this.registros.almacen1702.length === 0) texto += "Sin registros.\n";
+                    this.registros.almacen1702.forEach((item, i) => {
+                        texto += `${i+1}. Fecha: ${formatearFecha(item.fecha)} | Sustrato: ${item.sustrato} | Cantidad: ${item.cantidad}\n`;
+                    });
+
+                    texto += "\n🔄 *TRASPASOS:*\n";
+                    if (this.registros.traspasos.length === 0) texto += "Sin registros.\n";
+                    this.registros.traspasos.forEach((item, i) => {
+                        let dest = item.destino === 'Otros' ? 'Otros (' + item.destinoOtro + ')' : item.destino;
+                        texto += `${i+1}. Fecha: ${formatearFecha(item.fecha)} | Origen: ${item.origen} | Sustrato: ${item.sustrato} | Cant: ${item.cantidad} | Destino: ${dest} | Orden: ${item.nroOrden}\n`;
+                    });
+
+                    let url = `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
+                    window.open(url, '_blank');
+                },
+
+                exportarPDF() {
+                    window.print();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
